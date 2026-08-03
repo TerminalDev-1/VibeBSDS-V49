@@ -7,6 +7,26 @@ The current server supports the Project BSDS V49 client and has been tested on
 an Android device through the home/lobby login flow. It listens on TCP port
 `9339` by default.
 
+## Download the Android client
+
+Download the V49.194 APK from this repository's GitHub release:
+
+- [Download `project-bsds-v49.apk`](https://github.com/TerminalDev-1/v49-server/releases/download/v49.194/project-bsds-v49.apk)
+- SHA-256: `279A4E3F9D418E6639A10F5F22F25FECB848363D30D715067BE35DCC5BB5DEF9`
+- Android package: `com.projectbsds.v49` (separate from the official game)
+
+You can also download it from a terminal authenticated with GitHub CLI:
+
+```powershell
+gh release download v49.194 -R TerminalDev-1/v49-server -p project-bsds-v49.apk
+```
+
+Before rebuilding the client, set `redirectHost` in
+`lib/armeabi-v7a/libkagenay.c.so` to the server computer's LAN IPv4 address.
+Keep `redirectPort` set to `9339`. The APK is distributed as a release asset
+because GitHub supports release files up to 2 GiB, while a file this large
+should not be stored in normal Git history.
+
 ## Start the server
 
 Requirements:
