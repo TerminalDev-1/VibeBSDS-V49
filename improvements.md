@@ -10,6 +10,17 @@ VibeBSDS changed the project from a mostly hardcoded protocol implementation
 into a stateful, self-hostable game server with durable accounts and a working
 progression loop.
 
+## What the base client actually showed
+
+The comparison starts from a very specific baseline:
+
+- Base BSDS showed Brawl Pass but **no Star Road at all**.
+- Every brawler was already unlocked, removing the normal unlock journey.
+- Player presentation was hardcoded around Rank 1 and 1,250 trophies.
+- Credits hardly formed a usable or persistent progression path.
+- Closing or reconnecting did not provide the durable account loop VibeBSDS
+  now uses.
+
 At least fourteen meaningful improvements were made:
 
 | # | Improvement | Current status |
@@ -21,7 +32,7 @@ At least fourteen meaningful improvements were made:
 | 5 | Total and per-brawler trophies | Working |
 | 6 | Transactional battle rewards | Working |
 | 7 | Persistent battle history | Working |
-| 8 | Stored credits | Working |
+| 8 | Stored battle credits and Star Road spending | Working; overall credit ecosystem partial |
 | 9 | Star Road progression and brawler unlocking | Working |
 | 10 | Duplicate Star Road unlock protection | Working |
 | 11 | Persistent brawler ownership and selection | Working |
@@ -102,7 +113,7 @@ Completed local/offline bot battles now feed a durable reward path:
 
 Results are restored into HomeData after returning home or reconnecting.
 
-## 6. Credits
+## 6. Credits (partially complete overall)
 
 Credits are no longer a purely visual client value. They are:
 
@@ -112,6 +123,11 @@ Credits are no longer a purely visual client value. They are:
 - Preserved across reconnects
 - Used as the Star Road spending currency
 - Deducted transactionally during a successful unlock
+
+That working core does not make the entire credit ecosystem complete. Brawl
+Pass credit rewards still need exact transfer, durable reward-node claim state,
+and client synchronization. In short: credits half work in VibeBSDS, while they
+hardly worked as progression in base BSDS.
 
 ## 7. Star Road
 
@@ -128,6 +144,10 @@ VibeBSDS added the V49.194-specific Star Road data and command path:
 - Refreshed HomeData after a successful claim
 
 The core credit-spending and brawler-unlock path works and is tested.
+
+This was not a repair of an already visible base feature: base BSDS displayed
+no Star Road at all and started with every brawler unlocked. VibeBSDS added the
+actual Star Road presentation and progression path.
 
 ## 8. Persistent brawler ownership and selection
 
@@ -201,6 +221,27 @@ python -m unittest discover -s tests -v
 - Runtime-visible changes are validated on the actual Android device instead of
   being declared complete from packet encoding alone.
 
+## Evidence and development method
+
+The improvements were not inferred only from source code or menu rendering.
+OpenAI Codex performed live testing through wireless Android debugging on the
+Xiaomi Pad 6, including:
+
+- Installing and relaunching the isolated `com.projectbsds.v49` client
+- Connecting it to the local game server over Wi-Fi
+- Opening the event chooser and verifying Gem Grab/Bounty ordering
+- Entering matches and inspecting the real mode scoreboard/controller
+- Rejecting the fake Brawl Ball/Gem Grab hybrid after arena inspection
+- Exercising Battle End and returning home
+- Reconnecting to verify database-backed trophies and progression
+- Capturing device screenshots under the gitignored `screenshots/` directory
+
+Codex accelerated the work by keeping code changes, packet analysis, game
+server restarts, automated tests, wireless-device actions, and visual evidence
+inside one iterative workflow. No exact speed multiplier is claimed, but the
+feedback cycle was materially shorter than a manual handoff between separate
+coding, deployment, and device-testing stages.
+
 ## Known boundaries
 
 - Battles are client-side local/offline bot simulations, not a
@@ -209,6 +250,7 @@ python -m unittest discover -s tests -v
 - A Brawl Ball-looking hybrid still runs Gem Grab behavior and is not shipped.
 - Alternative event slots can trigger the client's endless event roulette.
 - Some inherited club and social values remain static.
+- Some brawler-specific behavior/content remains unfinished.
 - Brawl Pass reward claim synchronization remains unfinished.
 - Battle End presentation and trophy animation remain unfinished.
 

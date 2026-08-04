@@ -12,8 +12,14 @@ This README is also the project's living changelog. It records what was
 actually built, what was verified on a real Android device, and what should not
 be expected from the project.
 
+For the full evidence-backed feature record, see
+[`improvements.md`](improvements.md). For the less diplomatic comparison, see
+[`roast.md`](roast.md).
+
 VibeBSDS is not just BSDS with a new name. The base project could connect a
-client and serve mostly hardcoded state. We pushed it substantially further:
+client and serve mostly hardcoded state: Brawl Pass appeared, Star Road did
+not appear at all, every brawler was unlocked, and players received the same
+Rank 1/1,250-trophy presentation. We pushed it substantially further:
 accounts now survive restarts, battles change real stored progression, credits
 can unlock brawlers, and HomeData is generated from the same database that
 records the results. That is far beyond the original server's static demo
@@ -27,7 +33,8 @@ behavior.
   trophies, mastery values, wins, losses, and battle history.
 - Transactional battle rewards committed before the result packet is sent.
 - Working total and per-brawler trophy progression.
-- Working credits that persist into Star Road progression.
+- Partially complete credits: battle credits persist and Star Road spending
+  works, while Brawl Pass credit claims still need synchronization.
 - Working Star Road spending and brawler unlocking.
 - Partial Brawl Pass support: the pass and token progression are present, but
   reward claiming is not yet durably registered by the game server.
@@ -107,6 +114,7 @@ server deliberately advertises Bounty rather than shipping a fake hybrid mode.
   durably claimed so the client cannot offer the same reward repeatedly.
 - Some surrounding club and social structures still originate from the base
   server and contain static placeholder data.
+- Some brawler-specific behavior/content remains unfinished.
 - VibeBSDS is intended to be downloaded and self-hosted. Each installation
   keeps its own accounts and progression in its local SQLite database.
 
@@ -119,6 +127,10 @@ includes the database, persistent progression, trophy and credit logic, Star
 Road integration, Bounty restoration, packet changes, and regression tests.
 TerminalDev-1 chose the direction, tested the real client, reported failures,
 and decided what was acceptable to ship.
+
+Codex also drove the fast code-test-device loop through wireless Android
+debugging on the Xiaomi Pad 6: changing packets, restarting the game server,
+entering matches, capturing evidence, and checking reconnect persistence.
 
 That disclosure is not an excuse for unverified claims. Changes are tested with
 automated checks and, where client behavior matters, on the actual Android

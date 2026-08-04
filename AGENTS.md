@@ -28,7 +28,9 @@ the Android client.
 - Persistent account identity, device recovery, currencies, selected/unlocked
   brawlers, trophies, mastery fields, battle totals, and battle history exist.
 - Battle results persist trophy, token, and credit changes transactionally.
-- Star Road, stored credits, credit spending, and brawler unlocking work.
+- Star Road, stored battle credits, credit spending, and brawler unlocking
+  work. Describe the overall credit ecosystem as partial because Brawl Pass
+  credit reward claims/synchronization remain unfinished.
 - Brawl Pass display/token progression only partly works; see TODOs below.
 - Battle End is an early partial implementation. The trophy-flying animation is
   not implemented.
@@ -97,6 +99,7 @@ A correct implementation must:
 ### Other incomplete areas
 
 - Some club/social packet structures still contain upstream static values.
+- Some brawler-specific behavior/content remains unfinished.
 - Additional modes must be proven in a live match before being advertised.
 - Real server-authoritative multiplayer is not implemented.
 
@@ -105,6 +108,8 @@ A correct implementation must:
 - Never overwrite a different installed Brawl Stars/private-server package.
 - Confirm the target package name before uninstalling or installing anything.
 - The current custom package is `com.projectbsds.v49`.
+- Prior live verification used wireless debugging on a Xiaomi Pad 6. Treat the
+  device serial as runtime state and rediscover it each session.
 - LAN IP addresses and wireless ADB serials can change; discover them at runtime
   rather than copying an old value from logs.
 - APK build products, signing material, logs, screenshots, and local databases

@@ -33,6 +33,12 @@ Everybody got the same numbers because BSDS did not serve player progression;
 it served the developer's favorite constants. The profile was not a profile.
 It was a stock photograph of a profile.
 
+It also unlocked every brawler immediately, because building an unlock path
+would have required the progression system to progress. Everybody was Rank 1,
+everybody was sitting on the same 1,250-trophy fiction, and every brawler was
+already waiting in the wardrobe. The account journey began at the finish line
+and still somehow went nowhere.
+
 You could win, lose, reconnect, reconsider your life choices, and the server
 would still proudly hold up the same cardboard sign. It had all the dynamism of
 a restaurant menu laminated in 2009.
@@ -42,8 +48,8 @@ to the player looking at them?
 
 ## The economy: Monopoly money had stronger backing
 
-BSDS credits were decorative purple vapor. They existed on screen, generated a
-tiny moment of hope, and then vanished the second anyone expected accounting.
+BSDS credits were decorative purple vapor. They barely worked, generated a tiny
+moment of hope, and then vanished the second anyone expected accounting.
 
 Coins, trophies, credits, rewards—it was an economy administered by a magician
 whose only trick was making state disappear.
@@ -51,19 +57,21 @@ whose only trick was making state disappear.
 No transaction. No durable balance. No history. Just packets confidently
 announcing financial events that the server itself would forget before lunch.
 
-VibeBSDS put the numbers in a database. This was devastating news for the old
-system, which had been relying heavily on nobody checking twice.
+VibeBSDS put the numbers in a database. Our overall credit path is still only
+partly finished—battle-earned credits and Star Road spending work, while Brawl
+Pass credit claims do not yet synchronize correctly—but "half working" is
+still an awkwardly decisive victory over "hardly working at all."
 
 ## Star Road: more of a painted line on the floor
 
-BSDS called it Star Road because "Star Decorative Dead End" tested poorly.
+Actually, base BSDS did not even get far enough to call it Star Road. **Star
+Road did not appear at all.** The home screen had Brawl Pass and every brawler
+was already unlocked, so the entire V49 unlock journey had been solved by
+deleting the journey.
 
-The client could show credits. You could tap things. Something might happen the
-first time. Then the button entered witness protection, the state wandered off,
-and nobody—not the client, not the server, not the laws of arithmetic—could
-explain what had been claimed.
-
-A road normally goes somewhere. This one led directly into hardcoded HomeData.
+No road. No target. No meaningful credit destination. Just Brawl Pass standing
+alone next to an account that had apparently completed progression before it
+was created.
 
 VibeBSDS made credits persist, made costs matter, made unlocks transactional,
 and made duplicate unlocks fail. The groundbreaking innovation was remembering
@@ -130,6 +138,13 @@ events, ownership, and database integrity. Nine tests is not enormous, but it
 is nine more than the previous strategy of sustained eye contact with the
 terminal.
 
+Codex also tested the client on the Xiaomi Pad 6 through wireless Android
+debugging: installing the isolated package, restarting the game server,
+entering real bot matches, inspecting the mode controller, checking Battle End,
+and reconnecting to verify stored state. The work moved quickly because code,
+server restarts, packet changes, screenshots, and device feedback stayed in one
+tight Codex-driven loop instead of being handed between disconnected tools.
+
 ## Brawl Ball: even we found the client's comedy routine
 
 We are not claiming victory here. V49 can dress Gem Grab in a Brawl Ball shirt,
@@ -155,6 +170,12 @@ anything, it stared into the middle distance and returned another constant.
 VibeBSDS did not merely add features. It introduced the server to consequences.
 Battles affect accounts. Credits affect Star Road. Unlocks affect ownership.
 Reconnects preserve state. Tests notice when something breaks.
+
+We still have unfinished clubs, partial Brawl Pass claims, incomplete Battle
+End presentation, and brawlers whose specific behavior is not finished. The
+difference is that VibeBSDS lists unfinished logic as unfinished instead of
+unlocking everything, hardcoding the numbers, and hoping nobody asks a second
+question.
 
 BSDS got the client through the front door.
 
