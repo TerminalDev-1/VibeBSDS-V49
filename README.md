@@ -129,14 +129,14 @@ because a convincing menu card is not proof of working gameplay.
 
 Download the V49.194 APK from this repository's GitHub release:
 
-- [Download `project-bsds-v49.apk`](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/project-bsds-v49.apk)
-- SHA-256: `279A4E3F9D418E6639A10F5F22F25FECB848363D30D715067BE35DCC5BB5DEF9`
+- [Download `VibeBSDS-V49.apk`](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/VibeBSDS-V49.apk)
+- SHA-256: `D658CE81C2824225CCA9528A35DE42965F526F38B4EA34E5C0BB42906658A3E0`
 - Android package: `com.projectbsds.v49`
 
 You can also download it with an authenticated GitHub CLI:
 
 ```powershell
-gh release download v49.194 -R TerminalDev-1/VibeBSDS-V49 -p project-bsds-v49.apk
+gh release download v49.194 -R TerminalDev-1/VibeBSDS-V49 -p VibeBSDS-V49.apk
 ```
 
 Before rebuilding the client, set `redirectHost` in
