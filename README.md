@@ -4,6 +4,10 @@
 built and managed collaboratively by
 [@TerminalDev-1](https://github.com/TerminalDev-1) and OpenAI Codex.
 
+It is a public, self-hostable game server available on GitHub. Anyone can run
+their own V49 instance with local accounts, persistent progression, and the
+included compatible Android client.
+
 This README is also the project's living changelog. It records what was
 actually built, what was verified on a real Android device, and what should not
 be expected from the project.
@@ -35,8 +39,8 @@ behavior.
 - Gem Grab as the first advertised mode and Bounty as the second, both kept on
   the client-proven event path.
 - Automated progression, database-integrity, and packet-encoding tests.
-- A separately packaged Android client so the official Brawl Stars app is not
-  overwritten.
+- A separately packaged Android client that can coexist with other installed
+  clients.
 
 Team victories currently award `+8` trophies, 20 Brawl Pass tokens, and 20
 credits. Defeats award `-6` trophies, 10 tokens, and 8 credits, with a
@@ -103,8 +107,8 @@ server deliberately advertises Bounty rather than shipping a fake hybrid mode.
   durably claimed so the client cannot offer the same reward repeatedly.
 - Some surrounding club and social structures still originate from the base
   server and contain static placeholder data.
-- The project is for development and learning, not production hosting,
-  monetisation, official services, or official accounts.
+- VibeBSDS is intended to be downloaded and self-hosted. Each installation
+  keeps its own accounts and progression in its local SQLite database.
 
 ## AI-generated-code disclosure
 
@@ -127,7 +131,7 @@ Download the V49.194 APK from this repository's GitHub release:
 
 - [Download `project-bsds-v49.apk`](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/project-bsds-v49.apk)
 - SHA-256: `279A4E3F9D418E6639A10F5F22F25FECB848363D30D715067BE35DCC5BB5DEF9`
-- Android package: `com.projectbsds.v49` (separate from the official game)
+- Android package: `com.projectbsds.v49`
 
 You can also download it with an authenticated GitHub CLI:
 
