@@ -1,4 +1,5 @@
 from Classes.ByteStreamHelper import ByteStreamHelper
+from Classes.GameData import active_events, star_road_remaining
 from Classes.Packets.PiranhaMessage import PiranhaMessage
 
 
@@ -8,20 +9,23 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.messageVersion = 0
 
     def encode(self, fields, player):
+        owned_brawlers = sorted(player.OwnedBrawlers.items())
+        events = active_events()
+        star_road = star_road_remaining(player.OwnedBrawlers)
 
         self.writeVInt(-1433793731) #timestamp
         self.writeVInt(2023064)#timestamp
         self.writeVInt(52685)#timestamp LogicDailyDataBegin
         self.writeVInt(52685) #timestamp
-        self.writeVInt(50000) # current trophies
-        self.writeVInt(50000) # hightest trophies
-        self.writeVInt(50000) #highest trophies today
-        self.writeVInt(300) # collected trophy road rewards
+        self.writeVInt(player.Trophies) # current trophies
+        self.writeVInt(player.HighestTrophies) # highest trophies
+        self.writeVInt(player.HighestTrophies) # highest trophies today
+        self.writeVInt(player.Trophies) # collected trophy road progress
         self.writeVInt(503026) # exp points
          # profile icon
-        self.writeDataReference(28, 128)
+        self.writeDataReference(28, player.Thumbnail)
         # name color
-        self.writeDataReference(43, 1)
+        self.writeDataReference(43, player.Namecolor)
 
         self.writeVInt(26) # played Game Mode
         for x in range(26):
@@ -32,16 +36,17 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeVInt(0) # available ramdon skins
 
         self.writeVInt(0) # random skins
-        self.writeVInt(689)
-        for x in range(689):
-            self.writeDataReference(29, x) # unlocked skin array
+        # Do not advertise every numeric skin ID. The original hardcoded range
+        # includes unresolved V49.194 entries; offline bot generation can pick
+        # one and later dereference the small CSV index as a native pointer.
+        self.writeVInt(0) # unlocked non-default skins
 
         self.writeVInt(0) # skin purchase option
 
         self.writeVInt(0) # unk skin array5
 
         self.writeVInt(0) # leaderboard region
-        self.writeVInt(50000) # highest trophies
+        self.writeVInt(player.HighestTrophies) # highest trophies
         self.writeVInt(0) # tokens used in battle
         self.writeVInt(2) # control mode
         self.writeBoolean(True) # battle hints
@@ -77,9 +82,9 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeVInt(30) #unk
 
         self.writeByte(1) # count brawlers selected
-        self.writeDataReference(16, 69) # selected brawler
-        self.writeString("CA") # location
-        self.writeString("BSDS") # supported creator
+        self.writeDataReference(16, player.SelectedBrawlers[0]) # selected brawler
+        self.writeString(player.Region) # location
+        self.writeString(player.ContentCreator) # supported creator
 
         self.writeVInt(0) # resources gained
         self.writeVInt(0) # count 0
@@ -161,35 +166,35 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeVInt(32)
         self.writeVInt(33)
 
-        self.writeVInt(1) # event count
-
-        self.writeVInt(1)
-        self.writeVInt(32)
-        self.writeVInt(0)
-        self.writeVInt(72292)
-        self.writeVInt(0)
-        self.writeDataReference(15, 122) # map id
-        self.writeVInt(-1)
-        self.writeVInt(2)
-        self.writeString("")
-        self.writeVInt(0)
-        self.writeVInt(0)
-        self.writeVInt(0)
-        self.writeVInt(0)
-        self.writeVInt(0)
-        self.writeVInt(0)
-        self.writeBoolean(False) # MapMaker map structure array
-        self.writeVInt(0)
-        self.writeBoolean(False) # Power League array entry
-        self.writeVInt(0)
-        self.writeVInt(0)
-        self.writeBoolean(False)
-        self.writeBoolean(False)
-        self.writeBoolean(False)
-        self.writeVInt(-1)
-        self.writeBoolean(False)
-        self.writeBoolean(False)
-        self.writeVInt(-1)
+        self.writeVInt(len(events)) # event count
+        for event in events:
+            self.writeVInt(event["slot"])
+            self.writeVInt(event["event_index"])
+            self.writeVInt(0)
+            self.writeVInt(event["seconds_left"])
+            self.writeVInt(0)
+            self.writeDataReference(15, event["map_id"])
+            self.writeVInt(-1)
+            self.writeVInt(event["variation"])
+            self.writeString("")
+            self.writeVInt(0)
+            self.writeVInt(0)
+            self.writeVInt(0)
+            self.writeVInt(0)
+            self.writeVInt(0)
+            self.writeVInt(0)
+            self.writeBoolean(False) # MapMaker map structure array
+            self.writeVInt(0)
+            self.writeBoolean(False) # Power League array entry
+            self.writeVInt(0)
+            self.writeVInt(0)
+            self.writeBoolean(False)
+            self.writeBoolean(False)
+            self.writeBoolean(False)
+            self.writeVInt(-1)
+            self.writeBoolean(False)
+            self.writeBoolean(False)
+            self.writeVInt(-1)
 
 
         self.writeVInt(0) # upcoming event count
@@ -233,7 +238,7 @@ class OwnHomeDataMessage(PiranhaMessage):
         ByteStreamHelper.encodeIntList(self, [0, 29, 79, 169, 349, 699]) # brawler cost gems ?
         ByteStreamHelper.encodeIntList(self, [0, 160, 450, 500, 1500, 4500]) # what is that ? looks like chroma price of chromatic brawlers but it doesn't go under 500
 
-        self.writeLong(0, 1) # Player ID
+        self.writeLong(player.ID[0], player.ID[1]) # Player ID
 
         self.writeVInt(0) # Notification factory
         
@@ -245,9 +250,48 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeBoolean(False) # 0x0
         # new function v46
         self.writeVInt(0) # new function v46
-        self.writeBoolean(False) # login calendar ?
+        self.writeBoolean(bool(star_road)) # Star Road
+        if star_road:
+            # V49.194 StarRoadData::decode. The first two candidate lists and
+            # selected reference are unused by this linear progression path.
+            self.writeVInt(0)
+            self.writeVInt(0)
+            self.writeDataReference(0)
 
-        self.writeVInt(0) # new function v48
+            current_entry = star_road[:1]
+            self.writeVInt(len(current_entry))
+            for brawler_id, credits, gems in current_entry:
+                self.writeDataReference(16, brawler_id)
+                self.writeVInt(credits)
+                self.writeVInt(gems)
+                self.writeVInt(0)
+                self.writeVInt(player.Credits)
+                self.writeVInt(0)
+                self.writeVInt(0)
+
+            # The route list includes the currently unlocking brawler as its
+            # first node.  The client uses the sixth field as that node's
+            # brawler index when opening the full Star Road screen; omitting
+            # either leaves the home tile drawable but crashes on tap.
+            queued_entries = star_road
+            self.writeVInt(len(queued_entries))
+            for brawler_id, credits, gems in queued_entries:
+                self.writeDataReference(16, brawler_id)
+                self.writeVInt(credits)
+                self.writeVInt(gems)
+                self.writeVInt(0)
+                self.writeVInt(0)
+                self.writeVInt(brawler_id)
+                self.writeVInt(0)
+
+            self.writeVInt(0)
+            self.writeVInt(0)
+
+        self.writeVInt(len(owned_brawlers)) # Mastery entries
+        for brawler_id, brawler in owned_brawlers:
+            self.writeDataReference(16, brawler_id)
+            self.writeVInt(brawler["MasteryPoints"])
+            self.writeVInt(brawler["MasteryClaimed"])
 
         self.writeVInt(0) # v48
         self.writeVInt(0) # v48
@@ -261,67 +305,66 @@ class OwnHomeDataMessage(PiranhaMessage):
 
         self.writeVInt(0) # end LogicClientHome
 
-        self.writeVLong(0, 1) # player id
-        self.writeVLong(0, 1)
-        self.writeVLong(0, 1)
-        self.writeStringReference("risporce")
-        self.writeBoolean(True) # name set
+        self.writeVLong(player.ID[0], player.ID[1]) # player id
+        self.writeVLong(player.ID[0], player.ID[1])
+        self.writeVLong(player.ID[0], player.ID[1])
+        self.writeStringReference(player.Name)
+        self.writeBoolean(player.Registered) # name set
         self.writeInt(-1)
 
         self.writeVInt(17) # commodity count
-        unlocked_brawler = [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 95, 100, 105, 110, 115, 120, 125, 130, 177, 182, 188, 194, 200, 206, 218, 224, 230, 236, 279, 296, 303, 320, 327, 334, 341, 358, 365, 372, 379, 386, 393, 410, 417, 427, 434, 448, 466, 474, 491, 499, 507, 515, 523, 531, 539, 547, 557, 565, 573]
-        self.writeVInt(len(unlocked_brawler) + 3) # unlocked brawlers + resources
-        for x in unlocked_brawler:
-            self.writeDataReference(23, x)
+        self.writeVInt(len(owned_brawlers) + 3) # unlocked brawlers + resources
+        for _, brawler in owned_brawlers:
+            self.writeDataReference(23, brawler["CardID"])
             self.writeVInt(-1)
             self.writeVInt(1)
 
         self.writeDataReference(5, 8)
         self.writeVInt(-1)
-        self.writeVInt(1090)
+        self.writeVInt(player.Coins)
 
         self.writeDataReference(5, 10)
         self.writeVInt(-1)
-        self.writeVInt(73)
+        self.writeVInt(player.StarPoints)
 
         self.writeDataReference(5, 13)
         self.writeVInt(-1)
-        self.writeVInt(22)
+        self.writeVInt(player.ClubCoins)
 
 
-        self.writeVInt(70) # HeroScore
-        for x in range(70):
-            self.writeDataReference(16, x)
+        self.writeVInt(len(owned_brawlers)) # HeroScore
+        for brawler_id, brawler in owned_brawlers:
+            self.writeDataReference(16, brawler_id)
             self.writeVInt(-1)
-            self.writeVInt(1250)
+            self.writeVInt(brawler["Trophies"])
         
-        self.writeVInt(70)
-        for x in range(70):
-            self.writeDataReference(16, x)
+        self.writeVInt(len(owned_brawlers)) # HeroHighestScore
+        for brawler_id, brawler in owned_brawlers:
+            self.writeDataReference(16, brawler_id)
             self.writeVInt(-1)
-            self.writeVInt(1)
+            self.writeVInt(brawler["HighestTrophies"])
 
         self.writeVInt(0) # Array
 
-        self.writeVInt(70) # HeroPower
-        for x in range(70):
-            self.writeDataReference(16, x)
+        self.writeVInt(len(owned_brawlers)) # HeroPowerPoints
+        for brawler_id, brawler in owned_brawlers:
+            self.writeDataReference(16, brawler_id)
             self.writeVInt(-1)
-            self.writeVInt(1)
+            self.writeVInt(brawler["PowerPoints"])
         
-        self.writeVInt(70) # HeroLevel
-        for x in range(70):
-            self.writeDataReference(16, x)
+        self.writeVInt(len(owned_brawlers)) # HeroLevel
+        for brawler_id, brawler in owned_brawlers:
+            self.writeDataReference(16, brawler_id)
             self.writeVInt(-1)
-            self.writeVInt(10)
+            self.writeVInt(brawler["PowerLevel"] - 1)
 
         self.writeVInt(0) # hero star power and gadget
 
-        self.writeVInt(70) # HeroSeenState
-        for x in range(70):
-            self.writeDataReference(16, x)
+        self.writeVInt(len(owned_brawlers)) # HeroSeenState
+        for brawler_id, brawler in owned_brawlers:
+            self.writeDataReference(16, brawler_id)
             self.writeVInt(-1)
-            self.writeVInt(2)
+            self.writeVInt(brawler["State"])
 
         self.writeVInt(0) # Array
         self.writeVInt(0) # Array
@@ -333,18 +376,18 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeVInt(0) # Array
         self.writeVInt(0) # Array
 
-        self.writeVInt(999) # Diamonds
-        self.writeVInt(999) # Free Diamonds
-        self.writeVInt(10) # Player Level
-        self.writeVInt(100)
+        self.writeVInt(player.Gems) # Diamonds
+        self.writeVInt(player.Gems) # Free Diamonds
+        self.writeVInt(player.Level) # Player Level
+        self.writeVInt(player.Experience)
         self.writeVInt(0) # CumulativePurchasedDiamonds or Avatar User Level Tier | 10000 < Level Tier = 3 | 1000 < Level Tier = 2 | 0 < Level Tier = 1
-        self.writeVInt(100) # Battle Count
-        self.writeVInt(10) # WinCount
-        self.writeVInt(80) # LoseCount
-        self.writeVInt(50) # WinLooseStreak
-        self.writeVInt(20) # NpcWinCount
+        self.writeVInt(player.BattleCount) # Battle Count
+        self.writeVInt(player.WinCount) # WinCount
+        self.writeVInt(player.LoseCount) # LoseCount
+        self.writeVInt(0) # WinLoseStreak
+        self.writeVInt(0) # NpcWinCount
         self.writeVInt(0) # NpcLoseCount
-        self.writeVInt(2) # TutorialState | shouldGoToFirstTutorialBattle = State == 0
+        self.writeVInt(player.TutorialState) # TutorialState
         self.writeVInt(12)
         self.writeVInt(0)
         self.writeVInt(0)

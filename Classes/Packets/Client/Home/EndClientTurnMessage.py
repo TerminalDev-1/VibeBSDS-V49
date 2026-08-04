@@ -33,7 +33,7 @@ class EndClientTurnMessage(PiranhaMessage):
         fields["Socket"] = calling_instance.client
         for command in fields["Commands"]:
             if "Instance" not in command.keys():
-                return
+                continue
 
             if hasattr(command["Instance"], 'execute'):
                 command["Instance"].execute(calling_instance, command["Fields"], cryptoInit)

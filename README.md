@@ -45,6 +45,42 @@ python Core.py
 The server binds to `0.0.0.0:9339`. If another device is connecting over your
 network, allow TCP port `9339` through the host firewall.
 
+## Persistent progression
+
+VibeBSDS now creates `player.sqlite` on first launch. The SQLite database stores
+account identity and tokens, Android-device recovery, currencies, unlocked
+brawlers, selected brawler, trophies, mastery values, battle totals, and a
+battle history ledger. Schema creation and upgrades run automatically.
+
+Completed client battles are committed transactionally before BattleEnd is
+sent. Team wins currently award `+8` trophies, 20 Brawl Pass tokens, and 20
+credits; losses award `-6` trophies (with a five-trophy V49.194 client-safety
+floor), 10 tokens, and 8 credits. Showdown placement uses a rank-based trophy
+table.
+
+HomeData is generated from the same account rows: total and per-brawler
+trophies, selected and unlocked brawlers, power level, coins, gems, profile
+statistics, and the current Star Road credit target are no longer hardcoded.
+The V49.194 event selector advertises Brawl Ball, Bounty, and Gem Grab
+simultaneously instead of leaving the home screen on one mode for 30 minutes.
+
+Run the progression and packet-encoding tests with:
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+### V49.194 client compatibility
+
+V49.194's Star Road and event layouts differ in important ways from nearby
+minor client builds. VibeBSDS encodes the structures decoded from the included
+49.194 APK and keeps every advertised event on the client-safe event slot while
+using distinct event indexes for the selectable modes.
+
+Battles currently use the client's local/offline battle simulation and persist
+the reported result on the server. This is not yet a server-authoritative
+real-time multiplayer battle engine.
+
 ## Project status
 
 This is a development and learning project. It is not intended for production

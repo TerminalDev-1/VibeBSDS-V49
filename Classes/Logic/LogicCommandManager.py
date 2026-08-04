@@ -1,4 +1,6 @@
 from Classes.Commands.Client.LogicPurchaseOfferCommand import LogicPurchaseOfferCommand
+from Classes.Commands.Client.LogicSelectCharacterCommand import LogicSelectCharacterCommand
+from Classes.Commands.Client.LogicStarRoadRewardCommand import LogicStarRoadRewardCommand
 from Classes.Commands.Server.LogicChangeAvatarNameCommand import LogicChangeAvatarNameCommand
 
 
@@ -48,7 +50,7 @@ class LogicCommandManager:
         522: 'LogicHeroSeenCommand',
         523: 'LogicClaimAdRewardCommand',
         524: 'LogicVideoStartedCommand',
-        525: 'LogicSelectCharacterCommand',
+        525: LogicSelectCharacterCommand,
         526: 'LogicUnlockFreeSkinsCommand',
         527: 'LogicSetPlayerNameColorCommand',
         528: 'LogicViewInboxNotificationCommand',
@@ -65,7 +67,8 @@ class LogicCommandManager:
         539: 'LogicBrawlPassAutoCollectWarningSeenCommand',
         540: 'LogicPurchaseChallengeLivesCommand',
         541: 'LogicClearESportsHubNotificationCommand',
-        542: 'LogicSelectGroupSkinCommand'
+        542: 'LogicSelectGroupSkinCommand',
+        560: LogicStarRoadRewardCommand,
     }
 
     def getCommandsName(commandType):

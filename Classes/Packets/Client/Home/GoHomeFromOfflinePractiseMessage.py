@@ -17,6 +17,7 @@ class GoHomeFromOfflinePractiseMessage(PiranhaMessage):
         return fields
 
     def execute(message, calling_instance, fields, cryptoInit):
+        calling_instance.player.reload()
         fields["Socket"] = calling_instance.client
         Messaging.sendMessage(24101, fields, cryptoInit, calling_instance.player)
 

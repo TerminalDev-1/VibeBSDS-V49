@@ -6,12 +6,17 @@ class BattleEndMessage(PiranhaMessage):
         self.messageVersion = 0
 
     def encode(self, fields, player):
+        progression = fields.get("Progression", {})
+        trophy_change = progression.get("trophy_delta", 0)
+        tokens = progression.get("tokens", 0)
+        player_brawler_id = fields.get("PlayerBrawlerID", player.SelectedBrawlers[0])
+        player_brawler = player.OwnedBrawlers.get(player_brawler_id, {})
         self.writeLong(0, 1) # Battle UUID High
         self.writeLong(0, 1) # Battle UUID Low
         self.writeVInt(1) # Battle End Game Mode (gametype)
         self.writeVInt(fields["Rank"]) # Result (Victory/Defeat/Draw/Rank Score)
-        self.writeVInt(0) # Tokens Gained (Gained Keys)
-        self.writeVInt(1250) # Trophies Result (Metascore change)
+        self.writeVInt(tokens) # Tokens Gained (Gained Keys)
+        self.writeVInt(trophy_change) # Trophies Result (Metascore change)
         self.writeVInt(0) # Power Play Points Gained (Pro League Points)
         self.writeVInt(0) # Doubled Tokens (Double Keys)
         self.writeVInt(0) # Double Token Event (Double Event Keys)
@@ -51,10 +56,10 @@ class BattleEndMessage(PiranhaMessage):
                 self.writeDataReference(heroEntry["Brawler"]["SkinID"][0], heroEntry["Brawler"]["SkinID"][1])
             self.writeVInt(1)
             for i in range(1):
-                self.writeVInt(1250)
+                self.writeVInt(player_brawler.get("Trophies", 0) if heroEntry["IsPlayer"] else 0)
             self.writeVInt(1)
             for i in range(1):
-                self.writeVInt(11)
+                self.writeVInt(player_brawler.get("PowerLevel", 1) if heroEntry["IsPlayer"] else 1)
             self.writeVInt(1)
             for i in range(1):
                 self.writeVInt(0)
@@ -83,12 +88,13 @@ class BattleEndMessage(PiranhaMessage):
         self.writeVInt(2)
 
         self.writeVInt(1)
-        self.writeVInt(1250)
-        self.writeVInt(1250)
+        current_trophies = player_brawler.get("Trophies", 0)
+        self.writeVInt(max(0, current_trophies - trophy_change))
+        self.writeVInt(current_trophies)
 
         self.writeVInt(5)
-        self.writeVInt(999999)
-        self.writeVInt(999999)
+        self.writeVInt(player.Trophies - trophy_change)
+        self.writeVInt(player.Trophies)
 
         self.writeDataReference(28, 0)
         self.writeBoolean(False)
@@ -99,7 +105,6 @@ class BattleEndMessage(PiranhaMessage):
         self.writeVInt(-1)
         self.writeBoolean(False)
 
-        print(self.messagePayload.hex())
 
     def decode(self):
         fields = {}

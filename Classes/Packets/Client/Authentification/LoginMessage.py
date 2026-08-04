@@ -1,4 +1,6 @@
 from Classes.Messaging import Messaging
+from Classes.ClientsManager import ClientsManager
+from Classes.Database import database
 
 from Classes.Packets.PiranhaMessage import PiranhaMessage
 
@@ -51,10 +53,13 @@ class LoginMessage(PiranhaMessage):
         return fields
 
     def execute(message, calling_instance, fields, cryptoInit):
-        pass
+        account, brawlers = database.login(
+            fields["AccountID"], fields["PassToken"], fields.get("AndroidID")
+        )
+        calling_instance.player.load(account, brawlers)
         calling_instance.player.ClientVersion = f'{str(fields["ClientMajor"])}.{str(fields["ClientBuild"])}.{str(fields["ClientMinor"])}'
         fields["Socket"] = calling_instance.client
-        # ClientsManager.AddPlayer(calling_instance.player.ID, calling_instance.client)
+        ClientsManager.AddPlayer(calling_instance.player.ID, calling_instance.client)
         Messaging.sendMessage(20104, fields, cryptoInit, calling_instance.player)
         Messaging.sendMessage(24101, fields, cryptoInit, calling_instance.player)
         Messaging.sendMessage(24399, fields, cryptoInit, calling_instance.player)

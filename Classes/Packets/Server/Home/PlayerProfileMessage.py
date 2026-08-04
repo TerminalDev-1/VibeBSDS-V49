@@ -9,30 +9,30 @@ class PlayerProfileMessage(PiranhaMessage):
     def encode(self, fields, player):
         self.writeVLong(fields["PlayerHighID"], fields["PlayerLowID"])
         self.writeDataReference(0)
-        self.writeVInt(63)
-        for i in range(63):
-            self.writeDataReference(16, i)
+        self.writeVInt(len(player.OwnedBrawlers))
+        for brawler_id, brawler in player.OwnedBrawlers.items():
+            self.writeDataReference(16, brawler_id)
             self.writeDataReference(0)
-            self.writeVInt(500) # trophies
-            self.writeVInt(1250) # highestTrophies
-            self.writeVInt(11) #power level
+            self.writeVInt(brawler["Trophies"])
+            self.writeVInt(brawler["HighestTrophies"])
+            self.writeVInt(brawler["PowerLevel"])
         
         self.writeVInt(17)
 
         self.writeVInt(1) 
-        self.writeVInt(1) # 3v3 victories
+        self.writeVInt(player.WinCount) # 3v3 victories
 
         self.writeVInt(2)
-        self.writeVInt(2) # total exp
+        self.writeVInt(player.Experience) # total exp
 
         self.writeVInt(3)
-        self.writeVInt(3) # current trophies
+        self.writeVInt(player.Trophies) # current trophies
 
         self.writeVInt(4)
-        self.writeVInt(4) # highest trophies
+        self.writeVInt(player.HighestTrophies) # highest trophies
 
         self.writeVInt(5) 
-        self.writeVInt(5) # unlocked brawler?
+        self.writeVInt(len(player.OwnedBrawlers)) # unlocked brawlers
 
         self.writeVInt(8)
         self.writeVInt(6) # solo victories
@@ -68,34 +68,22 @@ class PlayerProfileMessage(PiranhaMessage):
         self.writeVInt(16)
 
         self.writeVInt(20) # number fame
-        self.writeVInt(69)
+        self.writeVInt(player.Fame)
 
-        self.writeString("risporce")  #PlayerInfo
+        self.writeString(player.Name)  # PlayerInfo
         self.writeVInt(100)
-        self.writeVInt(28000001)
-        self.writeVInt(43000001)
+        self.writeVInt(28000000 + player.Thumbnail)
+        self.writeVInt(43000000 + player.Namecolor)
         self.writeVInt(14)
 
         self.writeBoolean(True)
         self.writeVInt(0)
 
-        self.writeString("hello world")
+        self.writeString("VibeBSDS V49 player")
         self.writeVInt(0)
         self.writeVInt(0)
 
-        self.writeBoolean(True) #alliance
-        self.writeLong(0,1) #alliance ID
-        self.writeString("haccers") #alliance name
-        self.writeDataReference(8,1) # alliance icon
-        self.writeVInt(1) # type
-        self.writeVInt(1) # member count
-        self.writeVInt(10000) # total trophies
-        self.writeVInt(1) # minimum trophies to enter
-        self.writeDataReference(0)
-        self.writeString("CA") #location
-        self.writeVInt(4) # unknown
-        self.writeBoolean(True) #is Family friendly
-        self.writeVInt(0)
+        self.writeBoolean(False) # alliance
         
 
         self.writeDataReference(25, 1) #alliance role
