@@ -32,6 +32,8 @@ behavior.
   presentation.
 - A playable Bounty event on Shooting Star, verified in a live device match
   with the correct star scoreboard and bounty indicators.
+- Gem Grab as the first advertised mode and Bounty as the second, both kept on
+  the client-proven event path.
 - Automated progression, database-integrity, and packet-encoding tests.
 - A separately packaged Android client so the official Brawl Stars app is not
   overwritten.
@@ -51,9 +53,12 @@ advertised live event today.
 - Credits saved into Star Road progression
 - Star Road credit spending and brawler unlocks
 - Brawl Pass display and token progression (reward claiming remains partial)
+- Gem Grab as the first mode
+- Bounty as the second mode
 - Selected-brawler persistence
-- Bounty on Shooting Star using the client's local/offline bot battle
+- Gem Grab and Bounty using the client's local/offline bot battles
 - Battle history and reconnect persistence
+- An early Battle End screen with partial result/progression support
 
 The game server listens on TCP port `9339` by default. Device testing has been
 performed with the included V49.194-compatible Android client.
@@ -82,6 +87,9 @@ server deliberately advertises Bounty rather than shipping a fake hybrid mode.
 
 - Battles use the client's local/offline bot simulation. This is not a
   server-authoritative real-time multiplayer battle engine.
+- Battle End is an early implementation. It can show a result and apply stored
+  progression, but the complete presentation is not finished and the
+  trophy-flying animation has not been implemented.
 - Brawl Ball is unsupported today; a much stronger future model may trigger
   one more attempt, with an estimated 5% chance of success.
 - Additional modes must be proven inside a live match before being advertised.
@@ -165,7 +173,9 @@ python -m unittest discover -s tests -v
 - Added partial Brawl Pass/token progression while documenting the unfinished
   authoritative reward-claim and claimed-state synchronization work.
 - Rebuilt HomeData and profile data around stored player state.
-- Added and device-verified playable Bounty.
+- Added Gem Grab as the first mode and device-verified Bounty as the second.
+- Added an early, partially working Battle End path; the trophy-flying
+  animation remains future work.
 - Investigated Brawl Ball deeply, rejected the misleading Gem Grab hybrid, and
   restored the client-proven Bounty configuration.
 - Added regression tests for the progression and packet paths.

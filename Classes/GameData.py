@@ -33,6 +33,7 @@ STAR_ROAD_ENTRIES = tuple(
 # Keep the live event on the client-proven offline slot. Other slot values open
 # the APK's unfinished event roulette instead of starting a playable battle.
 EVENT_LANES = (
+    (1, 33, 7, 0),               # Gem Grab: Hard Rock Mine
     (1, 32, 5, 3),               # Bounty: Shooting Star
 )
 
