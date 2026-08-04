@@ -1,7 +1,7 @@
-# BSAIS-V49
+# VibeBSDS V49
 
-The first-ever **BSAIS** repository: **Brawl Stars AI Server** for V49.194.
-This game server is built and managed collaboratively by
+**VibeBSDS** is a vibe-coded evolution of the BSDS V49.194 game server.
+It is built and managed collaboratively by
 [@TerminalDev-1](https://github.com/TerminalDev-1) and OpenAI Codex.
 
 The current server supports the Project BSDS V49 client and has been tested on
@@ -12,14 +12,14 @@ an Android device through the home/lobby login flow. It listens on TCP port
 
 Download the V49.194 APK from this repository's GitHub release:
 
-- [Download `project-bsds-v49.apk`](https://github.com/TerminalDev-1/BSAIS-V49/releases/download/v49.194/project-bsds-v49.apk)
+- [Download `project-bsds-v49.apk`](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/project-bsds-v49.apk)
 - SHA-256: `279A4E3F9D418E6639A10F5F22F25FECB848363D30D715067BE35DCC5BB5DEF9`
 - Android package: `com.projectbsds.v49` (separate from the official game)
 
 You can also download it from a terminal authenticated with GitHub CLI:
 
 ```powershell
-gh release download v49.194 -R TerminalDev-1/BSAIS-V49 -p project-bsds-v49.apk
+gh release download v49.194 -R TerminalDev-1/VibeBSDS-V49 -p project-bsds-v49.apk
 ```
 
 Before rebuilding the client, set `redirectHost` in
