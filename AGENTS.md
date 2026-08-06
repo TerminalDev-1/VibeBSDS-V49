@@ -28,9 +28,9 @@ the Android client.
 - Persistent account identity, device recovery, currencies, selected/unlocked
   brawlers, trophies, mastery fields, battle totals, and battle history exist.
 - Battle results persist trophy, token, and credit changes transactionally.
-- Star Road, stored battle credits, credit spending, and brawler unlocking
-  work. Describe the overall credit ecosystem as partial because Brawl Pass
-  credit reward claims/synchronization remain unfinished.
+- Star Road, stored battle credits, Brawl Pass credit claims, credit spending,
+  and brawler unlocking work. Exact pass-credit amounts and claimed nodes are
+  durable and synchronize back into HomeData after the reward animation.
 - Brawl Pass display/token progression only partly works; see TODOs below.
 - Battle End is an early partial implementation. The trophy-flying animation is
   not implemented.
@@ -76,18 +76,6 @@ Do not advertise or claim working Brawl Ball.
 
 ## Known TODOs
 
-### Brawl Pass credit rewards
-
-The pass and token progression are visible, but reward claiming is incomplete.
-A correct implementation must:
-
-1. Register the reward tap/claim on the game server.
-2. Persist a durable claimed state for the exact reward node.
-3. Transfer the exact credit amount into Star Road/the active brawler unlock
-   target rather than relying on the client's partial animation.
-4. Return updated HomeData/state so the client shows the reward as claimed.
-5. Prevent the same reward from being offered or claimed repeatedly.
-
 ### Battle End
 
 - Preserve the existing early result/progression path.
@@ -99,6 +87,10 @@ A correct implementation must:
 ### Other incomplete areas
 
 - Some club/social packet structures still contain upstream static values.
+- Non-credit Brawl Pass reward types remain incomplete.
+- A Star Road unlock is durable and the next target is correct after reconnect,
+  but the current V49 client can remain on the completed unlock panel after the
+  new-brawler reveal instead of advancing in the same session.
 - Some brawler-specific behavior/content remains unfinished.
 - Additional modes must be proven in a live match before being advertised.
 - Real server-authoritative multiplayer is not implemented.

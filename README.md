@@ -33,11 +33,14 @@ behavior.
   trophies, mastery values, wins, losses, and battle history.
 - Transactional battle rewards committed before the result packet is sent.
 - Working total and per-brawler trophy progression.
-- Partially complete credits: battle credits persist and Star Road spending
-  works, while Brawl Pass credit claims still need synchronization.
-- Working Star Road spending and brawler unlocking.
-- Partial Brawl Pass support: the pass and token progression are present, but
-  reward claiming is not yet durably registered by the game server.
+- Complete credit flow for battles and known V49 Brawl Pass credit nodes:
+  exact rewards persist into Star Road, survive reconnects, and cannot be
+  claimed twice.
+- Durable Star Road spending and brawler unlocking; reconnecting shows the
+  correct next target. The same-session post-reveal panel transition remains
+  incomplete in the V49 client.
+- Partial Brawl Pass support: display, tokens, and credit rewards work; other
+  pass reward types remain incomplete.
 - Database-backed character selection and profile/home values.
 - Dynamic HomeData instead of the old hardcoded rank, trophy, and Power 11
   presentation.
@@ -63,7 +66,7 @@ advertised live event today.
 - Trophy, token, and credit rewards
 - Credits saved into Star Road progression
 - Star Road credit spending and brawler unlocks
-- Brawl Pass display and token progression (reward claiming remains partial)
+- Brawl Pass display, token progression, and persistent credit rewards
 - Gem Grab as the first mode
 - Bounty as the second mode
 - Selected-brawler persistence
@@ -104,14 +107,13 @@ server deliberately advertises Bounty rather than shipping a fake hybrid mode.
 - Brawl Ball is unsupported today; a much stronger future model may trigger
   one more attempt, with an estimated 5% chance of success.
 - Additional modes must be proven inside a live match before being advertised.
-- Brawl Pass rewards need authoritative claim handling. When a credit reward is
-  tapped, the game server must record that exact reward as claimed, transfer
-  the exact credit amount into Star Road/the active brawler unlock target, and
-  return the updated state to the client.
-- The current Brawl Pass client can animate a credit transfer without the game
-  server fully registering the claim, and the animation may appear to transfer
-  only part of the reward. Claimed reward nodes also need to remain visibly and
-  durably claimed so the client cannot offer the same reward repeatedly.
+- Non-credit Brawl Pass rewards still need their own authoritative handlers.
+  Credit nodes are handled separately and are complete for the known V49
+  seasons encoded by the game server.
+- After a Star Road unlock reveal, the current client may remain on the
+  completed panel instead of advancing immediately. The unlock and deduction
+  are already saved, and reconnecting displays the correct next 160-credit
+  target.
 - Some surrounding club and social structures still originate from the base
   server and contain static placeholder data.
 - Some brawler-specific behavior/content remains unfinished.
@@ -186,8 +188,8 @@ python -m unittest discover -s tests -v
 - Replaced ephemeral player objects with durable SQLite-backed accounts.
 - Added real battle reward persistence and battle history.
 - Added trophy, token, credit, Star Road, and brawler-selection logic.
-- Added partial Brawl Pass/token progression while documenting the unfinished
-  authoritative reward-claim and claimed-state synchronization work.
+- Added Brawl Pass/token progression plus exact, durable, duplicate-safe credit
+  reward claims synchronized into Star Road.
 - Rebuilt HomeData and profile data around stored player state.
 - Added Gem Grab as the first mode and device-verified Bounty as the second.
 - Added an early, partially working Battle End path; the trophy-flying

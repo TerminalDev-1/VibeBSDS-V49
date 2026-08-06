@@ -64,7 +64,10 @@ class Crypto:
             payload = bytearray(16) + bytearray(payload)
             decrypted = bytearray(len(payload))
             crypto_secretbox_xsalsa20poly1305_tweet_open(decrypted, payload, len(payload), bytes(self.decryptNonce), self.shared_encryption_key)
-            return decrypted
+            # NaCl's low-level API leaves the 32-byte zero prefix used by
+            # crypto_secretbox in the output buffer.  That prefix is transport
+            # framing, not part of the Laser message payload.
+            return decrypted[32:]
 
     def encryptServer(self, packet_id, payload):
         if packet_id == 20100 or packet_id == 20103:

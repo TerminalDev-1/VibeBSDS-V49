@@ -1,14 +1,19 @@
 from Classes.Commands.Client.LogicPurchaseOfferCommand import LogicPurchaseOfferCommand
 from Classes.Commands.Client.LogicSelectCharacterCommand import LogicSelectCharacterCommand
 from Classes.Commands.Client.LogicStarRoadRewardCommand import LogicStarRoadRewardCommand
+from Classes.Commands.Client.LogicStarRoadClaimCommand import LogicStarRoadClaimCommand
+from Classes.Commands.Client.LogicClaimRankUpRewardCommand import LogicClaimRankUpRewardCommand
+from Classes.Commands.Client.LogicStarRoadClaimBrawlerCommand import LogicStarRoadClaimBrawlerCommand
 from Classes.Commands.Server.LogicChangeAvatarNameCommand import LogicChangeAvatarNameCommand
+from Classes.Commands.Server.LogicGiveDeliveryItemsCommand import LogicGiveDeliveryItemsCommand
+from Classes.Commands.Server.LogicStarRoadUpdateCommand import LogicStarRoadUpdateCommand
 
 
 class LogicCommandManager:
     commandsList = {
         201: LogicChangeAvatarNameCommand,
         202: 'LogicDiamondsAddedCommand',
-        203: 'LogicGiveDeliveryItemsCommand',
+        203: LogicGiveDeliveryItemsCommand,
         204: 'LogicDayChangedCommand',
         205: 'LogicDecreaseHeroScoreCommand',
         206: 'LogicAddNotificationCommand',
@@ -30,6 +35,7 @@ class LogicCommandManager:
         222: 'LogicRankedSeasonChangedCommand',
         223: 'LogicCooldownAddedCommand',
         224: 'LogicSetESportsHubNotificationCommand',
+        225: LogicStarRoadUpdateCommand,
         500: 'LogicGatchaCommand',
         503: 'LogicClaimDailyRewardCommand',
         504: 'LogicSendAllianceMailCommand',
@@ -42,7 +48,7 @@ class LogicCommandManager:
         512: 'LogicToggleInGameHintsCommand',
         514: 'LogicDeleteNotificationCommand',
         515: 'LogicClearShopTickersCommand',
-        517: 'LogicClaimRankUpRewardCommand',
+        517: LogicClaimRankUpRewardCommand,
         518: 'LogicPurchaseTicketsCommand',
         519: LogicPurchaseOfferCommand,
         520: 'LogicLevelUpCommand',
@@ -69,6 +75,8 @@ class LogicCommandManager:
         541: 'LogicClearESportsHubNotificationCommand',
         542: 'LogicSelectGroupSkinCommand',
         560: LogicStarRoadRewardCommand,
+        562: LogicStarRoadClaimCommand,
+        567: LogicStarRoadClaimBrawlerCommand,
     }
 
     def getCommandsName(commandType):

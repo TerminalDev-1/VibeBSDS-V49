@@ -40,6 +40,7 @@ class Player:
         self.WinCount = 0
         self.LoseCount = 0
         self.TutorialState = 2
+        self.BrawlPassCreditClaims = set()
 
     def load(self, account, brawlers):
         self.ID = [account["high_id"], account["low_id"]]
@@ -82,6 +83,7 @@ class Player:
             }
             for row in brawlers
         }
+        self.BrawlPassCreditClaims = database.brawl_pass_credit_claims(self.ID[1])
 
     def reload(self):
         loaded = database.load(self.ID[1])

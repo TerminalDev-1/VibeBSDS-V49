@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import patch
 
 from Classes.Database import GameDatabase
-from Classes.GameData import active_events, star_road_remaining
+from Classes.GameData import active_events, brawl_pass_claim_masks, star_road_remaining
 from Classes.Instances.Classes.Player import Player
 from Classes.Packets.Server.Home.OwnHomeDataMessage import OwnHomeDataMessage
 from Classes.Packets.Client.Battle.AskForBattleEndMessage import AskForBattleEndMessage
@@ -57,6 +57,39 @@ class ProgressionTests(unittest.TestCase):
         self.assertEqual(20, account["credits"])
         self.assertEqual(1, account["battle_count"])
         self.assertEqual(13, brawlers[0]["trophies"])
+
+    def test_brawl_pass_credit_claim_is_exact_and_idempotent(self):
+        claimed, amount = self.db.claim_brawl_pass_credit(self.low_id, 17, 9, 47)
+        self.assertTrue(claimed)
+        self.assertEqual(45, amount)
+        account, _ = self.db.load(self.low_id)
+        self.assertEqual(45, account["credits"])
+        self.assertEqual({(17, 9, 47)}, self.db.brawl_pass_credit_claims(self.low_id))
+
+        claimed_again, reason = self.db.claim_brawl_pass_credit(self.low_id, 17, 9, 47)
+        self.assertFalse(claimed_again)
+        self.assertEqual("already-claimed", reason)
+        account_again, _ = self.db.load(self.low_id)
+        self.assertEqual(45, account_again["credits"])
+
+    def test_first_star_road_unlock_advances_to_the_next_target(self):
+        with self.db.connect() as connection:
+            connection.execute(
+                "UPDATE accounts SET credits = 160 WHERE low_id = ?", (self.low_id,)
+            )
+
+        claimed, cost = self.db.claim_star_road(self.low_id, 8)
+        self.assertTrue(claimed)
+        self.assertEqual(160, cost)
+        account, brawlers = self.db.load(self.low_id)
+        self.assertEqual(0, account["credits"])
+        self.assertIn(8, {row["brawler_id"] for row in brawlers})
+        self.assertEqual(2, star_road_remaining(row["brawler_id"] for row in brawlers)[0][0])
+
+    def test_brawl_pass_claim_mask_marks_the_exact_tier(self):
+        premium, free = brawl_pass_claim_masks(17, {(17, 9, 47)})
+        self.assertEqual(16383 | (1 << 17), premium[1])
+        self.assertEqual(2147483647, free[1])
 
     def test_offline_battle_result_uses_advertised_map_fallback(self):
         player = Player()

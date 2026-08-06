@@ -32,8 +32,8 @@ At least fourteen meaningful improvements were made:
 | 5 | Total and per-brawler trophies | Working |
 | 6 | Transactional battle rewards | Working |
 | 7 | Persistent battle history | Working |
-| 8 | Stored battle credits and Star Road spending | Working; overall credit ecosystem partial |
-| 9 | Star Road progression and brawler unlocking | Working |
+| 8 | Battle and Brawl Pass credits plus Star Road spending | Working |
+| 9 | Star Road progression and brawler unlocking | Durable; same-session panel transition incomplete |
 | 10 | Duplicate Star Road unlock protection | Working |
 | 11 | Persistent brawler ownership and selection | Working |
 | 12 | Gem Grab plus playable Bounty | Working |
@@ -113,21 +113,22 @@ Completed local/offline bot battles now feed a durable reward path:
 
 Results are restored into HomeData after returning home or reconnecting.
 
-## 6. Credits (partially complete overall)
+## 6. Credits
 
 Credits are no longer a purely visual client value. They are:
 
 - Stored in SQLite
 - Awarded from completed battles
+- Awarded in the exact amount from known V49 Brawl Pass credit nodes
 - Reflected in HomeData
 - Preserved across reconnects
+- Recorded per pass season, track, and tier so a node cannot pay twice
 - Used as the Star Road spending currency
 - Deducted transactionally during a successful unlock
 
-That working core does not make the entire credit ecosystem complete. Brawl
-Pass credit rewards still need exact transfer, durable reward-node claim state,
-and client synchronization. In short: credits half work in VibeBSDS, while they
-hardly worked as progression in base BSDS.
+The game server acknowledges successful credit claims with V49's delivery-item
+server command. This updates the live client without the crash caused by
+injecting a second full HomeData packet into an established session.
 
 ## 7. Star Road
 
@@ -141,9 +142,12 @@ VibeBSDS added the V49.194-specific Star Road data and command path:
 - Transactional credit deduction
 - Persistent brawler unlock
 - Duplicate/unowned-state protection
-- Refreshed HomeData after a successful claim
+- Correct next target after reconnect
 
-The core credit-spending and brawler-unlock path works and is tested.
+The core credit-spending and brawler-unlock path works and is tested. After
+reconnect, the client displays the correct next target. One presentation defect
+remains: after the new-brawler reveal, the same session can stay on the
+completed Star Road panel instead of advancing immediately.
 
 This was not a repair of an already visible base feature: base BSDS displayed
 no Star Road at all and started with every brawler unlocked. VibeBSDS added the
@@ -181,16 +185,17 @@ It remains an early implementation:
 - Result UI, animation, database changes, HomeData, and reconnect state still
   require separate validation when this area changes.
 
-## 11. Partial Brawl Pass support
+## 11. Brawl Pass credit rewards
 
-The Brawl Pass and token progression are present, but reward claiming is not
-complete. Remaining work includes:
+The Brawl Pass and token progression are present. Credit rewards now:
 
-1. Registering the exact reward tap and node on the game server.
-2. Persisting a durable claimed state.
-3. Transferring the exact credit amount into Star Road/the active unlock target.
-4. Returning updated state so the client visibly marks the reward claimed.
-5. Preventing the same reward from being offered repeatedly.
+1. Decode the exact reward track, season, and tier claimed by the client.
+2. Persist a durable claimed-state receipt.
+3. Transfer the exact configured amount into Star Road.
+4. Send the credit delivery-item acknowledgement to update the live client.
+5. Reject duplicate claims transactionally.
+
+Other Brawl Pass reward types remain incomplete.
 
 ## 12. Automated regression coverage
 
@@ -203,6 +208,8 @@ The current test suite covers:
 - Database-backed HomeData
 - Advertised-map reward fallback
 - Transactional and idempotent Star Road claims
+- Exact and idempotent Brawl Pass credit claims and claimed-node masks
+- Encrypted post-login command framing
 - Rejection of rewards for unowned brawlers
 - Correct V49 character/card mapping around disabled rows
 
@@ -251,7 +258,7 @@ coding, deployment, and device-testing stages.
 - Alternative event slots can trigger the client's endless event roulette.
 - Some inherited club and social values remain static.
 - Some brawler-specific behavior/content remains unfinished.
-- Brawl Pass reward claim synchronization remains unfinished.
+- Non-credit Brawl Pass reward types remain unfinished.
 - Battle End presentation and trophy animation remain unfinished.
 
 ## Authorship

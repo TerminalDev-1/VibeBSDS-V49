@@ -4,7 +4,12 @@ import sqlite3
 import threading
 import time
 
-from Classes.GameData import BRAWLER_CARD_IDS, star_road_remaining, trophy_delta
+from Classes.GameData import (
+    BRAWLER_CARD_IDS,
+    brawl_pass_credit_reward,
+    star_road_remaining,
+    trophy_delta,
+)
 
 
 class ClosingConnection(sqlite3.Connection):
@@ -217,6 +222,41 @@ class GameDatabase:
                 (low_id, brawler_id, BRAWLER_CARD_IDS[brawler_id], now),
             )
             return True, cost
+
+    def brawl_pass_credit_claims(self, low_id):
+        with self.connect() as db:
+            rows = db.execute(
+                "SELECT subject_id FROM progression_actions WHERE account_low_id = ? AND action_type = 'brawl_pass_credit'",
+                (low_id,),
+            ).fetchall()
+        return {
+            (row["subject_id"] >> 16, (row["subject_id"] >> 8) & 0xFF, row["subject_id"] & 0xFF)
+            for row in rows
+        }
+
+    def claim_brawl_pass_credit(self, low_id, season, reward_track, tier):
+        amount = brawl_pass_credit_reward(season, reward_track, tier)
+        if amount is None:
+            return False, "not-credit"
+
+        subject_id = (season << 16) | (reward_track << 8) | tier
+        now = int(time.time())
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            if db.execute("SELECT 1 FROM accounts WHERE low_id = ?", (low_id,)).fetchone() is None:
+                return False, "account"
+            try:
+                db.execute(
+                    "INSERT INTO progression_actions(account_low_id, action_type, subject_id, amount, created_at) VALUES (?, 'brawl_pass_credit', ?, ?, ?)",
+                    (low_id, subject_id, amount, now),
+                )
+            except sqlite3.IntegrityError:
+                return False, "already-claimed"
+            db.execute(
+                "UPDATE accounts SET credits = credits + ?, updated_at = ? WHERE low_id = ?",
+                (amount, now, low_id),
+            )
+        return True, amount
 
     def record_battle(self, low_id, map_id, result, rank, brawler_id):
         delta = trophy_delta(result, rank)

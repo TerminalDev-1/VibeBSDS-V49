@@ -30,6 +30,48 @@ STAR_ROAD_ENTRIES = tuple(
     for brawler_id in brawlers
 )
 
+# Candyland, Mystery at the Hub, and The Rescue use the same credit layout.
+# Season IDs are zero-based in LogicClaimRankUpRewardCommand (15, 16, 17).
+_BRAWL_PASS_FREE_CREDIT_TIERS = {
+    tier: 95
+    for tier in (0, 4, 8, 12, 16, 20, 25, 30, 33, 38, 43, 49, 54, 58, 63, 68)
+}
+_BRAWL_PASS_PREMIUM_CREDIT_TIERS = {
+    tier: 45
+    for tier in (2, 5, 8, 12, 15, 18, 22, 25, 28, 32, 36, 40, 47, 50, 56, 64)
+}
+BRAWL_PASS_CREDIT_REWARDS = {
+    season: {
+        9: _BRAWL_PASS_PREMIUM_CREDIT_TIERS,
+        10: _BRAWL_PASS_FREE_CREDIT_TIERS,
+        12: _BRAWL_PASS_PREMIUM_CREDIT_TIERS,
+    }
+    for season in (15, 16, 17)
+}
+
+
+def brawl_pass_credit_reward(season, reward_track, tier):
+    return BRAWL_PASS_CREDIT_REWARDS.get(season, {}).get(reward_track, {}).get(tier)
+
+
+def brawl_pass_claim_masks(season, claims):
+    """Return V49's four-word premium/free claimed-tier bitsets."""
+    premium = [-4, 16383, 0, 0]
+    free = [-4, 2147483647, 0, 0]
+
+    for claim_season, reward_track, tier in claims:
+        if claim_season != season:
+            continue
+        words = free if reward_track == 10 else premium
+        bit_index = tier + 2
+        word_index, word_bit = divmod(bit_index, 32)
+        if word_index >= len(words):
+            continue
+        unsigned = (words[word_index] & 0xFFFFFFFF) | (1 << word_bit)
+        words[word_index] = unsigned if unsigned < 0x80000000 else unsigned - 0x100000000
+
+    return premium, free
+
 # Keep the live event on the client-proven offline slot. Other slot values open
 # the APK's unfinished event roulette instead of starting a playable battle.
 EVENT_LANES = (

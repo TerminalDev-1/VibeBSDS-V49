@@ -1,5 +1,5 @@
 from Classes.ByteStreamHelper import ByteStreamHelper
-from Classes.GameData import active_events, star_road_remaining
+from Classes.GameData import active_events, brawl_pass_claim_masks, star_road_remaining
 from Classes.Packets.PiranhaMessage import PiranhaMessage
 
 
@@ -91,21 +91,20 @@ class OwnHomeDataMessage(PiranhaMessage):
 
         self.writeVInt(18) # count brawl pass seasons
         for season in range(18):
+            premium_claims, free_claims = brawl_pass_claim_masks(
+                season, player.BrawlPassCreditClaims
+            )
             self.writeVInt(season) # season
             self.writeVInt(56796) # season token collected
             self.writeBoolean(True) # 0x1
             self.writeVInt(56)
             self.writeBoolean(False) # 0x0
             self.writeBoolean(True) # 0x1
-            self.writeInt(-4)
-            self.writeInt(16383)
-            self.writeInt(0)
-            self.writeInt(0)
+            for word in premium_claims:
+                self.writeInt(word)
             self.writeBoolean(True) # 0x1
-            self.writeInt(-4)
-            self.writeInt(2147483647)
-            self.writeInt(0)
-            self.writeInt(0)
+            for word in free_claims:
+                self.writeInt(word)
 
         self.writeVInt(0)
 
@@ -269,11 +268,10 @@ class OwnHomeDataMessage(PiranhaMessage):
                 self.writeVInt(0)
                 self.writeVInt(0)
 
-            # The route list includes the currently unlocking brawler as its
-            # first node.  The client uses the sixth field as that node's
-            # brawler index when opening the full Star Road screen; omitting
-            # either leaves the home tile drawable but crashes on tap.
-            queued_entries = star_road
+            # The route contains only the nodes after the active unlock. On the
+            # next HomeData decode (including reconnect), its first node becomes
+            # the next active Star Road target.
+            queued_entries = star_road[1:]
             self.writeVInt(len(queued_entries))
             for brawler_id, credits, gems in queued_entries:
                 self.writeDataReference(16, brawler_id)
