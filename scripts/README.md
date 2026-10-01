@@ -50,3 +50,10 @@ python scripts/verify_v49_native.py <patched.apk>
 These exercise scores below and above 20, both winning teams, other variations,
 preservation of an existing winner, and the observed null-roster/null-actor
 paths. Real-device verification is still required.
+
+- `0x49c570`: replace eager shared rank-up badge mutation with queued native
+  badge actions, so a large trophy award displays each intermediate rank.
+  Requires the server's pre-battle score/high-score progression snapshots.
+  The ARM verifier checks old/new rank values and preserved registers at
+  ranks 2, 7, 25 and 35. Live Brock +750 proof reached rank 25 at 755/800.
+  Individual flying trophy sprites are still unfinished.

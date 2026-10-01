@@ -51,17 +51,34 @@ def patch_library(original):
     skill = [0xE3500000, branch(skill_at + 4, 0x652350) & 0x0FFFFFFF,
              0xE1A08000, branch(skill_at + 12, 0x647878, True),
              branch(skill_at + 16, 0x652320)]
-    end = skill_at + len(skill) * 4
+    rank_at = skill_at + len(skill) * 4
+    # Rank-up clips share their old/new badge children. Updating all children
+    # while building a +750 sequence leaves every clip with the final rank.
+    # Queue the existing native rank-badge action for each child immediately
+    # before its clip plays, rather than setting its label/skin eagerly.
+    rank = [0xE51B8030, 0xE51B6034, 0xE51B5038, 0xE3A00014,
+            branch(rank_at + 16, 0xDCBE50, True), 0xE1A01000,
+            0xE59D2020, 0xE5812000, 0xE51B203C, 0xE5812004,
+            0xE5952000, 0xE5812008, 0xE581400C, 0xE2462001,
+            0xE5812010, 0xE1A00008,
+            branch(rank_at + 64, 0x58F6B8, True), 0xE3A00014,
+            branch(rank_at + 72, 0xDCBE50, True), 0xE1A01000,
+            0xE59D2020, 0xE5812000, 0xE51B203C, 0xE5812004,
+            0xE5952000, 0xE5812008, 0xE581700C, 0xE5816010,
+            0xE1A00008, branch(rank_at + 116, 0x58F6B8, True),
+            branch(rank_at + 120, 0x49C630)]
+    end = rank_at + len(rank) * 4
     if end > 0xDCE000 or any(data[CAVE:end]):
         raise ValueError("Executable padding is unavailable")
     for address, words in [(CAVE, passive), (gadget_at, gadget),
-                           (bounty_at, bounty), (skill_at, skill)]:
+                           (bounty_at, bounty), (skill_at, skill), (rank_at, rank)]:
         struct.pack_into("<" + "I" * len(words), data, address, *words)
     for address, target, link in [(0x6E4448, CAVE, False),
                                   (0x61B77C, gadget_at, False),
                                   (0x2A2F14, bounty_at, True),
                                   (0x2A2F30, bounty_at, True),
-                                  (0x652318, skill_at, False)]:
+                                  (0x652318, skill_at, False),
+                                  (0x49C570, rank_at, False)]:
         struct.pack_into("<I", data, address, branch(address, target, link))
     phoff = struct.unpack_from("<I", data, 28)[0]
     stride, count = struct.unpack_from("<HH", data, 42)

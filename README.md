@@ -327,8 +327,9 @@ SQLite now captures both brawler and account high scores before updating them.
 Live Xiaomi Pad 6 recording (`screenshots/vibe-bull-rank2.mp4`, gitignored):
 Bull's win counted from 5 to 755 trophies, played rank-up bursts and showed
 +5 mastery at 5/300. Persistence was checked for the awarded progression.
-Large awards still expose a native presentation defect: queued rank-up clips
-share their badge state, briefly showing rank 24/25 at earlier thresholds.
+This checkpoint exposed a native presentation defect in large awards: queued
+rank-up clips shared their badge state. The later client checkpoint below
+records the verified correction.
 Individual flying trophy sprites are not yet verified. Do not call the entire
 animation finished. Gold mastery cosmetic presentation is also pending;
 the 6,000-point daily mastery cap is not implemented.
@@ -337,3 +338,24 @@ All 32 regression tests, Classes compilation and diff checks passed. Coverage
 includes pre-battle high scores when current trophies are below an earlier
 record, and repeated Star Road claims producing no duplicate reward or reload.
 These changes use the existing published APK; no replacement asset is needed.
+
+## Large trophy award client checkpoint (2026-10-01)
+
+The V49 client now queues old/new rank badge values with its existing native
+rank action before each upgrade clip plays. Previously, creating a +750 reward
+sequence repeatedly modified the same clip children, leaving earlier upgrades
+with the last rank's badge. The reproducible ARM patch at 0x49c570 fixes that
+shared-state ordering without changing the trophy policy or database totals.
+
+Live Xiaomi Pad 6 proof: Brock rose from 5 to 755 trophies; recorded rank-up
+bursts showed the appropriate intermediate badges (including ranks 11, 16, 17
+and 21), then rank 25 at 755/800. The result also showed +5 mastery at 5/300.
+Account trophies increased from 3825 to 4575 and credits from 53 to 73.
+Native emulation checks queued old/new badge values at four rank boundaries
+and retained the existing Bounty and null-guard behavior. Server checks still
+pass all 32 tests. Individual flying trophy sprites remain incomplete.
+
+The tested signed APK uses package com.projectbsds.v49, the existing signing
+certificate, and the laptop's rediscovered address 192.168.1.103:9339. Its
+SHA-256 is 7742556db316b4867ddf9843d3490bc91ae7c7d53100332b4a6832cb5cbff8b6.
+Release publication is recorded separately after upload verification.

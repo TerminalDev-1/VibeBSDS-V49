@@ -12,6 +12,7 @@ from unicorn import Uc, UC_ARCH_ARM, UC_MODE_ARM, UC_HOOK_CODE
 from unicorn.arm_const import (
     UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_PC,
     UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R8,
+    UC_ARM_REG_FP, UC_ARM_REG_R4, UC_ARM_REG_R5, UC_ARM_REG_R6, UC_ARM_REG_R7,
 )
 
 
@@ -66,7 +67,48 @@ def verify(apk):
     cpu.emu_start(0x6E4448, 0x1000, count=10)
     assert cpu.reg_read(UC_ARM_REG_PC) == 0x1000
     assert cpu.reg_read(UC_ARM_REG_R0) == 0xFFFFFFFF
-    print("Native ARM checks passed: threshold, mode isolation, winner preservation, null guards")
+    # Exercise the real branch and deferred badge actions at several rank
+    # boundaries. Mock only allocation/queue insertion, inspecting their ABI.
+    for new_rank in (2, 7, 25, 35):
+        cpu = emulator()
+        frame = 0x200F000
+        stack = frame - 0x80
+        cpu.reg_write(UC_ARM_REG_FP, frame)
+        cpu.reg_write(UC_ARM_REG_SP, stack)
+        for offset, value in {-0x30: 0x2000100, -0x34: new_rank,
+                              -0x38: 0x2000200, -0x3C: 0x2000300}.items():
+            cpu.mem_write(frame + offset, struct.pack("<I", value))
+        cpu.mem_write(0x2000200, struct.pack("<I", 1))
+        cpu.mem_write(stack + 0x20, struct.pack("<I", 0xDE5CEC))
+        cpu.reg_write(UC_ARM_REG_R4, 0x2000400)
+        cpu.reg_write(UC_ARM_REG_R7, 0x2000500)
+        actions = []
+        allocation = [0x2010000]
+
+        def queue_badges(cpu, address, size, user):
+            if address == 0xDCBE50:
+                assert cpu.reg_read(UC_ARM_REG_R0) == 20
+                cpu.reg_write(UC_ARM_REG_R0, allocation[0])
+                allocation[0] += 32
+                cpu.reg_write(UC_ARM_REG_PC, cpu.reg_read(UC_ARM_REG_LR))
+            elif address == 0x58F6B8:
+                assert cpu.reg_read(UC_ARM_REG_R0) == 0x2000100
+                actions.append(struct.unpack("<5I", bytes(cpu.mem_read(
+                    cpu.reg_read(UC_ARM_REG_R1), 20))))
+                cpu.reg_write(UC_ARM_REG_PC, cpu.reg_read(UC_ARM_REG_LR))
+
+        cpu.hook_add(UC_HOOK_CODE, queue_badges)
+        cpu.emu_start(0x49C570, 0x49C630, count=100)
+        assert cpu.reg_read(UC_ARM_REG_PC) == 0x49C630
+        assert actions == [(0xDE5CEC, 0x2000300, 1, 0x2000400, new_rank - 1),
+                           (0xDE5CEC, 0x2000300, 1, 0x2000500, new_rank)]
+        for register, value in ((UC_ARM_REG_R4, 0x2000400),
+                                (UC_ARM_REG_R5, 0x2000200),
+                                (UC_ARM_REG_R6, new_rank),
+                                (UC_ARM_REG_R7, 0x2000500),
+                                (UC_ARM_REG_R8, 0x2000100)):
+            assert cpu.reg_read(register) == value
+    print("Native ARM checks passed: Bounty limit, null guards, deferred rank badges")
 
 
 if __name__ == "__main__":
