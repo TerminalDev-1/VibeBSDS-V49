@@ -121,8 +121,12 @@ Do not advertise or claim working Brawl Ball.
 ## Change and verification workflow
 
 1. Inspect `git status -sb` before editing and preserve unrelated user work.
-2. Keep changes narrow and update README claims whenever verified behavior or
-   known limitations change.
+2. Keep changes narrow. For every improvement, behavior change, or substantial
+   verified investigation, update BOTH README.md and improvements.md before
+   committing. Explain what changed, what VibeBSDS adds over the upstream BSDS
+   base, how it was verified, and what remains incomplete. Keep both documents
+   consistent; distinguish live-device proof from automated checks and retain
+   upstream attribution. Update AGENTS.md when operating context changes.
 3. Run:
 
    ```powershell
@@ -158,8 +162,9 @@ Do not advertise or claim working Brawl Ball.
   certificate before using an in-place APK update that preserves app data.
 - Verify login on the tablet and an established TCP connection to the current
   game-server computer. Record only the behavior actually checked.
-- Update the README and release notes with the new APK SHA-256 and configuration
-  details. Make a separate documentation commit for the APK publication, push
+- Update README.md, improvements.md, and release notes with the new APK SHA-256,
+  configuration details, and verified improvements. Make a separate
+  documentation commit for the APK publication, push
   it, and verify the uploaded asset digest and local/remote commit SHAs.
 - Keep signing material, unsigned intermediates, signed APKs, and evidence in
   gitignored directories. Publishing an APK does not require committing it.

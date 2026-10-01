@@ -25,6 +25,11 @@ can unlock brawlers, and HomeData is generated from the same database that
 records the results. That is far beyond the original server's static demo
 behavior.
 
+Every verified improvement and substantial investigation is documented in both
+this README and improvements.md before its checkpoint is committed and pushed.
+The record distinguishes live-device evidence, automated checks, and remaining
+limitations while retaining credit for the upstream BSDS foundation.
+
 ## What we built beyond BSDS
 
 - A versioned SQLite database created automatically as `player.sqlite`.
@@ -48,6 +53,10 @@ behavior.
   with the correct star scoreboard and bounty indicators.
 - Gem Grab as the first advertised mode and Bounty as the second, both kept on
   the client-proven event path.
+- Native offline-bot roster and special-skill guards that fix Gem Grab Play
+  crashes, plus Bounty score enforcement that ends the match at 20.
+- Correct V49 Battle End packets with player-relative outcomes, result teams,
+  database battle receipts, and old/new trophy values for reward animation.
 - Automated progression, database-integrity, and packet-encoding tests.
 - A separately packaged Android client that can coexist with other installed
   clients.

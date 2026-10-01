@@ -21,7 +21,7 @@ The comparison starts from a very specific baseline:
 - Closing or reconnecting did not provide the durable account loop VibeBSDS
   now uses.
 
-At least fourteen meaningful improvements were made:
+The improvements include:
 
 | # | Improvement | Current status |
 |---:|---|---|
@@ -37,8 +37,11 @@ At least fourteen meaningful improvements were made:
 | 10 | Duplicate Star Road unlock protection | Working |
 | 11 | Persistent brawler ownership and selection | Working |
 | 12 | Gem Grab plus playable Bounty | Working |
-| 13 | Battle End tied to stored progression | Early/partial |
+| 13 | Battle End tied to stored progression | Result/reward screens verified; flying trophy sprites incomplete |
 | 14 | Automated regression tests | Working |
+| 15 | Offline bot roster and special-skill crash guards | Gem Grab Play and completed matches verified on device |
+| 16 | Bounty score limit and match completion at 20 | Verified on device at 20/20 with 1:19 remaining |
+| 17 | Reproducible native patches and GitHub APK publication | Tested APK published; uploaded digest matches |
 
 ## 1. Persistent SQLite database
 
@@ -173,15 +176,30 @@ Both remain on the client-safe event slot. Their instance IDs preserve the
 requested chooser order. Bounty was verified on the Android device with its
 correct arena, star scoreboard, and bounty indicators.
 
-## 10. Early Battle End integration
+## 10. Shared Battle End result and reward flow
 
-Battle End now connects the reported result to database-backed progression and
-returns updated trophy/reward values.
+Compared with the base server's static presentation, Battle End now connects
+the reported result to transactional database progression and displays the
+result and reward screens for Gem Grab and Bounty.
 
-It remains an early implementation:
+The October 1, 2026 update corrected the V49 packet layout, default-skin
+encoding, and hero display/footer fields. Incoming winning-team IDs are
+normalized relative to the local player, and result-screen sides are encoded
+as allies/enemies relative to that player. Each stored battle supplies a
+database receipt; pre-battle trophies and old/new progression values allow the
+client's trophy bar and token counter to animate.
 
-- The complete result presentation is unfinished.
-- The trophy-flying animation has not been implemented.
+Live Gem Grab and Bounty wins reached the result/reward screens, awarded +8
+trophies, 20 tokens, and 20 credits, and retained progression after reconnect.
+Gem Grab trophies also survived app/server restarts. Defeat/draw, placement,
+and either-team normalization are covered by regression tests; those outcomes
+were not separately verified in live matches.
+
+Remaining limits:
+
+- Individual flying trophy sprites have not been implemented.
+- Offline requests omit kills, damage, healing, and MVP data, so those result
+  statistics remain empty.
 - Result UI, animation, database changes, HomeData, and reconnect state still
   require separate validation when this area changes.
 
@@ -212,6 +230,12 @@ The current test suite covers:
 - Encrypted post-login command framing
 - Rejection of rewards for unowned brawlers
 - Correct V49 character/card mapping around disabled rows
+- Player-relative win/loss conversion, draw/placement preservation, and battle receipts
+- Complete V49 result packet layout, default skins, and old/new reward values
+
+The October 1 checkpoint passed all 19 tests. The optional native verifier
+executes the actual patched ARM32 code to check the Bounty threshold, other-mode
+isolation, existing-winner preservation, and null roster/special-skill guards.
 
 Run it with:
 
@@ -227,6 +251,34 @@ python -m unittest discover -s tests -v
   from normal Git history.
 - Runtime-visible changes are validated on the actual Android device instead of
   being declared complete from packet encoding alone.
+
+## 14. Offline client crashes and the Bounty score limit
+
+The earlier compatible client could crash when offline bots lacked a roster
+for passive/gadget setup. A special-skill callback could also replace its actor
+with a null return before reading its position. Native guards now handle absent
+rosters and skip the null callback while retaining the actor. Gem Grab Play
+reached Hard Rock Mine and completed its match and reward flow on Xiaomi Pad 6.
+
+Bounty already declared MaxScore=20 in its CSV, but its offline controller
+continued beyond that value. The native patch caps score reads at 20 and sets
+the existing winner field for variation 3, entering the normal result flow.
+Live evidence recorded exactly 20/20 with 1:19 remaining, then the victory
+screen. Other variations retain their existing score behavior.
+
+Reproducible patching and ARM32 verification scripts are documented in
+[scripts/README.md](scripts/README.md). Rebuilding requires a compatible original
+V49.194 native library; unsupported hashes are rejected.
+
+The tested build is published as the
+[VibeBSDS-V49.apk release asset](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/VibeBSDS-V49.apk).
+Its SHA-256 is
+`1b22ab6c97a8ed894af5f9918fed4c5fd93af4bab83203b97097921f8eaa28bb`;
+GitHub's uploaded digest matches the installed build. Use server checkpoint
+`c37019ae9fa4e70cf0ed76940dac6520f496c092` or newer for its Battle End packet.
+The release redirects to `192.168.1.103:9339`; discover and configure your own
+server's current LAN address. The matching certificate allowed an in-place
+update of `com.projectbsds.v49` with app data retained.
 
 ## Evidence and development method
 
@@ -259,7 +311,11 @@ coding, deployment, and device-testing stages.
 - Some inherited club and social values remain static.
 - Some brawler-specific behavior/content remains unfinished.
 - Non-credit Brawl Pass reward types remain unfinished.
-- Battle End presentation and trophy animation remain unfinished.
+- Individual flying trophy sprites and detailed combat statistics remain unfinished.
+
+README.md and improvements.md are updated together for each verified change or
+substantial investigation before committing and pushing its checkpoint. Each
+entry records improvements over base BSDS, evidence, and remaining limitations.
 
 ## Authorship
 
