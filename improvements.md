@@ -290,6 +290,23 @@ The release redirects to `192.168.1.103:9339`; discover and configure your own
 server's current LAN address. The matching certificate allowed an in-place
 update of `com.projectbsds.v49` with app data retained.
 
+
+### V49 progression packet findings (2026-10-01)
+
+Native decoder inspection identified separate per-hero scoreChanges,
+masteryPoints, and masteryPointChanges arrays in Battle End. The existing
+server sends zero for scoreChanges and empty mastery arrays, even when the
+headline reward changes. These are candidates for restoring the client effects;
+visual fixes still require live verification.
+
+Star Road command 562 opens the claim presentation. Command 560 consumes TWO
+data references (brawler and payment resource), rather than the one currently
+decoded by the server. Native server command 227 replaces StarRoadData and
+notifies its observers; the inherited command 225 label is incorrect for that
+purpose. These findings come from native code inspection, not completed unlock
+flow verification. Mastery reward command 569 reads a brawler reference, reward
+index, and fallback boolean; claimed mastery state is a sequential count.
+
 ## Evidence and development method
 
 The improvements were not inferred only from source code or menu rendering.
