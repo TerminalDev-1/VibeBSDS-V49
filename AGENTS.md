@@ -129,6 +129,31 @@ Do not advertise or claim working Brawl Ball.
    repository as well; do not leave the only checkpoint as an unpushed local
    commit. Confirm local and `origin/main` SHAs match after pushing.
 
+### Publishing Android client updates
+
+- Publish signed APKs as GitHub release assets, never as tracked Git files.
+- Use the `v49.194` release asset `VibeBSDS-V49.apk` for the current client.
+  Replace that asset when publishing an updated compatible APK, preserving the
+  README download URL. Use the authenticated GitHub CLI (`gh release upload
+  v49.194 <path-to-VibeBSDS-V49.apk> --clobber -R TerminalDev-1/VibeBSDS-V49`).
+- Discover the current game-server computer's LAN IPv4 at runtime. Update
+  `redirectHost` in `lib/armeabi-v7a/libkagenay.c.so`, leaving `redirectPort`
+  at `9339`. This is the Frida configuration; do not assume an old host address
+  still belongs to the current computer.
+- Confirm the package is `com.projectbsds.v49` and match the installed signing
+  certificate before using an in-place APK update that preserves app data.
+- Verify login on the tablet and an established TCP connection to the current
+  game-server computer. Record only the behavior actually checked.
+- Update the README and release notes with the new APK SHA-256 and configuration
+  details. Make a separate documentation commit for the APK publication, push
+  it, and verify the uploaded asset digest and local/remote commit SHAs.
+- Keep signing material, unsigned intermediates, signed APKs, and evidence in
+  gitignored directories. Publishing an APK does not require committing it.
+
+The 2026-10-01 client update was installed in place on the Xiaomi Pad 6 and
+verified to reach HomeData over Wi-Fi on the laptop-hosted server. This check
+confirmed login and connectivity; it did not reverify battles or progression.
+
 ## Communication style
 
 - Lead with the actual outcome and be candid about partial behavior.

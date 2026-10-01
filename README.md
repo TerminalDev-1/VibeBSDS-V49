@@ -144,8 +144,15 @@ because a convincing menu card is not proof of working gameplay.
 Download the V49.194 APK from this repository's GitHub release:
 
 - [Download `VibeBSDS-V49.apk`](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/VibeBSDS-V49.apk)
-- SHA-256: `D658CE81C2824225CCA9528A35DE42965F526F38B4EA34E5C0BB42906658A3E0`
+- SHA-256: `2EF10E6A93A3E6DDBA7AF8238969CCCBB8EE99162DD4C525D1DA197EE10B1AF1`
 - Android package: `com.projectbsds.v49`
+
+The 2026-10-01 APK update redirects to the current laptop-hosted game server
+at `192.168.1.103:9339`. It was installed in place on the Xiaomi Pad 6, and
+login to the home screen and the laptop's TCP connection were verified over
+Wi-Fi. Battles and progression were not reverified in this connectivity check.
+For your own installation, discover your game-server computer's current LAN
+address and configure the client accordingly; LAN addresses can change.
 
 You can also download it with an authenticated GitHub CLI:
 
