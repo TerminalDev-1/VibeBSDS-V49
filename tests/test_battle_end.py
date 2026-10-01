@@ -23,9 +23,9 @@ class BattleEndTests(unittest.TestCase):
     def tearDown(self):
         self.directory.cleanup()
 
-    def finish(self, team, winner, rank=0):
+    def finish(self, team, outcome, rank=0):
         fields = {
-            "Result": winner, "Rank": rank, "MapID": [15, 5],
+            "Outcome": outcome, "Result": team, "Rank": rank, "MapID": [15, 5],
             "Heroes": [{"IsPlayer": True, "Team": team, "PlayerName": "Player",
                         "Brawler": {"ID": [16, 0], "SkinID": None}}],
         }
@@ -35,20 +35,20 @@ class BattleEndTests(unittest.TestCase):
             AskForBattleEndMessage.execute(None, instance, fields, None)
         return fields
 
-    def test_winning_team_is_relative_to_player_on_either_team(self):
+    def test_native_outcome_is_independent_of_local_team(self):
         for team in (0, 1):
-            for winner in (0, 1):
-                with self.subTest(team=team, winner=winner):
+            for outcome in (0, 1):
+                with self.subTest(team=team, outcome=outcome):
                     before = self.player.Trophies
-                    fields = self.finish(team, winner)
-                    won = team == winner
+                    fields = self.finish(team, outcome)
+                    won = outcome == 0
                     self.assertEqual(0 if won else 1, fields["Result"])
                     self.assertEqual(20 if won else 10, fields["Progression"]["tokens"])
                     self.assertEqual(20 if won else 8, fields["Progression"]["credits"])
-                    expected = before + 750 if won else before
+                    expected = before + 32 if won else before
                     reconnected, _ = self.db.load(self.player.ID[1])
                     self.assertEqual(expected, reconnected["trophies"])
-                    self.assertEqual(750 if won else 0, fields["Progression"]["trophy_delta"])
+                    self.assertEqual(32 if won else 0, fields["Progression"]["trophy_delta"])
                     with self.db.connect() as connection:
                         battle = connection.execute(
                             "SELECT result, map_id FROM battles WHERE rowid = ?",
@@ -58,7 +58,28 @@ class BattleEndTests(unittest.TestCase):
 
     def test_draw_and_placement_do_not_become_team_victories(self):
         self.assertEqual(2, self.finish(1, -1)["Result"])
-        self.assertEqual(0, self.finish(1, 0, rank=1)["Result"])
+        self.assertEqual(1, self.finish(1, 0, rank=1)["Result"])
+
+    def test_native_loss_packet_does_not_reward_matching_team_id(self):
+        packet = ByteStream(b"")
+        for value in (1, 1, 0):  # defeat, local team 1, no placement
+            packet.writeVInt(value)
+        packet.writeDataReference(15, 7)
+        packet.writeVInt(1)
+        packet.writeDataReference(16, 0)
+        packet.writeDataReference(0)
+        packet.writeVInt(1)
+        packet.writeBoolean(True)
+        packet.writeString("Player")
+        fields = AskForBattleEndMessage(packet.messagePayload).decode()
+        instance = SimpleNamespace(player=self.player, client=object())
+        with patch("Classes.Packets.Client.Battle.AskForBattleEndMessage.database", self.db), \
+                patch("Classes.Messaging.Messaging.sendMessage"):
+            AskForBattleEndMessage.execute(None, instance, fields, None)
+        self.assertEqual(1, fields["Result"])
+        self.assertEqual(0, fields["Progression"]["trophy_delta"])
+        self.assertEqual(0, fields["Progression"]["mastery_delta"])
+        self.assertEqual(5, self.db.load(self.player.ID[1])[0]["trophies"])
 
     def test_rank_animation_uses_high_score_before_battle(self):
         with self.db.connect() as db:
@@ -68,7 +89,7 @@ class BattleEndTests(unittest.TestCase):
         self.assertEqual(800, fields["Progression"]["previous_highest_trophies"])
         self.assertEqual(900, fields["Progression"]["previous_account_highest_trophies"])
         account, brawlers = self.db.load(self.player.ID[1])
-        self.assertEqual(755, brawlers[0]["trophies"])
+        self.assertEqual(37, brawlers[0]["trophies"])
         self.assertEqual(800, brawlers[0]["highest_trophies"])
 
     def test_result_header_encodes_defeat_draw_and_placement(self):
@@ -84,7 +105,7 @@ class BattleEndTests(unittest.TestCase):
                 self.assertEqual(outcome, reader.readVInt())
 
     def test_v49_native_result_layout_including_default_skins(self):
-        fields = self.finish(1, 1)
+        fields = self.finish(1, 0)
         fields["Heroes"] += [
             {"IsPlayer": False, "Team": index % 2, "PlayerName": f"Bot {index}",
              "Brawler": {"ID": [16, index], "SkinID": [29, 0] if index == 1 else None}}
@@ -96,7 +117,7 @@ class BattleEndTests(unittest.TestCase):
         self.assertEqual([0, self.player.ID[1]], reader.readLong())
         self.assertEqual([0, fields["Progression"]["battle_id"]], reader.readLong())
         header = [reader.readVInt() for _ in range(11)]
-        self.assertEqual([1, 0, 20, 750], header[:4])
+        self.assertEqual([1, 0, 20, 32], header[:4])
         self.assertFalse(reader.readBoolean())
         for _ in range(2): reader.readVInt()
         for _ in range(2): reader.readBoolean()
@@ -121,7 +142,7 @@ class BattleEndTests(unittest.TestCase):
                 if array_index == 0:
                     self.assertEqual(5 if hero["IsPlayer"] else 0, value)
                 elif array_index == 2:
-                    self.assertEqual(750 if hero["IsPlayer"] else 0, value)
+                    self.assertEqual(32 if hero["IsPlayer"] else 0, value)
             reader.readVInt()
             reader.readVInt()
             local = reader.readBoolean()

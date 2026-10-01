@@ -15,7 +15,7 @@ class AskForBattleEndMessage(PiranhaMessage):
 
     def decode(self):
         fields = {}
-        fields["Unk1"] = self.readVInt()
+        fields["Outcome"] = self.readVInt()
         fields["Result"] = self.readVInt()
         fields["Rank"] = self.readVInt()
         fields["MapID"] = self.readDataReference()
@@ -27,15 +27,16 @@ class AskForBattleEndMessage(PiranhaMessage):
 
     def execute(message, calling_instance, fields, cryptoInit):
         brawler_id = calling_instance.player.SelectedBrawlers[0]
+        if fields["Rank"] == 0:
+            # Native 0x54c5d0 stores the player-relative outcome at arena+0xd4,
+            # encoded FIRST by 0x54c6e4. The second integer is the local team
+            # (arena+0xa0), not the winner. Comparing it with hero.Team made
+            # every completed match a victory, including real defeats.
+            outcome = fields.get("Outcome", fields["Result"])
+            fields["Result"] = outcome if outcome in (0, 1, 2) else 2
         for hero in fields["Heroes"]:
             if hero["IsPlayer"]:
                 brawler_id = hero["Brawler"]["ID"][1]
-                if fields["Rank"] == 0:
-                    # The V49 offline client reports the winning team index,
-                    # not a player-relative victory/defeat flag.
-                    winner = fields["Result"]
-                    fields["Result"] = (2 if winner not in (0, 1)
-                                        else int(winner != hero["Team"]))
                 break
         # Legacy result messages can omit the map and hero list. Use the
         # selected brawler and first advertised event for that fallback.

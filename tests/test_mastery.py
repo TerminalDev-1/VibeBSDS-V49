@@ -24,12 +24,12 @@ class MasteryTests(unittest.TestCase):
 
     def test_win_award_uses_pre_battle_trophies_and_stays_separate(self):
         result = self.db.record_battle(self.low, 7, 0, 0, 0)
-        self.assertEqual((750, 5, 0), (result["trophy_delta"], result["mastery_delta"], result["previous_mastery"]))
+        self.assertEqual((32, 5, 0), (result["trophy_delta"], result["mastery_delta"], result["previous_mastery"]))
         result = self.db.record_battle(self.low, 7, 1, 0, 0)
         self.assertEqual(0, result["mastery_delta"])
         result = self.db.record_battle(self.low, 7, 0, 0, 0)
-        self.assertEqual(60, result["mastery_delta"])
-        self.assertEqual(65, self.db.load(self.low)[1][0]["mastery_points"])
+        self.assertEqual(5, result["mastery_delta"])
+        self.assertEqual(10, self.db.load(self.low)[1][0]["mastery_points"])
 
     def test_thresholds_cap_and_draw(self):
         self.assertEqual(5, battle_mastery(49, True, 0))

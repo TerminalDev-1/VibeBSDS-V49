@@ -93,7 +93,7 @@ work. The central player progression path is dynamic.
 
 VibeBSDS applies persistent trophy deltas after reported battle completion:
 
-- Team win: `+750` trophies
+- Team win: `+32` trophies
 - Team loss: `0` trophy change
 - Five-trophy client-safety floor
 - Placement-based trophy table for Showdown-compatible results
@@ -446,3 +446,25 @@ An in-place install retained account data. Reconnect showed Brock at rank 25,
 IPv4 remains 192.168.1.103 and the client redirects to port 9339. Other
 self-hosters must configure their own current address. The prior battle-fix
 APK is superseded; build products and signing files remain gitignored.
+
+## Correct outcome field and +32 policy (2026-10-01)
+
+Team wins now award +32 trophies; defeats and draws change trophies by zero.
+The inherited Showdown placement table is unchanged while playable Showdown is
+investigated. Existing account/brawler totals are preserved.
+
+Native inspection corrected the earlier packet interpretation: 0x54c5d0
+writes the player-relative outcome (0 win, 1 loss, 2 draw) to arena+0xd4;
+0x54c6e4 encodes that as the FIRST integer of 14110. The second integer comes
+from arena+0xa0 and identifies the local team. Comparing the second integer
+with hero.Team made completed defeats look like victories and awarded trophies.
+The server now reads Outcome from the first integer and uses it for stored
+rewards and the outgoing result. Hero ally/enemy display remains team-relative.
+
+This invalidates earlier claims that matching Result and hero.Team proved a
+win. Prior rank/counting recordings still prove those animations and saved
+totals, but not the correctness of the displayed victory. Native evidence and
+33 tests verify the corrected mapping, zero loss, +32 wins, both local teams,
+draws, decode/execute of a real-shaped defeat and no defeat mastery award.
+Live outcome proof is pending at this checkpoint; a pre-existing native Play
+crash interrupted the first attempt. No replacement APK is required.

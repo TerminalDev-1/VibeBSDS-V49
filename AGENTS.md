@@ -65,7 +65,7 @@ Do not advertise or claim working Brawl Ball.
 
 ## Progression details
 
-- Team win: `+750` trophies, 20 tokens, 20 credits.
+- Team win: `+32` trophies, 20 tokens, 20 credits.
 - Team loss: `0` trophy change, 10 tokens, 8 credits.
 - Keep the five-trophy safety floor required by this client build.
 - Showdown-compatible placement trophy logic exists but Showdown is not an
@@ -91,8 +91,8 @@ Do not advertise or claim working Brawl Ball.
 ### Battle End
 
 - Preserve the corrected V49 result/progression path and regression tests.
-- Incoming Result is the winning team ID. Normalize it relative to the player
-  hero before recording rewards. Outgoing hero sides are ally/enemy relative
+- Incoming Outcome (first integer) is already player-relative: 0 win,
+  1 defeat, 2 draw. The second integer is the local team, not a winner. Outgoing hero sides are ally/enemy relative
   to that same player; do not write raw team IDs as enemy flags.
 - Hero display data has FOUR VInts after the name; hero footers contain two
   shorts, two fixed integers, and a data reference. Default skins can be None.
@@ -333,3 +333,25 @@ An in-place install retained account data. Reconnect showed Brock at rank 25,
 IPv4 remains 192.168.1.103 and the client redirects to port 9339. Other
 self-hosters must configure their own current address. The prior battle-fix
 APK is superseded; build products and signing files remain gitignored.
+
+## Correct outcome field and +32 policy (2026-10-01)
+
+Team wins now award +32 trophies; defeats and draws change trophies by zero.
+The inherited Showdown placement table is unchanged while playable Showdown is
+investigated. Existing account/brawler totals are preserved.
+
+Native inspection corrected the earlier packet interpretation: 0x54c5d0
+writes the player-relative outcome (0 win, 1 loss, 2 draw) to arena+0xd4;
+0x54c6e4 encodes that as the FIRST integer of 14110. The second integer comes
+from arena+0xa0 and identifies the local team. Comparing the second integer
+with hero.Team made completed defeats look like victories and awarded trophies.
+The server now reads Outcome from the first integer and uses it for stored
+rewards and the outgoing result. Hero ally/enemy display remains team-relative.
+
+This invalidates earlier claims that matching Result and hero.Team proved a
+win. Prior rank/counting recordings still prove those animations and saved
+totals, but not the correctness of the displayed victory. Native evidence and
+33 tests verify the corrected mapping, zero loss, +32 wins, both local teams,
+draws, decode/execute of a real-shaped defeat and no defeat mastery award.
+Live outcome proof is pending at this checkpoint; a pre-existing native Play
+crash interrupted the first attempt. No replacement APK is required.
