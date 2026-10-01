@@ -27,7 +27,14 @@ class AskForBattleEndMessage(PiranhaMessage):
 
     def execute(message, calling_instance, fields, cryptoInit):
         brawler_id = calling_instance.player.SelectedBrawlers[0]
-        if fields["Rank"] == 0:
+        if fields["Rank"] > 0:
+            if not 1 <= fields["Rank"] <= 10:
+                print("Rejected invalid Solo Showdown placement")
+                return
+            # Survival reports placement, not a team outcome. Preserve rank
+            # for presentation and normalize the stored win/loss separately.
+            fields["Result"] = 0 if fields["Rank"] == 1 else 1
+        else:
             # Native 0x54c5d0 stores the player-relative outcome at arena+0xd4,
             # encoded FIRST by 0x54c6e4. The second integer is the local team
             # (arena+0xa0), not the winner. Comparing it with hero.Team made

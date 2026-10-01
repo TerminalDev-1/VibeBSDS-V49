@@ -406,3 +406,18 @@ The first native result submitted rank 9 with ten heroes. Result presentation
 and zero-loss placement rewards still need work; Showdown is not yet enabled
 in the public event list, and the release APK is unchanged. Ten ARM emulation
 cases cover valid indices, overflow and null UI profiles.
+
+
+### Solo placement reward checkpoint (2026-10-01)
+
+Showdown results now store win/loss independently of the local team. First
+place earns +32 trophies; placements 2-5 retain +8/+6/+4/+2, and placements
+6-10 lose zero trophies. The outgoing survival result uses gametype 2 and
+the actual placement. Invalid placements above ten are rejected.
+All ten placements are regression-tested for saved rewards and outcome.
+Live placement 9 (SQLite battle 19) preserved account trophies at 4563 and
+Shelly at 1543 after returning home; screenshot `showdown-exit-game2.png`
+records that state. Earlier experimental matches used the inherited negative
+table and are retained in history. Reward-screen presentation remains pending
+because the offline client waits for the remaining bots. Public events and
+the release asset are still unchanged.

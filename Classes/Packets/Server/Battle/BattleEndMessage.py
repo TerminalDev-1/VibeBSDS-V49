@@ -17,7 +17,7 @@ class BattleEndMessage(PiranhaMessage):
                             if hero["IsPlayer"]), 0)
         self.writeLong(player.ID[0], player.ID[1])
         self.writeLong(0, progression.get("battle_id", 0))
-        self.writeVInt(1) # Battle End Game Mode (gametype)
+        self.writeVInt(2 if fields["Rank"] > 0 else 1) # survival / team result
         self.writeVInt(fields["Rank"] if fields["Rank"] > 0 else fields["Result"])
         self.writeVInt(tokens) # Tokens Gained (Gained Keys)
         self.writeVInt(trophy_change) # Trophies Result (Metascore change)

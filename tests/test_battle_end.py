@@ -58,7 +58,22 @@ class BattleEndTests(unittest.TestCase):
 
     def test_draw_and_placement_do_not_become_team_victories(self):
         self.assertEqual(2, self.finish(1, -1)["Result"])
-        self.assertEqual(1, self.finish(1, 0, rank=1)["Result"])
+        self.assertEqual(0, self.finish(1, 0, rank=1)["Result"])
+
+    def test_showdown_placements_persist_zero_losses_and_first_place_award(self):
+        for rank, delta in [(1, 32), (2, 8), (3, 6), (4, 4), (5, 2),
+                            (6, 0), (7, 0), (8, 0), (9, 0), (10, 0)]:
+            with self.subTest(rank=rank):
+                before = self.player.Trophies
+                fields = self.finish(0, rank, rank)
+                self.assertEqual(delta, fields["Progression"]["trophy_delta"])
+                self.assertEqual(0 if rank == 1 else 1, fields["Result"])
+                self.assertEqual(rank == 1, fields["Progression"]["won"])
+                self.assertEqual(before + delta, self.db.load(self.player.ID[1])[0]["trophies"])
+                with self.db.connect() as connection:
+                    battle = connection.execute('SELECT result, rank, trophy_delta FROM battles WHERE rowid = ?',
+                        (fields["Progression"]["battle_id"],)).fetchone()
+                self.assertEqual((fields["Result"], rank, delta), tuple(battle))
 
     def test_native_loss_packet_does_not_reward_matching_team_id(self):
         packet = ByteStream(b"")
@@ -101,7 +116,7 @@ class BattleEndTests(unittest.TestCase):
                 reader = ByteStream(message.messagePayload)
                 reader.readLong()
                 reader.readLong()
-                reader.readVInt()
+                self.assertEqual(2 if rank > 0 else 1, reader.readVInt())
                 self.assertEqual(outcome, reader.readVInt())
 
     def test_v49_native_result_layout_including_default_skins(self):
