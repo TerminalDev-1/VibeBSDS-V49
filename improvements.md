@@ -33,7 +33,7 @@ The improvements include:
 | 6 | Transactional battle rewards | Working |
 | 7 | Persistent battle history | Working |
 | 8 | Battle and Brawl Pass credits plus Star Road spending | Working |
-| 9 | Star Road progression and brawler unlocking | Durable; same-session panel transition incomplete |
+| 9 | Star Road progression and brawler unlocking | Durable; same-session transition verified |
 | 10 | Duplicate Star Road unlock protection | Working |
 | 11 | Persistent brawler ownership and selection | Working |
 | 12 | Gem Grab plus playable Bounty | Working |
@@ -156,10 +156,9 @@ VibeBSDS added the V49.194-specific Star Road data and command path:
 - Duplicate/unowned-state protection
 - Correct next target after reconnect
 
-The core credit-spending and brawler-unlock path works and is tested. After
-reconnect, the client displays the correct next target. One presentation defect
-remains: after the new-brawler reveal, the same session can stay on the
-completed Star Road panel instead of advancing immediately.
+The credit-spending and brawler-unlock path advances to the next target in
+the same session. The V49 reward reveal now dismisses without reconnecting.
+Gem purchases remain unsupported server-side.
 
 This was not a repair of an already visible base feature: base BSDS displayed
 no Star Road at all and started with every brawler unlocked. VibeBSDS added the
@@ -367,3 +366,23 @@ Automated checks cover win/loss/draw awards, thresholds, the cap, invalid and
 duplicate claims, decoder alignment and cosmetic persistence. Cosmetic reward
 presentation and new Battle End mastery animations still need live proof.
 Existing mastery totals are retained rather than reset.
+
+## Star Road presentation checkpoint (2026-10-01)
+
+Unlike the upstream BSDS base, VibeBSDS now updates the active credit route
+through native server command 227 after an atomic brawler claim. Command 562
+requires a reward response; command 560 also carries a payment resource.
+Reward command 203 now includes all V49 delivery context and server-base fields.
+Its Star Road source is 25. Server command payloads are encoded in a fresh
+stream: prefixing their buffer with the command ID while retaining offset zero
+made packed booleans overwrite earlier fields, causing an empty-route crash.
+Owned mastery vanity references now use the native DataReference format.
+
+Xiaomi Pad 6 proof: Brock unlocked for 160 credits, Barley appeared as the
+next target at 13/160 in the same session, and the final Brock reward reveal
+closed back to Brawl Pass by tapping. No forced reconnect was needed. The
+initial reveal, next-target presentation and delivery reveal remain distinct
+client screens. This fixes the trapped flow; it does not remove every reveal.
+Database ownership and deduction were verified separately. Cosmetic ownership
+serialization follows the native decoder but Gold cosmetic UI proof is pending.
+Thirty automated tests, Classes compilation and diff checks passed.

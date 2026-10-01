@@ -34,8 +34,16 @@ class LogicGiveDeliveryItemsCommand(LogicServerCommand):
                 self.writeVInt(0)
                 self.writeVInt(0)
 
-        self.writeVInt(0)
-        self.writeVInt(0)
+        # Native V49 decoder 0x5c8a2c: delivery context then server base.
+        self.writeBoolean(False) # optional purchase receipt
+        for key in ("Season", "RewardTrack", "Tier", "DeliveryIndex"):
+            self.writeVInt(fields.get(key, 0))
+        self.writeBoolean(False)
+        self.writeBoolean(False)
+        self.writeDataReference(*fields.get("RewardBrawler", [0, 0]))
+        self.writeVInt(fields.get("MasteryLevel", -1))
+        self.writeVInt(-1)
+        self.writeVInt(-1) # mutex token before LogicCommand
         LogicCommand.encode(self, fields)
         return self.messagePayload
 

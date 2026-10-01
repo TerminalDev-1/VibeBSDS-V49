@@ -9,8 +9,10 @@ class AvailableServerCommandMessage(PiranhaMessage):
 
     def encode(self, fields):
         self.writeVInt(fields["Command"]["ID"])
-        command = LogicCommandManager.createCommand(fields["Command"]["ID"], self.messagePayload)
-        self.messagePayload = command.encode(fields)
+        command = LogicCommandManager.createCommand(fields["Command"]["ID"], b"")
+        # Encode from offset zero in a fresh stream. A prefixed buffer with a
+        # zero offset makes packed booleans overwrite the command base.
+        self.messagePayload += command.encode(fields)
 
     def decode(self):
         return {}

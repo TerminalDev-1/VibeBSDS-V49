@@ -107,9 +107,8 @@ Do not advertise or claim working Brawl Ball.
 
 - Some club/social packet structures still contain upstream static values.
 - Non-credit Brawl Pass reward types remain incomplete.
-- A Star Road unlock is durable and the next target is correct after reconnect,
-  but the current V49 client can remain on the completed unlock panel after the
-  new-brawler reveal instead of advancing in the same session.
+- Star Road credit unlocks advance in the same session and their reveal can
+  be dismissed. Server-side gem purchases remain unsupported.
 - Some brawler-specific behavior/content remains unfinished.
 - Additional modes must be proven in a live match before being advertised.
 - Real server-authoritative multiplayer is not implemented.
@@ -253,3 +252,23 @@ Automated checks cover win/loss/draw awards, thresholds, the cap, invalid and
 duplicate claims, decoder alignment and cosmetic persistence. Cosmetic reward
 presentation and new Battle End mastery animations still need live proof.
 Existing mastery totals are retained rather than reset.
+
+## Star Road presentation checkpoint (2026-10-01)
+
+Unlike the upstream BSDS base, VibeBSDS now updates the active credit route
+through native server command 227 after an atomic brawler claim. Command 562
+requires a reward response; command 560 also carries a payment resource.
+Reward command 203 now includes all V49 delivery context and server-base fields.
+Its Star Road source is 25. Server command payloads are encoded in a fresh
+stream: prefixing their buffer with the command ID while retaining offset zero
+made packed booleans overwrite earlier fields, causing an empty-route crash.
+Owned mastery vanity references now use the native DataReference format.
+
+Xiaomi Pad 6 proof: Brock unlocked for 160 credits, Barley appeared as the
+next target at 13/160 in the same session, and the final Brock reward reveal
+closed back to Brawl Pass by tapping. No forced reconnect was needed. The
+initial reveal, next-target presentation and delivery reveal remain distinct
+client screens. This fixes the trapped flow; it does not remove every reveal.
+Database ownership and deduction were verified separately. Cosmetic ownership
+serialization follows the native decoder but Gold cosmetic UI proof is pending.
+Thirty automated tests, Classes compilation and diff checks passed.

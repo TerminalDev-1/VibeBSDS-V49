@@ -1,5 +1,6 @@
 from Classes.ByteStreamHelper import ByteStreamHelper
-from Classes.GameData import active_events, brawl_pass_claim_masks, star_road_remaining
+from Classes.StarRoad import encode_star_road
+from Classes.GameData import active_events, brawl_pass_claim_masks
 from Classes.Packets.PiranhaMessage import PiranhaMessage
 
 
@@ -11,7 +12,6 @@ class OwnHomeDataMessage(PiranhaMessage):
     def encode(self, fields, player):
         owned_brawlers = sorted(player.OwnedBrawlers.items())
         events = active_events()
-        star_road = star_road_remaining(player.OwnedBrawlers)
 
         self.writeVInt(-1433793731) #timestamp
         self.writeVInt(2023064)#timestamp
@@ -117,7 +117,7 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeBoolean(True) # owned vanity items (pins, profile icons, titles)
         self.writeVInt(len(player.OwnedCosmetics))
         for data_class, instance_id in player.OwnedCosmetics:
-            self.writeVInt(data_class * 1000000 + instance_id)
+            self.writeDataReference(data_class, instance_id)
             self.writeVInt(0) # child-item count
 
         self.writeBoolean(False) # Power league season data
@@ -249,41 +249,7 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeBoolean(False) # 0x0
         # new function v46
         self.writeVInt(0) # new function v46
-        self.writeBoolean(bool(star_road)) # Star Road
-        if star_road:
-            # V49.194 StarRoadData::decode. The first two candidate lists and
-            # selected reference are unused by this linear progression path.
-            self.writeVInt(0)
-            self.writeVInt(0)
-            self.writeDataReference(0)
-
-            current_entry = star_road[:1]
-            self.writeVInt(len(current_entry))
-            for brawler_id, credits, gems in current_entry:
-                self.writeDataReference(16, brawler_id)
-                self.writeVInt(credits)
-                self.writeVInt(gems)
-                self.writeVInt(0)
-                self.writeVInt(player.Credits)
-                self.writeVInt(0)
-                self.writeVInt(0)
-
-            # The route contains only the nodes after the active unlock. On the
-            # next HomeData decode (including reconnect), its first node becomes
-            # the next active Star Road target.
-            queued_entries = star_road[1:]
-            self.writeVInt(len(queued_entries))
-            for brawler_id, credits, gems in queued_entries:
-                self.writeDataReference(16, brawler_id)
-                self.writeVInt(credits)
-                self.writeVInt(gems)
-                self.writeVInt(0)
-                self.writeVInt(0)
-                self.writeVInt(brawler_id)
-                self.writeVInt(0)
-
-            self.writeVInt(0)
-            self.writeVInt(0)
+        encode_star_road(self, player.OwnedBrawlers, player.Credits)
 
         self.writeVInt(len(owned_brawlers)) # Mastery entries
         for brawler_id, brawler in owned_brawlers:
