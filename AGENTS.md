@@ -421,3 +421,25 @@ records that state. Earlier experimental matches used the inherited negative
 table and are retained in history. Reward-screen presentation remains pending
 because the offline client waits for the remaining bots. Public events and
 the release asset are still unchanged.
+
+
+### Showdown result transition investigation (2026-10-01)
+
+Native `0x2a3490..0x2a34e8` only schedules the Solo Showdown result transition
+after a result is pending, variation is 6, and the remaining actor count is
+at most one. This explains the eliminated-player practice overlay despite
+a saved placement. An experimental APK removes the final count branch at
+`0x2a34c8`; it is installed but has NOT passed a live match test. Its SHA-256
+is `849ba79462b10ea5a47421d2dcf509bbf8f9dba19301d3c15908dac5a41899db`.
+The code change remains outside tracked source and the public release.
+Wireless ADB disconnected after the in-place install. The tablet still
+responded at its runtime LAN address, but no ADB service was advertised and
+its previous endpoint refused connections; no high-port listener was found.
+The normal Core.py server was restored with Gem Grab/Bounty and the real
+shared power-point balance. A live Showdown reward screen, cube pickup,
+first-place reward/reconnect, and normal-mode regression are still required
+before enabling Showdown or publishing its APK. The committed reproducible
+guard patch matches the live-tested arena library byte for byte.
+When device access returns, restore Android `stay_on_while_plugged_in` to its
+original value 0 after testing. It was temporarily enabled while charging.
+The experimental APK could not be replaced while ADB was unavailable.
