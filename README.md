@@ -397,3 +397,17 @@ totals, but not the correctness of the displayed victory. Native evidence and
 draws, decode/execute of a real-shaped defeat and no defeat mastery award.
 Live outcome proof is pending at this checkpoint; a pre-existing native Play
 crash interrupted the first attempt. No replacement APK is required.
+
+### Subsequent device verification
+
+A real Xiaomi Pad 6 Gem Grab defeat displayed **DEFEAT / 0 trophies**.
+Its stored battle records result 1, zero trophies, 10 tokens and 8 credits.
+Account trophies stayed 4575 and Shelly stayed 1555 after reconnect.
+The test temporarily hid shared power points in HomeData to bypass an upgrade
+tutorial; stored progression and the battle result were unchanged by that probe.
+The normal server continues to send the real shared power-point balance.
+
+Solo Showdown was tested with Skull Creek (map 13, variation 6): its event card
+renders, but the current APK crashes in the native bot-profile path before
+starting the arena. Showdown remains unavailable; Gem Grab and Bounty are the
+enabled modes. Upgrade/tutorial handling and playable Showdown need further work.

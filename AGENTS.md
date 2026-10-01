@@ -355,3 +355,23 @@ totals, but not the correctness of the displayed victory. Native evidence and
 draws, decode/execute of a real-shaped defeat and no defeat mastery award.
 Live outcome proof is pending at this checkpoint; a pre-existing native Play
 crash interrupted the first attempt. No replacement APK is required.
+
+## Live zero-loss proof and Showdown probe (2026-10-01)
+
+The subsequent Xiaomi Pad 6 Gem Grab match displayed DEFEAT and 0 trophies.
+Its native receipt had Outcome=1, local team=1, rank=0, map=7. SQLite battle
+15 stores result=1, trophy_delta=0, tokens=10 and credits=8. Account trophies
+remained 4575 and Shelly remained 1555 after reconnect; credits rose 73 to 81.
+This verifies the corrected defeat label, zero trophy reward and persistence.
+
+The live probe temporarily hid shared power points in HomeData to avoid the
+client's mandatory upgrade tutorial; it did not change stored currencies,
+brawler powers, battle outcomes or rewards. The normal server retains the
+real shared power-point balance. Upgrade/tutorial handling needs separate work.
+
+Solo Showdown was probed on slot 1/index 33/map 13/variation 6. Skull Creek's
+card rendered, but Play crashed before arena proof with an invalid bot-profile
+pointer (native PC 0xdcdeb0, r0=0x6e756f72). Native 0x54c7dc..0x54c8c8 has a
+variation-6 placement path, but that alone does not prove playable Showdown.
+Keep only Gem Grab and Bounty enabled. Do not claim Showdown is implemented
+until ten-player survival, power cubes, poison and rank/reconnect flow work.

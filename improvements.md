@@ -468,3 +468,19 @@ totals, but not the correctness of the displayed victory. Native evidence and
 draws, decode/execute of a real-shaped defeat and no defeat mastery award.
 Live outcome proof is pending at this checkpoint; a pre-existing native Play
 crash interrupted the first attempt. No replacement APK is required.
+
+## Subsequent live defeat and Showdown verification (2026-10-01)
+
+The corrected server produced **DEFEAT / 0 trophies** for a real lost Gem Grab
+match on the Xiaomi Pad 6. Its receipt contains Outcome=1/local team=1, and
+SQLite battle 15 records result=1, trophy_delta=0, 10 tokens and 8 credits.
+Reconnect preserved account trophies 4575 and Shelly trophies 1555; credits
+advanced from 73 to 81. The probe hid shared power points only in HomeData to
+get past the client's upgrade tutorial, without changing stored balances or
+battle logic. The normal server retains the actual balance.
+
+A temporary Solo Showdown event (slot 1/index 33/map 13/variation 6) displayed
+Skull Creek, but Play crashed in the native bot-profile path (PC 0xdcdeb0,
+invalid pointer 0x6e756f72). No ten-player arena, survival rules or placement
+result was proven. The normal event list still contains Gem Grab and Bounty.
+Showdown and upgrade/tutorial handling remain incomplete.
