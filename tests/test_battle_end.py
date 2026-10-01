@@ -45,9 +45,10 @@ class BattleEndTests(unittest.TestCase):
                     self.assertEqual(0 if won else 1, fields["Result"])
                     self.assertEqual(20 if won else 10, fields["Progression"]["tokens"])
                     self.assertEqual(20 if won else 8, fields["Progression"]["credits"])
-                    expected = before + 8 if won else max(5, before - 6)
+                    expected = before + 750 if won else before
                     reconnected, _ = self.db.load(self.player.ID[1])
                     self.assertEqual(expected, reconnected["trophies"])
+                    self.assertEqual(750 if won else 0, fields["Progression"]["trophy_delta"])
                     with self.db.connect() as connection:
                         battle = connection.execute(
                             "SELECT result, map_id FROM battles WHERE rowid = ?",
@@ -84,7 +85,7 @@ class BattleEndTests(unittest.TestCase):
         self.assertEqual([0, self.player.ID[1]], reader.readLong())
         self.assertEqual([0, fields["Progression"]["battle_id"]], reader.readLong())
         header = [reader.readVInt() for _ in range(11)]
-        self.assertEqual([1, 0, 20, 8], header[:4])
+        self.assertEqual([1, 0, 20, 750], header[:4])
         self.assertFalse(reader.readBoolean())
         for _ in range(2): reader.readVInt()
         for _ in range(2): reader.readBoolean()
@@ -122,7 +123,7 @@ class BattleEndTests(unittest.TestCase):
             self.assertEqual([0, 0], [reader.readInt(), reader.readInt()])
             self.assertIsNone(reader.readDataReference())
         self.assertEqual([0, 0, 2], [reader.readVInt() for _ in range(3)])
-        self.assertEqual([1, 5, 13, 5, 5, 13], [reader.readVInt() for _ in range(6)])
+        self.assertEqual([1, 5, 755, 5, 5, 755], [reader.readVInt() for _ in range(6)])
         self.assertEqual([28, 0], reader.readDataReference())
         for _ in range(3): self.assertFalse(reader.readBoolean())
         for _ in range(2): self.assertEqual(0, reader.readVInt())

@@ -65,8 +65,8 @@ Do not advertise or claim working Brawl Ball.
 
 ## Progression details
 
-- Team win: `+8` trophies, 20 tokens, 20 credits.
-- Team loss: `-6` trophies, 10 tokens, 8 credits.
+- Team win: `+750` trophies, 20 tokens, 20 credits.
+- Team loss: `0` trophy change, 10 tokens, 8 credits.
 - Keep the five-trophy safety floor required by this client build.
 - Showdown-compatible placement trophy logic exists but Showdown is not an
   advertised event.
@@ -74,6 +74,17 @@ Do not advertise or claim working Brawl Ball.
   hardcoded rank/trophy/power values.
 - Do not claim a feature works merely because its packet encodes or its menu
   renders. Verify persistence across reconnect when relevant.
+
+### Trophy policy verification (2026-10-01)
+
+- Team wins now add 750 trophies; defeats remove none. Token/credit amounts,
+  draw behavior, and the unadvertised Showdown placement table are unchanged.
+- Live Bounty result displayed Victory +750. Account trophies 60 -> 810 and
+  Shelly 55 -> 805 matched SQLite and Home after reconnect.
+- Evidence: screenshots/trophy-update-match.png and
+  screenshots/trophy-update-reconnect-home.png (gitignored).
+- Either-team zero-loss defeats are regression-tested, not separately live-tested.
+- This policy is server-side and requires no replacement APK.
 
 ## Known TODOs
 

@@ -50,13 +50,13 @@ class ProgressionTests(unittest.TestCase):
 
     def test_battle_rewards_persist_across_reload(self):
         result = self.db.record_battle(self.low_id, 7, 0, 0, 0)
-        self.assertEqual(8, result["trophy_delta"])
+        self.assertEqual(750, result["trophy_delta"])
         self.assertEqual(20, result["tokens"])
         account, brawlers = self.db.load(self.low_id)
-        self.assertEqual(13, account["trophies"])
+        self.assertEqual(755, account["trophies"])
         self.assertEqual(20, account["credits"])
         self.assertEqual(1, account["battle_count"])
-        self.assertEqual(13, brawlers[0]["trophies"])
+        self.assertEqual(755, brawlers[0]["trophies"])
 
     def test_brawl_pass_credit_claim_is_exact_and_idempotent(self):
         claimed, amount = self.db.claim_brawl_pass_credit(self.low_id, 17, 9, 47)
@@ -123,8 +123,8 @@ class ProgressionTests(unittest.TestCase):
                 (self.low_id,),
             ).fetchone()[0]
         self.assertEqual(active_events()[0]["map_id"], recorded_map)
-        self.assertEqual(8, fields["Progression"]["trophy_delta"])
-        self.assertEqual(13, player.Trophies)
+        self.assertEqual(750, fields["Progression"]["trophy_delta"])
+        self.assertEqual(755, player.Trophies)
         send_message.assert_called_once()
 
     def test_unowned_brawler_cannot_receive_battle_rewards(self):

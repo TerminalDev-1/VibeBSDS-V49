@@ -93,14 +93,23 @@ work. The central player progression path is dynamic.
 
 VibeBSDS applies persistent trophy deltas after reported battle completion:
 
-- Team win: `+8` trophies
-- Team loss: `-6` trophies
+- Team win: `+750` trophies
+- Team loss: `0` trophy change
 - Five-trophy client-safety floor
 - Placement-based trophy table for Showdown-compatible results
 - Matching total-account and per-brawler trophy changes
 - Highest-trophy tracking
 
 The database is updated before the Battle End response is sent.
+
+
+The October 1 trophy-policy update changes team wins from +8 to +750 trophies
+and defeats from -6 to zero trophy loss. Tokens and credits retain their
+existing amounts; draws and the unadvertised Showdown placement table are
+unchanged. A live Bounty win displayed Victory +750, raised account trophies
+from 60 to 810 and Shelly from 55 to 805, and retained both values after
+reconnect. Zero-loss defeats on either team are covered by regression tests,
+not a separate live defeat. This server change works with the published APK.
 
 ## 5. Battle rewards and history
 
@@ -189,7 +198,8 @@ as allies/enemies relative to that player. Each stored battle supplies a
 database receipt; pre-battle trophies and old/new progression values allow the
 client's trophy bar and token counter to animate.
 
-Live Gem Grab and Bounty wins reached the result/reward screens, awarded +8
+The earlier October 1 live Gem Grab and Bounty wins reached the result/reward
+screens under the previous reward policy, awarded +8
 trophies, 20 tokens, and 20 credits, and retained progression after reconnect.
 Gem Grab trophies also survived app/server restarts. Defeat/draw, placement,
 and either-team normalization are covered by regression tests; those outcomes

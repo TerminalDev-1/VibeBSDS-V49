@@ -61,11 +61,20 @@ limitations while retaining credit for the upstream BSDS foundation.
 - A separately packaged Android client that can coexist with other installed
   clients.
 
-Team victories currently award `+8` trophies, 20 Brawl Pass tokens, and 20
-credits. Defeats award `-6` trophies, 10 tokens, and 8 credits, with a
+Team victories currently award `+750` trophies, 20 Brawl Pass tokens, and 20
+credits. Defeats award `0` trophy change, 10 tokens, and 8 credits, with a
 five-trophy floor required for V49.194 client stability. Showdown-compatible
 results retain a placement-based trophy table even though Showdown is not an
 advertised live event today.
+
+
+The October 1 trophy-policy update changes team wins from +8 to +750 trophies
+and defeats from -6 to zero trophy loss. Tokens and credits retain their
+existing amounts; draws and the unadvertised Showdown placement table are
+unchanged. A live Bounty win displayed Victory +750, raised account trophies
+from 60 to 810 and Shelly from 55 to 805, and retained both values after
+reconnect. Zero-loss defeats on either team are covered by regression tests,
+not a separate live defeat. This server change works with the published APK.
 
 ## What works right now
 
@@ -88,7 +97,7 @@ advertised live event today.
 The 2026-10-01 development client was tested on the Xiaomi Pad 6: Gem Grab
 Play reached Hard Rock Mine and completed the result/reward flow; Bounty
 reached exactly `20/20` with `1:19` left and entered the victory screen.
-Winning rewards were `+8` trophies, 20 tokens, and 20 credits. Gem Grab trophies
+Those earlier checks used the previous `+8` trophy reward, 20 tokens, and 20 credits. Gem Grab trophies
 survived app/server restarts, and the final Bounty reward matched the database.
 Defeat/draw outcomes and either-team conversion are covered by regression
 tests; those outcomes were not separately proven in live matches.
