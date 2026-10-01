@@ -16,6 +16,7 @@ class Player:
         self.Namecolor = 0
         self.Region = "CA"
         self.ContentCreator = "VibeBSDS"
+        self.PowerPoints = 0
         self.Coins = 0
         self.Gems = 0
         self.StarPoints = 0
@@ -35,6 +36,7 @@ class Player:
         self.RandomizerSelectedSkins = []
         self.OwnedPins = [0, 1, 2, 3, 4]
         self.OwnedThumbnails = [0]
+        self.OwnedCosmetics = []
         self.OwnedBrawlers = {}
         self.BattleCount = 0
         self.WinCount = 0
@@ -51,6 +53,7 @@ class Player:
         self.Namecolor = account["name_color"]
         self.Region = account["region"]
         self.ContentCreator = account["creator"]
+        self.PowerPoints = account["power_points"]
         self.Coins = account["coins"]
         self.Gems = account["gems"]
         self.StarPoints = account["star_points"]
@@ -69,6 +72,7 @@ class Player:
         self.WinCount = account["wins"]
         self.LoseCount = account["losses"]
         self.TutorialState = account["tutorial_state"]
+        self.OwnedCosmetics = account.get("cosmetics", [])
         self.OwnedBrawlers = {
             row["brawler_id"]: {
                 "CardID": row["card_id"],

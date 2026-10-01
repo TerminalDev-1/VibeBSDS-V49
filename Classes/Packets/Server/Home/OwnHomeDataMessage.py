@@ -114,11 +114,11 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeVInt(2)
         self.writeVInt(0) # club league quest count
 
-        self.writeBoolean(True) # Vanity items
-        # self.writeVInt(1)
-        # self.writeVInt(0)
-        # self.writeVInt(0)
-
+        self.writeBoolean(True) # owned vanity items (pins, profile icons, titles)
+        self.writeVInt(len(player.OwnedCosmetics))
+        for data_class, instance_id in player.OwnedCosmetics:
+            self.writeVInt(data_class * 1000000 + instance_id)
+            self.writeVInt(0) # child-item count
 
         self.writeBoolean(False) # Power league season data
 
@@ -311,11 +311,15 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeInt(-1)
 
         self.writeVInt(17) # commodity count
-        self.writeVInt(len(owned_brawlers) + 3) # unlocked brawlers + resources
+        self.writeVInt(len(owned_brawlers) + 4) # unlocked brawlers + resources
         for _, brawler in owned_brawlers:
             self.writeDataReference(23, brawler["CardID"])
             self.writeVInt(-1)
             self.writeVInt(1)
+
+        self.writeDataReference(5, 22) # shared V49 power-point resource
+        self.writeVInt(-1)
+        self.writeVInt(player.PowerPoints)
 
         self.writeDataReference(5, 8)
         self.writeVInt(-1)

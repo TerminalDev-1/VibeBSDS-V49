@@ -1,3 +1,4 @@
+from Classes.Commands.Client.LogicClaimMasteryTrackRewardCommand import LogicClaimMasteryTrackRewardCommand
 from Classes.Commands.Client.LogicPurchaseOfferCommand import LogicPurchaseOfferCommand
 from Classes.Commands.Client.LogicSelectCharacterCommand import LogicSelectCharacterCommand
 from Classes.Commands.Client.LogicStarRoadRewardCommand import LogicStarRoadRewardCommand
@@ -77,6 +78,7 @@ class LogicCommandManager:
         560: LogicStarRoadRewardCommand,
         562: LogicStarRoadClaimCommand,
         567: LogicStarRoadClaimBrawlerCommand,
+        569: LogicClaimMasteryTrackRewardCommand,
     }
 
     def getCommandsName(commandType):

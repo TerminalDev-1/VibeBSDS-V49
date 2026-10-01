@@ -235,3 +235,21 @@ index, and fallback boolean; claimed mastery state is a sequential count.
   progression work that VibeBSDS added beyond it.
 - Prefer evidence over optimism. A visible UI element is not proof that its
   underlying state or gameplay controller works.
+
+## Mastery progression checkpoint (2026-10-01)
+
+V49 mastery awards now use the asset-defined normal-battle table and the
+brawler's pre-battle trophies, independently of the +750 trophy policy, capped
+at 24,800 points. Command 569 validates ownership, earned thresholds and
+sequential claims in one transaction. Coins, shared power points, credits,
+chroma credits and unique mastery cosmetics have durable reward records.
+Reward delivery uses command 203; the native claim alone marks the node but
+does not add the currency.
+
+On the Xiaomi Pad 6, Shelly's first three earned rewards were claimed once:
+750 coins, 100 shared power points and 75 credits. Reconnect showed 1,750 coins,
+148 Star Road credits, the shared upgrade resource and the three claimed nodes.
+Automated checks cover win/loss/draw awards, thresholds, the cap, invalid and
+duplicate claims, decoder alignment and cosmetic persistence. Cosmetic reward
+presentation and new Battle End mastery animations still need live proof.
+Existing mastery totals are retained rather than reset.

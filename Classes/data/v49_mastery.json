@@ -1,0 +1,1604 @@
+{
+  "source": "V49.194 csv_logic mastery_levels, mastery_points, mastery_hero_confs and cosmetic/card tables",
+  "points": [
+    [
+      0,
+      5
+    ],
+    [
+      50,
+      7
+    ],
+    [
+      100,
+      10
+    ],
+    [
+      150,
+      12
+    ],
+    [
+      200,
+      15
+    ],
+    [
+      250,
+      17
+    ],
+    [
+      300,
+      20
+    ],
+    [
+      350,
+      23
+    ],
+    [
+      400,
+      25
+    ],
+    [
+      450,
+      27
+    ],
+    [
+      500,
+      35
+    ],
+    [
+      550,
+      40
+    ],
+    [
+      600,
+      45
+    ],
+    [
+      650,
+      50
+    ],
+    [
+      700,
+      55
+    ],
+    [
+      750,
+      60
+    ],
+    [
+      800,
+      65
+    ],
+    [
+      850,
+      70
+    ],
+    [
+      900,
+      75
+    ],
+    [
+      950,
+      80
+    ],
+    [
+      1000,
+      85
+    ],
+    [
+      1050,
+      90
+    ],
+    [
+      1100,
+      95
+    ],
+    [
+      1150,
+      100
+    ],
+    [
+      1200,
+      100
+    ],
+    [
+      1250,
+      100
+    ],
+    [
+      1300,
+      100
+    ],
+    [
+      1350,
+      100
+    ],
+    [
+      1400,
+      100
+    ],
+    [
+      1450,
+      100
+    ],
+    [
+      1500,
+      100
+    ]
+  ],
+  "levels": [
+    {
+      "level": 2,
+      "threshold": 300,
+      "fallback_coins": 0,
+      "rewards": {
+        "Common": [
+          "Coins",
+          750
+        ],
+        "Rare": [
+          "Coins",
+          750
+        ],
+        "SuperRare": [
+          "Coins",
+          750
+        ],
+        "Epic": [
+          "Coins",
+          750
+        ],
+        "Mythic": [
+          "Coins",
+          1000
+        ],
+        "Legendary": [
+          "Coins",
+          1000
+        ],
+        "Chromatic": [
+          "Coins",
+          1000
+        ]
+      }
+    },
+    {
+      "level": 3,
+      "threshold": 800,
+      "fallback_coins": 0,
+      "rewards": {
+        "Common": [
+          "PowerPoints",
+          100
+        ],
+        "Rare": [
+          "PowerPoints",
+          100
+        ],
+        "SuperRare": [
+          "PowerPoints",
+          100
+        ],
+        "Epic": [
+          "PowerPoints",
+          100
+        ],
+        "Mythic": [
+          "PowerPoints",
+          150
+        ],
+        "Legendary": [
+          "PowerPoints",
+          150
+        ],
+        "Chromatic": [
+          "PowerPoints",
+          150
+        ]
+      }
+    },
+    {
+      "level": 4,
+      "threshold": 1500,
+      "fallback_coins": 0,
+      "rewards": {
+        "Common": [
+          "Credits",
+          75
+        ],
+        "Rare": [
+          "Credits",
+          75
+        ],
+        "SuperRare": [
+          "Credits",
+          75
+        ],
+        "Epic": [
+          "Credits",
+          75
+        ],
+        "Mythic": [
+          "Credits",
+          100
+        ],
+        "Legendary": [
+          "Credits",
+          100
+        ],
+        "Chromatic": [
+          "Credits",
+          100
+        ]
+      }
+    },
+    {
+      "level": 5,
+      "threshold": 2600,
+      "fallback_coins": 0,
+      "rewards": {
+        "Common": [
+          "PowerPoints",
+          200
+        ],
+        "Rare": [
+          "PowerPoints",
+          200
+        ],
+        "SuperRare": [
+          "PowerPoints",
+          200
+        ],
+        "Epic": [
+          "PowerPoints",
+          200
+        ],
+        "Mythic": [
+          "PowerPoints",
+          300
+        ],
+        "Legendary": [
+          "PowerPoints",
+          300
+        ],
+        "Chromatic": [
+          "PowerPoints",
+          300
+        ]
+      }
+    },
+    {
+      "level": 6,
+      "threshold": 4000,
+      "fallback_coins": 0,
+      "rewards": {
+        "Common": [
+          "Coins",
+          1250
+        ],
+        "Rare": [
+          "Coins",
+          1250
+        ],
+        "SuperRare": [
+          "Coins",
+          1250
+        ],
+        "Epic": [
+          "Coins",
+          1250
+        ],
+        "Mythic": [
+          "Coins",
+          2000
+        ],
+        "Legendary": [
+          "Coins",
+          2000
+        ],
+        "Chromatic": [
+          "Coins",
+          2000
+        ]
+      }
+    },
+    {
+      "level": 7,
+      "threshold": 5800,
+      "fallback_coins": 0,
+      "rewards": {
+        "Common": [
+          "Credits",
+          150
+        ],
+        "Rare": [
+          "Credits",
+          150
+        ],
+        "SuperRare": [
+          "Credits",
+          150
+        ],
+        "Epic": [
+          "Credits",
+          150
+        ],
+        "Mythic": [
+          "Credits",
+          200
+        ],
+        "Legendary": [
+          "Credits",
+          200
+        ],
+        "Chromatic": [
+          "ChromaCredits",
+          100
+        ]
+      }
+    },
+    {
+      "level": 8,
+      "threshold": 10300,
+      "fallback_coins": 200,
+      "rewards": {
+        "Common": [
+          "UniqueEmote",
+          1
+        ],
+        "Rare": [
+          "UniqueEmote",
+          1
+        ],
+        "SuperRare": [
+          "UniqueEmote",
+          1
+        ],
+        "Epic": [
+          "UniqueEmote",
+          1
+        ],
+        "Mythic": [
+          "UniqueEmote",
+          1
+        ],
+        "Legendary": [
+          "UniqueEmote",
+          1
+        ],
+        "Chromatic": [
+          "UniqueEmote",
+          1
+        ]
+      }
+    },
+    {
+      "level": 9,
+      "threshold": 16800,
+      "fallback_coins": 200,
+      "rewards": {
+        "Common": [
+          "UniquePlayerIcon",
+          1
+        ],
+        "Rare": [
+          "UniquePlayerIcon",
+          1
+        ],
+        "SuperRare": [
+          "UniquePlayerIcon",
+          1
+        ],
+        "Epic": [
+          "UniquePlayerIcon",
+          1
+        ],
+        "Mythic": [
+          "UniquePlayerIcon",
+          1
+        ],
+        "Legendary": [
+          "UniquePlayerIcon",
+          1
+        ],
+        "Chromatic": [
+          "UniquePlayerIcon",
+          1
+        ]
+      }
+    },
+    {
+      "level": 10,
+      "threshold": 24800,
+      "fallback_coins": 200,
+      "rewards": {
+        "Common": [
+          "UniqueTitle",
+          1
+        ],
+        "Rare": [
+          "UniqueTitle",
+          1
+        ],
+        "SuperRare": [
+          "UniqueTitle",
+          1
+        ],
+        "Epic": [
+          "UniqueTitle",
+          1
+        ],
+        "Mythic": [
+          "UniqueTitle",
+          1
+        ],
+        "Legendary": [
+          "UniqueTitle",
+          1
+        ],
+        "Chromatic": [
+          "UniqueTitle",
+          1
+        ]
+      }
+    }
+  ],
+  "heroes": {
+    "0": {
+      "rarity": "Common",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1032
+        ],
+        "UniquePlayerIcon": [
+          28,
+          91
+        ],
+        "UniqueTitle": [
+          46,
+          0
+        ]
+      }
+    },
+    "1": {
+      "rarity": "Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          994
+        ],
+        "UniquePlayerIcon": [
+          28,
+          96
+        ],
+        "UniqueTitle": [
+          46,
+          1
+        ]
+      }
+    },
+    "2": {
+      "rarity": "Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          987
+        ],
+        "UniquePlayerIcon": [
+          28,
+          97
+        ],
+        "UniqueTitle": [
+          46,
+          2
+        ]
+      }
+    },
+    "3": {
+      "rarity": "Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          985
+        ],
+        "UniquePlayerIcon": [
+          28,
+          98
+        ],
+        "UniqueTitle": [
+          46,
+          3
+        ]
+      }
+    },
+    "4": {
+      "rarity": "Super_Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1028
+        ],
+        "UniquePlayerIcon": [
+          28,
+          123
+        ],
+        "UniqueTitle": [
+          46,
+          4
+        ]
+      }
+    },
+    "5": {
+      "rarity": "Legendary",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1033
+        ],
+        "UniquePlayerIcon": [
+          28,
+          206
+        ],
+        "UniqueTitle": [
+          46,
+          5
+        ]
+      }
+    },
+    "6": {
+      "rarity": "Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          979
+        ],
+        "UniquePlayerIcon": [
+          28,
+          117
+        ],
+        "UniqueTitle": [
+          46,
+          6
+        ]
+      }
+    },
+    "7": {
+      "rarity": "Super_Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1011
+        ],
+        "UniquePlayerIcon": [
+          28,
+          93
+        ],
+        "UniqueTitle": [
+          46,
+          7
+        ]
+      }
+    },
+    "8": {
+      "rarity": "Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1021
+        ],
+        "UniquePlayerIcon": [
+          28,
+          92
+        ],
+        "UniqueTitle": [
+          46,
+          8
+        ]
+      }
+    },
+    "9": {
+      "rarity": "Super_Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          997
+        ],
+        "UniquePlayerIcon": [
+          28,
+          95
+        ],
+        "UniqueTitle": [
+          46,
+          9
+        ]
+      }
+    },
+    "10": {
+      "rarity": "Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1027
+        ],
+        "UniquePlayerIcon": [
+          28,
+          116
+        ],
+        "UniqueTitle": [
+          46,
+          10
+        ]
+      }
+    },
+    "11": {
+      "rarity": "Mega_Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1018
+        ],
+        "UniquePlayerIcon": [
+          28,
+          207
+        ],
+        "UniqueTitle": [
+          46,
+          11
+        ]
+      }
+    },
+    "12": {
+      "rarity": "Legendary",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          995
+        ],
+        "UniquePlayerIcon": [
+          28,
+          205
+        ],
+        "UniqueTitle": [
+          46,
+          12
+        ]
+      }
+    },
+    "13": {
+      "rarity": "Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1026
+        ],
+        "UniquePlayerIcon": [
+          28,
+          119
+        ],
+        "UniqueTitle": [
+          46,
+          13
+        ]
+      }
+    },
+    "14": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          983
+        ],
+        "UniquePlayerIcon": [
+          28,
+          99
+        ],
+        "UniqueTitle": [
+          46,
+          14
+        ]
+      }
+    },
+    "15": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1025
+        ],
+        "UniquePlayerIcon": [
+          28,
+          196
+        ],
+        "UniqueTitle": [
+          46,
+          15
+        ]
+      }
+    },
+    "16": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1023
+        ],
+        "UniquePlayerIcon": [
+          28,
+          195
+        ],
+        "UniqueTitle": [
+          46,
+          16
+        ]
+      }
+    },
+    "17": {
+      "rarity": "Mega_Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1038
+        ],
+        "UniquePlayerIcon": [
+          28,
+          200
+        ],
+        "UniqueTitle": [
+          46,
+          17
+        ]
+      }
+    },
+    "18": {
+      "rarity": "Super_Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          996
+        ],
+        "UniquePlayerIcon": [
+          28,
+          120
+        ],
+        "UniqueTitle": [
+          46,
+          18
+        ]
+      }
+    },
+    "19": {
+      "rarity": "Super_Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1024
+        ],
+        "UniquePlayerIcon": [
+          28,
+          121
+        ],
+        "UniqueTitle": [
+          46,
+          19
+        ]
+      }
+    },
+    "20": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1002
+        ],
+        "UniquePlayerIcon": [
+          28,
+          191
+        ],
+        "UniqueTitle": [
+          46,
+          20
+        ]
+      }
+    },
+    "21": {
+      "rarity": "Mega_Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1004
+        ],
+        "UniquePlayerIcon": [
+          28,
+          198
+        ],
+        "UniqueTitle": [
+          46,
+          21
+        ]
+      }
+    },
+    "22": {
+      "rarity": "Super_Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1039
+        ],
+        "UniquePlayerIcon": [
+          28,
+          89
+        ],
+        "UniqueTitle": [
+          46,
+          22
+        ]
+      }
+    },
+    "23": {
+      "rarity": "Legendary",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1012
+        ],
+        "UniquePlayerIcon": [
+          28,
+          203
+        ],
+        "UniqueTitle": [
+          46,
+          23
+        ]
+      }
+    },
+    "24": {
+      "rarity": "Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1029
+        ],
+        "UniquePlayerIcon": [
+          28,
+          118
+        ],
+        "UniqueTitle": [
+          46,
+          24
+        ]
+      }
+    },
+    "25": {
+      "rarity": "Super_Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          991
+        ],
+        "UniquePlayerIcon": [
+          28,
+          122
+        ],
+        "UniqueTitle": [
+          46,
+          25
+        ]
+      }
+    },
+    "26": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          982
+        ],
+        "UniquePlayerIcon": [
+          28,
+          189
+        ],
+        "UniqueTitle": [
+          46,
+          26
+        ]
+      }
+    },
+    "27": {
+      "rarity": "Super_Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          976
+        ],
+        "UniquePlayerIcon": [
+          28,
+          100
+        ],
+        "UniqueTitle": [
+          46,
+          27
+        ]
+      }
+    },
+    "28": {
+      "rarity": "Legendary",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1031
+        ],
+        "UniquePlayerIcon": [
+          28,
+          212
+        ],
+        "UniqueTitle": [
+          46,
+          28
+        ]
+      }
+    },
+    "29": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          980
+        ],
+        "UniquePlayerIcon": [
+          28,
+          188
+        ],
+        "UniqueTitle": [
+          46,
+          29
+        ]
+      }
+    },
+    "30": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          999
+        ],
+        "UniquePlayerIcon": [
+          28,
+          94
+        ],
+        "UniqueTitle": [
+          46,
+          30
+        ]
+      }
+    },
+    "31": {
+      "rarity": "Mega_Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1019
+        ],
+        "UniquePlayerIcon": [
+          28,
+          199
+        ],
+        "UniqueTitle": [
+          46,
+          31
+        ]
+      }
+    },
+    "32": {
+      "rarity": "Mega_Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1016
+        ],
+        "UniquePlayerIcon": [
+          28,
+          202
+        ],
+        "UniqueTitle": [
+          46,
+          32
+        ]
+      }
+    },
+    "34": {
+      "rarity": "Super_Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1009
+        ],
+        "UniquePlayerIcon": [
+          28,
+          124
+        ],
+        "UniqueTitle": [
+          46,
+          33
+        ]
+      }
+    },
+    "35": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1003
+        ],
+        "UniquePlayerIcon": [
+          28,
+          209
+        ],
+        "UniqueTitle": [
+          46,
+          34
+        ]
+      }
+    },
+    "36": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1020
+        ],
+        "UniquePlayerIcon": [
+          28,
+          194
+        ],
+        "UniqueTitle": [
+          46,
+          35
+        ]
+      }
+    },
+    "37": {
+      "rarity": "Mega_Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1034
+        ],
+        "UniquePlayerIcon": [
+          28,
+          213
+        ],
+        "UniqueTitle": [
+          46,
+          36
+        ]
+      }
+    },
+    "38": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1037
+        ],
+        "UniquePlayerIcon": [
+          28,
+          211
+        ],
+        "UniqueTitle": [
+          46,
+          37
+        ]
+      }
+    },
+    "39": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          993
+        ],
+        "UniquePlayerIcon": [
+          28,
+          210
+        ],
+        "UniqueTitle": [
+          46,
+          38
+        ]
+      }
+    },
+    "40": {
+      "rarity": "Legendary",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          977
+        ],
+        "UniquePlayerIcon": [
+          28,
+          208
+        ],
+        "UniqueTitle": [
+          46,
+          39
+        ]
+      }
+    },
+    "41": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1014
+        ],
+        "UniquePlayerIcon": [
+          28,
+          241
+        ],
+        "UniqueTitle": [
+          46,
+          40
+        ]
+      }
+    },
+    "42": {
+      "rarity": "Mega_Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          989
+        ],
+        "UniquePlayerIcon": [
+          28,
+          197
+        ],
+        "UniqueTitle": [
+          46,
+          41
+        ]
+      }
+    },
+    "43": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          998
+        ],
+        "UniquePlayerIcon": [
+          28,
+          187
+        ],
+        "UniqueTitle": [
+          46,
+          42
+        ]
+      }
+    },
+    "44": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1030
+        ],
+        "UniquePlayerIcon": [
+          28,
+          214
+        ],
+        "UniqueTitle": [
+          46,
+          43
+        ]
+      }
+    },
+    "45": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1036
+        ],
+        "UniquePlayerIcon": [
+          28,
+          90
+        ],
+        "UniqueTitle": [
+          46,
+          44
+        ]
+      }
+    },
+    "46": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          981
+        ],
+        "UniquePlayerIcon": [
+          28,
+          215
+        ],
+        "UniqueTitle": [
+          46,
+          45
+        ]
+      }
+    },
+    "47": {
+      "rarity": "Mega_Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1035
+        ],
+        "UniquePlayerIcon": [
+          28,
+          201
+        ],
+        "UniqueTitle": [
+          46,
+          46
+        ]
+      }
+    },
+    "48": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1007
+        ],
+        "UniquePlayerIcon": [
+          28,
+          193
+        ],
+        "UniqueTitle": [
+          46,
+          47
+        ]
+      }
+    },
+    "49": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          988
+        ],
+        "UniquePlayerIcon": [
+          28,
+          231
+        ],
+        "UniqueTitle": [
+          46,
+          48
+        ]
+      }
+    },
+    "50": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1006
+        ],
+        "UniquePlayerIcon": [
+          28,
+          192
+        ],
+        "UniqueTitle": [
+          46,
+          49
+        ]
+      }
+    },
+    "51": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          978
+        ],
+        "UniquePlayerIcon": [
+          28,
+          232
+        ],
+        "UniqueTitle": [
+          46,
+          50
+        ]
+      }
+    },
+    "52": {
+      "rarity": "Legendary",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1017
+        ],
+        "UniquePlayerIcon": [
+          28,
+          204
+        ],
+        "UniqueTitle": [
+          46,
+          51
+        ]
+      }
+    },
+    "53": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1013
+        ],
+        "UniquePlayerIcon": [
+          28,
+          239
+        ],
+        "UniqueTitle": [
+          46,
+          52
+        ]
+      }
+    },
+    "54": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1001
+        ],
+        "UniquePlayerIcon": [
+          28,
+          233
+        ],
+        "UniqueTitle": [
+          46,
+          53
+        ]
+      }
+    },
+    "56": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1000
+        ],
+        "UniquePlayerIcon": [
+          28,
+          238
+        ],
+        "UniqueTitle": [
+          46,
+          54
+        ]
+      }
+    },
+    "57": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1010
+        ],
+        "UniquePlayerIcon": [
+          28,
+          217
+        ],
+        "UniqueTitle": [
+          46,
+          55
+        ]
+      }
+    },
+    "58": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          984
+        ],
+        "UniquePlayerIcon": [
+          28,
+          190
+        ],
+        "UniqueTitle": [
+          46,
+          56
+        ]
+      }
+    },
+    "59": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1022
+        ],
+        "UniquePlayerIcon": [
+          28,
+          216
+        ],
+        "UniqueTitle": [
+          46,
+          57
+        ]
+      }
+    },
+    "60": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          986
+        ],
+        "UniquePlayerIcon": [
+          28,
+          240
+        ],
+        "UniqueTitle": [
+          46,
+          58
+        ]
+      }
+    },
+    "61": {
+      "rarity": "Super_Rare",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1008
+        ],
+        "UniquePlayerIcon": [
+          28,
+          234
+        ],
+        "UniqueTitle": [
+          46,
+          59
+        ]
+      }
+    },
+    "62": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          990
+        ],
+        "UniquePlayerIcon": [
+          28,
+          243
+        ],
+        "UniqueTitle": [
+          46,
+          60
+        ]
+      }
+    },
+    "63": {
+      "rarity": "Legendary",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          992
+        ],
+        "UniquePlayerIcon": [
+          28,
+          237
+        ],
+        "UniqueTitle": [
+          46,
+          61
+        ]
+      }
+    },
+    "64": {
+      "rarity": "Mega_Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1005
+        ],
+        "UniquePlayerIcon": [
+          28,
+          230
+        ],
+        "UniqueTitle": [
+          46,
+          62
+        ]
+      }
+    },
+    "65": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1015
+        ],
+        "UniquePlayerIcon": [
+          28,
+          244
+        ],
+        "UniqueTitle": [
+          46,
+          63
+        ]
+      }
+    },
+    "66": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1072
+        ],
+        "UniquePlayerIcon": [
+          28,
+          236
+        ],
+        "UniqueTitle": [
+          46,
+          64
+        ]
+      }
+    },
+    "67": {
+      "rarity": "Mega_Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1082
+        ],
+        "UniquePlayerIcon": [
+          28,
+          235
+        ],
+        "UniqueTitle": [
+          46,
+          65
+        ]
+      }
+    },
+    "68": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1120
+        ],
+        "UniquePlayerIcon": [
+          28,
+          256
+        ],
+        "UniqueTitle": [
+          46,
+          66
+        ]
+      }
+    },
+    "69": {
+      "rarity": "Epic",
+      "cosmetics": {
+        "UniqueEmote": [
+          52,
+          1140
+        ],
+        "UniquePlayerIcon": [
+          28,
+          257
+        ],
+        "UniqueTitle": [
+          46,
+          67
+        ]
+      }
+    }
+  }
+}

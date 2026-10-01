@@ -21,7 +21,7 @@ class LogicGiveDeliveryItemsCommand(LogicServerCommand):
                     data_id if data_class == 16 else 0,
                 )
                 self.writeVInt(item["RewardID"])
-                for accepted_class in (29, (52, 28), 23):
+                for accepted_class in (29, (52, 28, 46), 23):
                     accepted = (
                         data_class in accepted_class
                         if isinstance(accepted_class, tuple)

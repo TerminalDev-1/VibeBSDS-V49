@@ -4,6 +4,8 @@ import sqlite3
 import threading
 import time
 
+from Classes.Mastery import battle_mastery, mastery_reward
+
 from Classes.GameData import (
     BRAWLER_CARD_IDS,
     brawl_pass_credit_reward,
@@ -120,6 +122,14 @@ class GameDatabase:
                     FOREIGN KEY (account_low_id) REFERENCES accounts(low_id) ON DELETE CASCADE
                 );
 
+                CREATE TABLE IF NOT EXISTS cosmetics (
+                    account_low_id INTEGER NOT NULL,
+                    class_id INTEGER NOT NULL,
+                    instance_id INTEGER NOT NULL,
+                    PRIMARY KEY (account_low_id, class_id, instance_id),
+                    FOREIGN KEY (account_low_id) REFERENCES accounts(low_id) ON DELETE CASCADE
+                );
+
                 -- The patched V49 client has no safe unset-name onboarding scene.
                 UPDATE accounts SET name_set = 1 WHERE name_set = 0;
                 -- V49.194's first total-trophy milestone starts at five. Values
@@ -131,6 +141,10 @@ class GameDatabase:
                 WHERE trophies < 5;
             """)
 
+            columns = {row["name"] for row in db.execute("PRAGMA table_info(accounts)")}
+            if "power_points" not in columns:
+                db.execute("ALTER TABLE accounts ADD COLUMN power_points INTEGER NOT NULL DEFAULT 0")
+
     def _load(self, db, low_id):
         account = db.execute("SELECT * FROM accounts WHERE low_id = ?", (low_id,)).fetchone()
         if account is None:
@@ -138,7 +152,12 @@ class GameDatabase:
         brawlers = db.execute(
             "SELECT * FROM brawlers WHERE account_low_id = ? ORDER BY brawler_id", (low_id,)
         ).fetchall()
-        return dict(account), [dict(row) for row in brawlers]
+        account = dict(account)
+        account["cosmetics"] = [list(row) for row in db.execute(
+            "SELECT class_id, instance_id FROM cosmetics WHERE account_low_id = ? ORDER BY class_id, instance_id",
+            (low_id,),
+        )]
+        return account, [dict(row) for row in brawlers]
 
     def login(self, account_id, token, android_id=None):
         high_id, low_id = account_id
@@ -258,6 +277,48 @@ class GameDatabase:
             )
         return True, amount
 
+    def claim_mastery(self, low_id, brawler_id, level):
+        reward = mastery_reward(brawler_id, level)
+        if reward is None:
+            return False, "reward"
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            brawler = db.execute(
+                "SELECT mastery_points, mastery_claimed FROM brawlers WHERE account_low_id = ? AND brawler_id = ?",
+                (low_id, brawler_id),
+            ).fetchone()
+            if brawler is None:
+                return False, "not-owned"
+            if level != brawler["mastery_claimed"] + 2:
+                return False, "not-next"
+            if brawler["mastery_points"] < reward["threshold"]:
+                return False, "points"
+            kind, amount = reward["kind"], reward["amount"]
+            reference = reward["reference"]
+            if reference is not None:
+                owned = db.execute(
+                    "SELECT 1 FROM cosmetics WHERE account_low_id = ? AND class_id = ? AND instance_id = ?",
+                    (low_id, *reference),
+                ).fetchone()
+                if owned:
+                    kind, amount = "Coins", reward["fallback_coins"]
+                else:
+                    db.execute("INSERT INTO cosmetics VALUES (?, ?, ?)", (low_id, *reference))
+            if kind == "PowerPoints":
+                db.execute("UPDATE accounts SET power_points = power_points + ? WHERE low_id = ?", (amount, low_id))
+            elif kind in ("Coins", "Credits", "ChromaCredits"):
+                column = {"Coins": "coins", "Credits": "credits", "ChromaCredits": "chroma_credits"}[kind]
+                db.execute(f"UPDATE accounts SET {column} = {column} + ? WHERE low_id = ?", (amount, low_id))
+            db.execute(
+                "UPDATE brawlers SET mastery_claimed = mastery_claimed + 1 WHERE account_low_id = ? AND brawler_id = ?",
+                (low_id, brawler_id),
+            )
+            db.execute(
+                "INSERT INTO progression_actions(account_low_id, action_type, subject_id, amount, created_at) VALUES (?, 'mastery', ?, ?, ?)",
+                (low_id, brawler_id * 16 + level, amount, int(time.time())),
+            )
+            return True, {**reward, "kind": kind, "amount": amount}
+
     def record_battle(self, low_id, map_id, result, rank, brawler_id):
         delta = trophy_delta(result, rank)
         won = rank == 1 if rank > 0 else result == 0
@@ -267,15 +328,16 @@ class GameDatabase:
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             brawler = db.execute(
-                "SELECT trophies FROM brawlers WHERE account_low_id = ? AND brawler_id = ?",
+                "SELECT trophies, mastery_points FROM brawlers WHERE account_low_id = ? AND brawler_id = ?",
                 (low_id, brawler_id),
             ).fetchone()
             if brawler is None:
                 return None
             applied_delta = max(5 - brawler["trophies"], delta)
+            mastery_delta = battle_mastery(brawler["trophies"], won, brawler["mastery_points"])
             db.execute(
                 "UPDATE brawlers SET trophies = trophies + ?, highest_trophies = MAX(highest_trophies, trophies + ?), mastery_points = mastery_points + ? WHERE account_low_id = ? AND brawler_id = ?",
-                (applied_delta, applied_delta, max(0, applied_delta), low_id, brawler_id),
+                (applied_delta, applied_delta, mastery_delta, low_id, brawler_id),
             )
             db.execute(
                 "UPDATE accounts SET trophies = trophies + ?, highest_trophies = MAX(highest_trophies, trophies + ?), tokens = tokens + ?, credits = credits + ?, battle_count = battle_count + 1, wins = wins + ?, losses = losses + ?, updated_at = ? WHERE low_id = ?",
@@ -288,6 +350,8 @@ class GameDatabase:
             return {
                 "battle_id": battle_receipt.lastrowid,
                 "trophy_delta": applied_delta,
+                "mastery_delta": mastery_delta,
+                "previous_mastery": brawler["mastery_points"],
                 "tokens": tokens,
                 "credits": credits,
                 "won": won,
