@@ -358,4 +358,20 @@ pass all 32 tests. Individual flying trophy sprites remain incomplete.
 The tested signed APK uses package com.projectbsds.v49, the existing signing
 certificate, and the laptop's rediscovered address 192.168.1.103:9339. Its
 SHA-256 is 7742556db316b4867ddf9843d3490bc91ae7c7d53100332b4a6832cb5cbff8b6.
-Release publication is recorded separately after upload verification.
+Release publication and uploaded-digest verification are recorded below.
+
+## Rank-update APK publication (2026-10-01)
+
+The tested rank-animation APK replaced the v49.194 GitHub Release asset
+VibeBSDS-V49.apk. GitHub reports SHA-256
+7742556db316b4867ddf9843d3490bc91ae7c7d53100332b4a6832cb5cbff8b6,
+matching the signed/installed build (479,200,690 bytes). Use server checkpoint
+de710ca493ff4858e3cf314c8e993faa5ed596e8 or newer. The existing download link
+remains valid. Release notes now describe mastery progression, the dismissible
+Star Road reveal and sequential rank-up badges, with their remaining limits.
+
+An in-place install retained account data. Reconnect showed Brock at rank 25,
+755/800 trophies and 5/300 mastery, matching SQLite. The server laptop's runtime
+IPv4 remains 192.168.1.103 and the client redirects to port 9339. Other
+self-hosters must configure their own current address. The prior battle-fix
+APK is superseded; build products and signing files remain gitignored.

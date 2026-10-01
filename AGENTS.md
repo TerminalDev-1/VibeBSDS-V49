@@ -195,13 +195,13 @@ confirmed login and connectivity; it did not reverify battles or progression.
 - Bounty already has MaxScore=20 in CSV, but the offline match continued beyond
   it. The patched client caps the arena score reads and sets the existing
   winner field at 20 for variation 3, entering the normal result controller.
-- The local signed development APK is under `screenshots/battle-fixes-final-signed/`.
+- The current signed development APK is under `screenshots/rank-experiment-signed/`.
   It was installed with the same certificate and app data retained, and is now
   published as the `v49.194` release asset `VibeBSDS-V49.apk`. GitHub's uploaded
   asset digest matches the tested local build. Use server checkpoint
   `c37019ae9fa4e70cf0ed76940dac6520f496c092` or newer for its Battle End packet.
 - Published APK SHA-256:
-  `1b22ab6c97a8ed894af5f9918fed4c5fd93af4bab83203b97097921f8eaa28bb`.
+  `7742556db316b4867ddf9843d3490bc91ae7c7d53100332b4a6832cb5cbff8b6`.
 - Final recorded Bounty proof: exactly 20/20 at 1:19 remaining, followed by
   victory/result submission. Evidence is `screenshots/bounty-final.mp4` and
   `screenshots/bounty-20-limit.png`.
@@ -316,4 +316,20 @@ pass all 32 tests. Individual flying trophy sprites remain incomplete.
 The tested signed APK uses package com.projectbsds.v49, the existing signing
 certificate, and the laptop's rediscovered address 192.168.1.103:9339. Its
 SHA-256 is 7742556db316b4867ddf9843d3490bc91ae7c7d53100332b4a6832cb5cbff8b6.
-Release publication is recorded separately after upload verification.
+Release publication and uploaded-digest verification are recorded below.
+
+## Rank-update APK publication (2026-10-01)
+
+The tested rank-animation APK replaced the v49.194 GitHub Release asset
+VibeBSDS-V49.apk. GitHub reports SHA-256
+7742556db316b4867ddf9843d3490bc91ae7c7d53100332b4a6832cb5cbff8b6,
+matching the signed/installed build (479,200,690 bytes). Use server checkpoint
+de710ca493ff4858e3cf314c8e993faa5ed596e8 or newer. The existing download link
+remains valid. Release notes now describe mastery progression, the dismissible
+Star Road reveal and sequential rank-up badges, with their remaining limits.
+
+An in-place install retained account data. Reconnect showed Brock at rank 25,
+755/800 trophies and 5/300 mastery, matching SQLite. The server laptop's runtime
+IPv4 remains 192.168.1.103 and the client redirects to port 9339. Other
+self-hosters must configure their own current address. The prior battle-fix
+APK is superseded; build products and signing files remain gitignored.
