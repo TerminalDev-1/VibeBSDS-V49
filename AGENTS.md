@@ -375,3 +375,9 @@ pointer (native PC 0xdcdeb0, r0=0x6e756f72). Native 0x54c7dc..0x54c8c8 has a
 variation-6 placement path, but that alone does not prove playable Showdown.
 Keep only Gem Grab and Bounty enabled. Do not claim Showdown is implemented
 until ten-player survival, power cubes, poison and rank/reconnect flow work.
+
+The v49.194 release notes now describe the +32/zero-loss policy, native outcome
+correction and live defeat proof. The APK asset is unchanged. The normal Core.py
+server was restored with real shared power points. TerminalDev-1 has explicitly
+requested continued Showdown investigation and implementation after this fix.
+The native patch README also now documents the corrected first/second fields.

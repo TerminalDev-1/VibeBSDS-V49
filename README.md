@@ -411,3 +411,8 @@ Solo Showdown was tested with Skull Creek (map 13, variation 6): its event card
 renders, but the current APK crashes in the native bot-profile path before
 starting the arena. Showdown remains unavailable; Gem Grab and Bounty are the
 enabled modes. Upgrade/tutorial handling and playable Showdown need further work.
+
+The v49.194 GitHub Release notes have been updated for the corrected outcome and
++32/zero-loss policy. These changes use the existing APK; the normal server sends
+stored currency balances. The native patch documentation uses the corrected
+outcome field mapping as well.

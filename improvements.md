@@ -484,3 +484,8 @@ Skull Creek, but Play crashed in the native bot-profile path (PC 0xdcdeb0,
 invalid pointer 0x6e756f72). No ten-player arena, survival rules or placement
 result was proven. The normal event list still contains Gem Grab and Bounty.
 Showdown and upgrade/tutorial handling remain incomplete.
+
+The v49.194 release notes now describe the corrected outcome, +32 team wins and
+live zero-loss defeat proof. No APK replacement was needed. Normal Core.py was
+restored with real shared power points, and scripts/README.md now records the
+correct first-outcome/second-local-team packet fields.

@@ -35,8 +35,10 @@ packet. Its layout was checked against V49 native decoders `0x689944` (message),
 `0x696d54` (hero), and `0x687350` (display data). Hero list counts are bytes;
 display data includes four VInts; hero statistics end with two shorts, two
 fixed integers, and a data reference. Team and MVP flags are separate fields.
-The incoming `14110` result identifies the winning team, while the outgoing
-result and hero-side flags are relative to the local player.
+The FIRST integer of incoming `14110` is the player-relative outcome (0 win,
+1 defeat, 2 draw); its second integer is the local team ID. Outgoing result
+and hero-side flags are relative to the local player. Comparing the second
+integer with hero.Team incorrectly rewards defeats as victories.
 
 The current offline result request does not include kills, damage, healing,
 or an MVP selection. Those result statistics remain empty.
