@@ -30,11 +30,15 @@ class AskForBattleEndMessage(PiranhaMessage):
         for hero in fields["Heroes"]:
             if hero["IsPlayer"]:
                 brawler_id = hero["Brawler"]["ID"][1]
+                if fields["Rank"] == 0:
+                    # The V49 offline client reports the winning team index,
+                    # not a player-relative victory/defeat flag.
+                    winner = fields["Result"]
+                    fields["Result"] = (2 if winner not in (0, 1)
+                                        else int(winner != hero["Team"]))
                 break
-        # V49 offline bot battles omit both the map reference and hero list.
-        # The result still belongs to the one event advertised in HomeData, and
-        # the selected database brawler is already used when no player hero is
-        # supplied.
+        # Legacy result messages can omit the map and hero list. Use the
+        # selected brawler and first advertised event for that fallback.
         map_reference = fields.get("MapID")
         if map_reference and len(map_reference) > 1 and map_reference[1] >= 0:
             map_id = map_reference[1]

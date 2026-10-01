@@ -72,7 +72,17 @@ advertised live event today.
 - Selected-brawler persistence
 - Gem Grab and Bounty using the client's local/offline bot battles
 - Battle history and reconnect persistence
-- An early Battle End screen with partial result/progression support
+- Shared Battle End result and reward screens for Gem Grab and Bounty
+- Correct player-relative victory/defeat and result-screen team placement
+- Trophy-bar and token-counter animation with durable rewards
+
+The 2026-10-01 development client was tested on the Xiaomi Pad 6: Gem Grab
+Play reached Hard Rock Mine and completed the result/reward flow; Bounty
+reached exactly `20/20` with `1:19` left and entered the victory screen.
+Winning rewards were `+8` trophies, 20 tokens, and 20 credits. Gem Grab trophies
+survived app/server restarts, and the final Bounty reward matched the database.
+Defeat/draw outcomes and either-team conversion are covered by regression
+tests; those outcomes were not separately proven in live matches.
 
 The game server listens on TCP port `9339` by default. Device testing has been
 performed with the included V49.194-compatible Android client.
@@ -101,9 +111,10 @@ server deliberately advertises Bounty rather than shipping a fake hybrid mode.
 
 - Battles use the client's local/offline bot simulation. This is not a
   server-authoritative real-time multiplayer battle engine.
-- Battle End is an early implementation. It can show a result and apply stored
-  progression, but the complete presentation is not finished and the
-  trophy-flying animation has not been implemented.
+- Battle End now reaches the result screen, reward screen, and Home. Trophy
+  bars and token counters animate. Individual flying trophy sprites remain
+  unfinished. The offline client does not report kills, damage, healing, or
+  MVP data, so those statistics remain empty.
 - Brawl Ball is unsupported today; a much stronger future model may trigger
   one more attempt, with an estimated 5% chance of success.
 - Additional modes must be proven inside a live match before being advertised.
@@ -160,6 +171,12 @@ You can also download it with an authenticated GitHub CLI:
 gh release download v49.194 -R TerminalDev-1/VibeBSDS-V49 -p VibeBSDS-V49.apk
 ```
 
+The battle fixes in this working tree require the patched client built by
+[`scripts/patch_v49_client.py`](scripts/patch_v49_client.py). The release asset
+above is the earlier connectivity update. See [`scripts/README.md`](scripts/README.md)
+for the version checks and signing workflow. APK build products remain outside
+Git.
+
 Before rebuilding the client, set `redirectHost` in
 `lib/armeabi-v7a/libkagenay.c.so` to the game server computer's LAN IPv4
 address. Keep `redirectPort` set to `9339`. The APK is distributed as a release
@@ -199,8 +216,11 @@ python -m unittest discover -s tests -v
   reward claims synchronized into Star Road.
 - Rebuilt HomeData and profile data around stored player state.
 - Added Gem Grab as the first mode and device-verified Bounty as the second.
-- Added an early, partially working Battle End path; the trophy-flying
-  animation remains future work.
+- Corrected the V49 Battle End layout, default-skin encoding, winning-team
+  conversion, and result team placement. The shared result/reward path persists
+  rewards before sending the result and includes a database battle receipt.
+- Added reproducible client fixes for Gem Grab Play crashes and Bounty ending
+  at 20 points; see `scripts/README.md`.
 - Investigated Brawl Ball deeply, rejected the misleading Gem Grab hybrid, and
   restored the client-proven Bounty configuration.
 - Added regression tests for the progression and packet paths.

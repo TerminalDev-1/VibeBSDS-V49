@@ -281,11 +281,12 @@ class GameDatabase:
                 "UPDATE accounts SET trophies = trophies + ?, highest_trophies = MAX(highest_trophies, trophies + ?), tokens = tokens + ?, credits = credits + ?, battle_count = battle_count + 1, wins = wins + ?, losses = losses + ?, updated_at = ? WHERE low_id = ?",
                 (applied_delta, applied_delta, tokens, credits, int(won), int(not won and result != 2), now, low_id),
             )
-            db.execute(
+            battle_receipt = db.execute(
                 "INSERT INTO battles(account_low_id, map_id, result, rank, brawler_id, trophy_delta, tokens, credits, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (low_id, map_id, result, rank, brawler_id, applied_delta, tokens, credits, now),
             )
             return {
+                "battle_id": battle_receipt.lastrowid,
                 "trophy_delta": applied_delta,
                 "tokens": tokens,
                 "credits": credits,

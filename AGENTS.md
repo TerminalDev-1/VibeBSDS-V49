@@ -32,8 +32,9 @@ the Android client.
   and brawler unlocking work. Exact pass-credit amounts and claimed nodes are
   durable and synchronize back into HomeData after the reward animation.
 - Brawl Pass display/token progression only partly works; see TODOs below.
-- Battle End is an early partial implementation. The trophy-flying animation is
-  not implemented.
+- Battle End has a shared result/reward screen path for Gem Grab and Bounty.
+  Trophy bars and token counters animate; individual flying trophy sprites
+  remain unfinished. Offline requests do not include kills/damage/healing/MVP.
 
 ## Event configuration - do not rediscover this the hard way
 
@@ -78,7 +79,14 @@ Do not advertise or claim working Brawl Ball.
 
 ### Battle End
 
-- Preserve the existing early result/progression path.
+- Preserve the corrected V49 result/progression path and regression tests.
+- Incoming Result is the winning team ID. Normalize it relative to the player
+  hero before recording rewards. Outgoing hero sides are ally/enemy relative
+  to that same player; do not write raw team IDs as enemy flags.
+- Hero display data has FOUR VInts after the name; hero footers contain two
+  shorts, two fixed integers, and a data reference. Default skins can be None.
+- Hero trophies must be the pre-battle value; progression entries contain both
+  old and new values so the client can animate the change.
 - Implement the missing trophy-flying animation only when the corresponding
   client packet/state behavior is understood.
 - Validate the result screen, animation, database delta, home trophies, and
@@ -125,9 +133,15 @@ Do not advertise or claim working Brawl Ball.
 
 4. For client-visible gameplay changes, validate on the real Android device.
 5. Do not call something fixed based only on unit tests or a menu card.
-6. When TerminalDev-1 requests a commit, publish it to the public GitHub
-   repository as well; do not leave the only checkpoint as an unpushed local
-   commit. Confirm local and `origin/main` SHAs match after pushing.
+6. Immediately commit and push each verified change and each substantial
+   verified reverse-engineering or archaeological finding. This is standing
+   authorization from TerminalDev-1; do not wait for another commit request.
+   Record the evidence and remaining limitations in AGENTS.md and relevant
+   documentation, and run the required checks before the checkpoint. Keep
+   unverified experiments clearly identified; do not describe them as fixes.
+7. Publish checkpoints to the public GitHub repository; do not leave the only
+   checkpoint as an unpushed local commit. Preserve unrelated user work and
+   confirm local and `origin/main` SHAs match after pushing.
 
 ### Publishing Android client updates
 
@@ -153,6 +167,29 @@ Do not advertise or claim working Brawl Ball.
 The 2026-10-01 client update was installed in place on the Xiaomi Pad 6 and
 verified to reach HomeData over Wi-Fi on the laptop-hosted server. This check
 confirmed login and connectivity; it did not reverify battles or progression.
+
+### Offline client battle fixes
+
+- `scripts/patch_v49_client.py` contains reproducible ARM32 V49.194 native edits.
+  It requires the original library hash and refuses unsupported inputs.
+- Gem Grab crashed in passive lookup when offline bots lacked a roster. The
+  client guards absent rosters for passive and gadget setup.
+- A special-skill path also replaced its actor with a null return value before
+  reading its position. The client now skips that callback and keeps the actor.
+- Bounty already has MaxScore=20 in CSV, but the offline match continued beyond
+  it. The patched client caps the arena score reads and sets the existing
+  winner field at 20 for variation 3, entering the normal result controller.
+- The local signed development APK is under `screenshots/battle-fixes-final-signed/`.
+  It was installed with the same certificate and app data retained. The public
+  release remains the earlier connectivity APK until this build is published.
+- Final local APK SHA-256:
+  `1b22ab6c97a8ed894af5f9918fed4c5fd93af4bab83203b97097921f8eaa28bb`.
+- Final recorded Bounty proof: exactly 20/20 at 1:19 remaining, followed by
+  victory/result submission. Evidence is `screenshots/bounty-final.mp4` and
+  `screenshots/bounty-20-limit.png`.
+- Live Gem Grab and Bounty wins reached result and reward screens. Database
+  deltas and reconnect trophies were checked. Defeat/draw and either-team
+  normalization are covered by tests; do not describe those as live-tested.
 
 ## Communication style
 

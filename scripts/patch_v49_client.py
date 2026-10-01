@@ -1,0 +1,110 @@
+"""Build an unsigned V49 APK with offline-battle fixes and a runtime LAN host.
+
+Sign the output with the existing client certificate before installing it.
+The native edits are specific to the checked ARM32 V49.194 library.
+"""
+import argparse
+import hashlib
+import ipaddress
+import json
+from pathlib import Path
+import struct
+import zipfile
+
+
+LIBRARY_SHA256 = "182ff6ea020262271829c9f43c087b40a13e192900369c0539251985c413602e"
+CAVE = 0xDCDEB0
+
+
+def branch(address, target, link=False):
+    displacement = target - address - 8
+    if displacement % 4 or not -(1 << 25) <= displacement < (1 << 25):
+        raise ValueError("ARM branch target outside range")
+    return (0xEB000000 if link else 0xEA000000) | ((displacement // 4) & 0xFFFFFF)
+
+
+def patch_library(original):
+    if hashlib.sha256(original).hexdigest() != LIBRARY_SHA256:
+        raise ValueError("Unsupported libg.so: require the original ARM32 V49.194 library")
+    data = bytearray(original)
+    # Offline bot profiles lack the roster used by passive and gadget lookup.
+    # Preserve the original path for profiles which have a roster.
+    passive = [0xE590302C, 0xE3530000, 0x03E00000, 0x012FFF1E,
+               0xE5900038, branch(CAVE + 20, 0x6E4450)]
+    gadget_at = CAVE + 32
+    gadget = [0xE3510000, 0x012FFF1E, 0xE591C02C, 0xE35C0000,
+              0x012FFF1E, 0xE92D4FF0, 0xE28DB01C,
+              branch(gadget_at + 28, 0x61B788)]
+    bounty_at = CAVE + 64
+    # The two arena score reads share this wrapper. For variation 3 only,
+    # saturate the displayed score and set the battle's winner at 20. The
+    # existing end controller then sends the normal result to the server.
+    bounty = [0xE92D4070, 0xE1A04000, 0xE1A05001,
+              branch(bounty_at + 12, 0x6D1C58, True),
+              0xE594C0E0, 0xE35C0003, 0x1A000005, 0xE3500014,
+              0xBA000003, 0xE3A00014, 0xE594C0D4, 0xE37C0001,
+              0x058450D4, 0xE8BD8070]
+    skill_at = bounty_at + len(bounty) * 4
+    # A special skill path replaces its actor with the return value of
+    # 0x636478, which is null in this client. Skip its position-dependent
+    # callback when null and retain the original actor for the remaining path.
+    skill = [0xE3500000, branch(skill_at + 4, 0x652350) & 0x0FFFFFFF,
+             0xE1A08000, branch(skill_at + 12, 0x647878, True),
+             branch(skill_at + 16, 0x652320)]
+    end = skill_at + len(skill) * 4
+    if end > 0xDCE000 or any(data[CAVE:end]):
+        raise ValueError("Executable padding is unavailable")
+    for address, words in [(CAVE, passive), (gadget_at, gadget),
+                           (bounty_at, bounty), (skill_at, skill)]:
+        struct.pack_into("<" + "I" * len(words), data, address, *words)
+    for address, target, link in [(0x6E4448, CAVE, False),
+                                  (0x61B77C, gadget_at, False),
+                                  (0x2A2F14, bounty_at, True),
+                                  (0x2A2F30, bounty_at, True),
+                                  (0x652318, skill_at, False)]:
+        struct.pack_into("<I", data, address, branch(address, target, link))
+    phoff = struct.unpack_from("<I", data, 28)[0]
+    stride, count = struct.unpack_from("<HH", data, 42)
+    for index in range(count):
+        header = phoff + stride * index
+        kind, offset, address = struct.unpack_from("<III", data, header)
+        if kind == 1 and address == 0x1EC000 and offset == address:
+            struct.pack_into("<II", data, header + 16, end - address, end - address)
+            break
+    else:
+        raise ValueError("Expected executable ELF segment was not found")
+    return bytes(data)
+
+
+def build_apk(source, output, host):
+    ipaddress.IPv4Address(host)
+    if source.resolve() == output.resolve():
+        raise ValueError("Output must differ from the original APK")
+    with zipfile.ZipFile(source) as archive:
+        patched = patch_library(archive.read("lib/armeabi-v7a/libg.so"))
+        config_name = "lib/armeabi-v7a/libkagenay.c.so"
+        config = json.loads(archive.read(config_name))
+        config["interaction"]["parameters"]["redirectHost"] = host
+        with zipfile.ZipFile(output, "w") as destination:
+            for entry in archive.infolist():
+                if entry.filename.startswith("META-INF/") and (
+                    entry.filename.endswith((".SF", ".RSA", ".DSA", ".EC"))
+                    or entry.filename == "META-INF/MANIFEST.MF"
+                ):
+                    continue
+                payload = archive.read(entry)
+                if entry.filename == "lib/armeabi-v7a/libg.so":
+                    payload = patched
+                elif entry.filename == config_name:
+                    payload = json.dumps(config).encode()
+                destination.writestr(entry, payload)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("source", type=Path)
+    parser.add_argument("output", type=Path)
+    parser.add_argument("--host", required=True)
+    args = parser.parse_args()
+    build_apk(args.source, args.output, args.host)
+    print(f"Unsigned APK: {args.output}")
