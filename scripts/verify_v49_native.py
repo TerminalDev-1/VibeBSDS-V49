@@ -108,7 +108,36 @@ def verify(apk):
                                 (UC_ARM_REG_R7, 0x2000500),
                                 (UC_ARM_REG_R8, 0x2000100)):
             assert cpu.reg_read(register) == value
-    print("Native ARM checks passed: Bounty limit, null guards, deferred rank badges")
+    for index,count,target in [(0,6,0x61a2d4),(5,6,0x61a2d4),(6,6,0x61a844),(9,6,0x61a844),(0,0,0x61a844)]:
+        u=Uc(UC_ARCH_ARM,UC_MODE_ARM)
+        u.mem_map(0,0x1000000)
+        u.mem_write(0,library)
+        u.mem_map(0x2000000,0x20000)
+        u.reg_write(UC_ARM_REG_FP,0x2001000)
+        u.reg_write(UC_ARM_REG_R0,index)
+        u.mem_write(0x200100c,struct.pack('<I',0x2002000))
+        u.mem_write(0x2002000,struct.pack('<III',0x2003000,count,count))
+        u.mem_write(0x2003000,struct.pack('<6I',*[0x2004000+i*0x100 for i in range(6)]))
+        u.emu_start(0x61a2c8,target,count=20)
+        assert u.reg_read(UC_ARM_REG_PC)==target
+        if index<count: assert u.reg_read(UC_ARM_REG_R5)==0x2004000+index*0x100
+        print(index,count,hex(target),'PASS')
+    for index,count,present,target in [(0,6,True,0x44eb50),(5,6,True,0x44eb50),(6,6,False,0x44ebe8),(15,6,False,0x44ebe8),(0,6,False,0x44ebe8)]:
+        u=Uc(UC_ARCH_ARM,UC_MODE_ARM)
+        u.mem_map(0,0x1000000)
+        u.mem_write(0,library)
+        u.mem_map(0x2000000,0x20000)
+        u.reg_write(UC_ARM_REG_R5,0x2002000)
+        u.reg_write(UC_ARM_REG_R6,index)
+        u.mem_write(0x2002000,struct.pack('<III',0x2003000,count,count))
+        if index<count:
+            u.mem_write(0x2003000+index*4,struct.pack('<I',0x2004000 if present else 0))
+            u.mem_write(0x20040e0,struct.pack('<I',0x2005000))
+        u.emu_start(0x44eb44,target,count=20)
+        assert u.reg_read(UC_ARM_REG_PC)==target
+        if present:assert u.reg_read(UC_ARM_REG_R0)==0x2005000
+        print('UI',index,count,present,hex(target),'PASS')
+    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profile bounds")
 
 
 if __name__ == "__main__":

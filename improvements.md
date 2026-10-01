@@ -498,3 +498,16 @@ a different UI null-profile crash at 0x44eb4c. Its fallback is 0x44ebe8; a
 second bounds/null guard passes five emulation cases. These guards remain
 experimental until live arena/results succeed. No Showdown release claim or
 APK publication has been made for this investigation.
+
+
+### Showdown arena guard checkpoint (2026-10-01)
+
+Two native profile-vector guards now preserve the existing missing-profile and
+unskinned actor paths. Unlike the upstream BSDS client, the experimental build
+reaches a ten-player Solo Showdown arena on Skull Creek (map 13, variation 6),
+with power-cube boxes and closing poison. Xiaomi Pad 6 evidence is stored in
+`screenshots/showdown-two-guards-real.png` and `showdown-arena-check.png`.
+The first native result submitted rank 9 with ten heroes. Result presentation
+and zero-loss placement rewards still need work; Showdown is not yet enabled
+in the public event list, and the release APK is unchanged. Ten ARM emulation
+cases cover valid indices, overflow and null UI profiles.

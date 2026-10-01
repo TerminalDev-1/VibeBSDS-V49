@@ -67,18 +67,35 @@ def patch_library(original):
             0xE5952000, 0xE5812008, 0xE581700C, 0xE5816010,
             0xE1A00008, branch(rank_at + 116, 0x58F6B8, True),
             branch(rank_at + 120, 0x49C630)]
-    end = rank_at + len(rank) * 4
+    actor_at = rank_at + len(rank) * 4
+    # Neutral Showdown actors (including boxes) can carry an owner index
+    # beyond the profile vector. Use the existing missing-profile path.
+    actor = [0xE59B100C, 0xE591C008, 0xE150000C,
+             (branch(actor_at + 12, 0x61A844) & 0x0FFFFFFF) | 0xA0000000,
+             0xE5911000, 0xE7915100, branch(actor_at + 24, 0x61A2D4)]
+    ui_at = actor_at + len(actor) * 4
+    # The cosmetic renderer has the same unchecked index and can also find
+    # a null entry. Its native unskinned fallback preserves neutral actors.
+    ui = [0xE5950008, 0xE1560000,
+          (branch(ui_at + 8, 0x44EBE8) & 0x0FFFFFFF) | 0xA0000000,
+          0xE5950000, 0xE7900106, 0xE3500000,
+          branch(ui_at + 24, 0x44EBE8) & 0x0FFFFFFF,
+          0xE59000E0, branch(ui_at + 32, 0x44EB50)]
+    end = ui_at + len(ui) * 4
     if end > 0xDCE000 or any(data[CAVE:end]):
         raise ValueError("Executable padding is unavailable")
     for address, words in [(CAVE, passive), (gadget_at, gadget),
-                           (bounty_at, bounty), (skill_at, skill), (rank_at, rank)]:
+                           (bounty_at, bounty), (skill_at, skill), (rank_at, rank),
+                           (actor_at, actor), (ui_at, ui)]:
         struct.pack_into("<" + "I" * len(words), data, address, *words)
     for address, target, link in [(0x6E4448, CAVE, False),
                                   (0x61B77C, gadget_at, False),
                                   (0x2A2F14, bounty_at, True),
                                   (0x2A2F30, bounty_at, True),
                                   (0x652318, skill_at, False),
-                                  (0x49C570, rank_at, False)]:
+                                  (0x49C570, rank_at, False),
+                                  (0x61A2C8, actor_at, False),
+                                  (0x44EB44, ui_at, False)]:
         struct.pack_into("<I", data, address, branch(address, target, link))
     phoff = struct.unpack_from("<I", data, 28)[0]
     stride, count = struct.unpack_from("<HH", data, 42)
