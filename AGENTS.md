@@ -381,3 +381,15 @@ correction and live defeat proof. The APK asset is unchanged. The normal Core.py
 server was restored with real shared power points. TerminalDev-1 has explicitly
 requested continued Showdown investigation and implementation after this fix.
 The native patch README also now documents the corrected first/second fields.
+
+## Showdown profile lookup investigation (2026-10-01)
+
+Native 0x61a2c8 indexes the actor's player-profile vector without an upper-bound
+check; the existing missing-profile path starts at 0x61a844. A bounds-check
+probe passed five ARM emulation cases and moved live testing past the first
+invalid-profile crash, but then failed at UI profile lookup 0x44eb4c (null+0xe0).
+That UI lookup also lacks an upper-bound check and has an existing unskinned
+fallback at 0x44ebe8. A second experimental guard passes five emulation cases,
+including index 15 against six profiles and an in-range null profile. These are
+investigation results, not playable Showdown proof. Experimental APKs/evidence
+remain gitignored, and the public release asset is unchanged.

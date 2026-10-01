@@ -489,3 +489,12 @@ The v49.194 release notes now describe the corrected outcome, +32 team wins and
 live zero-loss defeat proof. No APK replacement was needed. Normal Core.py was
 restored with real shared power points, and scripts/README.md now records the
 correct first-outcome/second-local-team packet fields.
+
+### Showdown native profile investigation
+
+Actor profile lookup 0x61a2c8 lacks an upper-bound check; its existing fallback
+is 0x61a844. A five-case ARM probe passed and the live attempt progressed to
+a different UI null-profile crash at 0x44eb4c. Its fallback is 0x44ebe8; a
+second bounds/null guard passes five emulation cases. These guards remain
+experimental until live arena/results succeed. No Showdown release claim or
+APK publication has been made for this investigation.

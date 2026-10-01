@@ -416,3 +416,9 @@ The v49.194 GitHub Release notes have been updated for the corrected outcome and
 +32/zero-loss policy. These changes use the existing APK; the normal server sends
 stored currency balances. The native patch documentation uses the corrected
 outcome field mapping as well.
+
+Further Showdown testing identified missing bounds checks in native actor and
+arena UI player-profile lookups. An actor guard moved past the first crash;
+the UI lookup then crashed on a missing profile. Bounds/fallback guards pass
+native emulation, with live arena validation still pending. Showdown is still
+unavailable in the public configuration and release.
