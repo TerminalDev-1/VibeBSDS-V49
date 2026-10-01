@@ -155,13 +155,15 @@ because a convincing menu card is not proof of working gameplay.
 Download the V49.194 APK from this repository's GitHub release:
 
 - [Download `VibeBSDS-V49.apk`](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/VibeBSDS-V49.apk)
-- SHA-256: `2EF10E6A93A3E6DDBA7AF8238969CCCBB8EE99162DD4C525D1DA197EE10B1AF1`
+- SHA-256: `1B22AB6C97A8ED894AF5F9918FED4C5FD93AF4BAB83203B97097921F8EAA28BB`
 - Android package: `com.projectbsds.v49`
 
 The 2026-10-01 APK update redirects to the current laptop-hosted game server
 at `192.168.1.103:9339`. It was installed in place on the Xiaomi Pad 6, and
 login to the home screen and the laptop's TCP connection were verified over
-Wi-Fi. Battles and progression were not reverified in this connectivity check.
+Wi-Fi. The published battle build also passed live Gem Grab and Bounty win,
+result-screen, reward, and reconnect checks. Bounty ended at exactly 20/20
+with 1:19 remaining. Individual flying trophy sprites remain unfinished.
 For your own installation, discover your game-server computer's current LAN
 address and configure the client accordingly; LAN addresses can change.
 
@@ -171,11 +173,12 @@ You can also download it with an authenticated GitHub CLI:
 gh release download v49.194 -R TerminalDev-1/VibeBSDS-V49 -p VibeBSDS-V49.apk
 ```
 
-The battle fixes in this working tree require the patched client built by
-[`scripts/patch_v49_client.py`](scripts/patch_v49_client.py). The release asset
-above is the earlier connectivity update. See [`scripts/README.md`](scripts/README.md)
-for the version checks and signing workflow. APK build products remain outside
-Git.
+The release asset includes the native battle fixes built by
+[`scripts/patch_v49_client.py`](scripts/patch_v49_client.py). Run server checkpoint
+`c37019ae9fa4e70cf0ed76940dac6520f496c092` or newer for the matching Battle End
+packet. See [`scripts/README.md`](scripts/README.md) for version checks and the
+signing workflow; rebuilding requires a compatible original native library.
+APK build products remain outside Git.
 
 Before rebuilding the client, set `redirectHost` in
 `lib/armeabi-v7a/libkagenay.c.so` to the game server computer's LAN IPv4

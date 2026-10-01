@@ -164,7 +164,7 @@ Do not advertise or claim working Brawl Ball.
 - Keep signing material, unsigned intermediates, signed APKs, and evidence in
   gitignored directories. Publishing an APK does not require committing it.
 
-The 2026-10-01 client update was installed in place on the Xiaomi Pad 6 and
+The earlier 2026-10-01 connectivity update was installed in place on the Xiaomi Pad 6 and
 verified to reach HomeData over Wi-Fi on the laptop-hosted server. This check
 confirmed login and connectivity; it did not reverify battles or progression.
 
@@ -180,9 +180,11 @@ confirmed login and connectivity; it did not reverify battles or progression.
   it. The patched client caps the arena score reads and sets the existing
   winner field at 20 for variation 3, entering the normal result controller.
 - The local signed development APK is under `screenshots/battle-fixes-final-signed/`.
-  It was installed with the same certificate and app data retained. The public
-  release remains the earlier connectivity APK until this build is published.
-- Final local APK SHA-256:
+  It was installed with the same certificate and app data retained, and is now
+  published as the `v49.194` release asset `VibeBSDS-V49.apk`. GitHub's uploaded
+  asset digest matches the tested local build. Use server checkpoint
+  `c37019ae9fa4e70cf0ed76940dac6520f496c092` or newer for its Battle End packet.
+- Published APK SHA-256:
   `1b22ab6c97a8ed894af5f9918fed4c5fd93af4bab83203b97097921f8eaa28bb`.
 - Final recorded Bounty proof: exactly 20/20 at 1:19 remaining, followed by
   victory/result submission. Evidence is `screenshots/bounty-final.mp4` and
