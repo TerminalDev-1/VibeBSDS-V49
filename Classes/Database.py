@@ -328,11 +328,14 @@ class GameDatabase:
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             brawler = db.execute(
-                "SELECT trophies, mastery_points FROM brawlers WHERE account_low_id = ? AND brawler_id = ?",
+                "SELECT trophies, highest_trophies, mastery_points FROM brawlers WHERE account_low_id = ? AND brawler_id = ?",
                 (low_id, brawler_id),
             ).fetchone()
             if brawler is None:
                 return None
+            account = db.execute(
+                "SELECT highest_trophies FROM accounts WHERE low_id = ?", (low_id,)
+            ).fetchone()
             applied_delta = max(5 - brawler["trophies"], delta)
             mastery_delta = battle_mastery(brawler["trophies"], won, brawler["mastery_points"])
             db.execute(
@@ -352,6 +355,8 @@ class GameDatabase:
                 "trophy_delta": applied_delta,
                 "mastery_delta": mastery_delta,
                 "previous_mastery": brawler["mastery_points"],
+                "previous_highest_trophies": brawler["highest_trophies"],
+                "previous_account_highest_trophies": account["highest_trophies"],
                 "tokens": tokens,
                 "credits": credits,
                 "won": won,

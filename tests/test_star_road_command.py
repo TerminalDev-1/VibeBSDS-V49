@@ -21,6 +21,16 @@ class StarRoadCommandTests(unittest.TestCase):
         self.assertEqual([203, 227], [call.args[1]["Command"]["ID"] for call in send.call_args_list])
         self.assertEqual(25, send.call_args_list[0].args[1]["Boxes"][0]["Type"])
 
+    @patch("Classes.Commands.Client.LogicStarRoadClaimCommand.database.claim_star_road", return_value=(False, "not-current"))
+    @patch("Classes.Messaging.Messaging.sendMessage")
+    def test_duplicate_claim_does_not_deliver_again(self, send, claim):
+        player = SimpleNamespace(ID=[0, 1], reload=Mock())
+        LogicStarRoadClaimCommand(b"").execute(
+            SimpleNamespace(player=player), {"BrawlerID": [16, 8]}
+        )
+        player.reload.assert_not_called()
+        send.assert_not_called()
+
     def test_framed_route_keeps_boolean_after_command_base(self):
         from Classes.Packets.Server.Home.AvailableServerCommandMessage import AvailableServerCommandMessage
         message = AvailableServerCommandMessage(b"")

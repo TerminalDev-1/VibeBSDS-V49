@@ -60,6 +60,17 @@ class BattleEndTests(unittest.TestCase):
         self.assertEqual(2, self.finish(1, -1)["Result"])
         self.assertEqual(0, self.finish(1, 0, rank=1)["Result"])
 
+    def test_rank_animation_uses_high_score_before_battle(self):
+        with self.db.connect() as db:
+            db.execute("UPDATE brawlers SET highest_trophies = 800 WHERE account_low_id = ?", (self.player.ID[1],))
+            db.execute("UPDATE accounts SET highest_trophies = 900 WHERE low_id = ?", (self.player.ID[1],))
+        fields = self.finish(0, 0)
+        self.assertEqual(800, fields["Progression"]["previous_highest_trophies"])
+        self.assertEqual(900, fields["Progression"]["previous_account_highest_trophies"])
+        account, brawlers = self.db.load(self.player.ID[1])
+        self.assertEqual(755, brawlers[0]["trophies"])
+        self.assertEqual(800, brawlers[0]["highest_trophies"])
+
     def test_result_header_encodes_defeat_draw_and_placement(self):
         for team, winner, rank, outcome in [(0, 1, 0, 1), (0, -1, 0, 2), (1, 0, 4, 4)]:
             with self.subTest(outcome=outcome):
@@ -109,6 +120,8 @@ class BattleEndTests(unittest.TestCase):
                 value = reader.readVInt()
                 if array_index == 0:
                     self.assertEqual(5 if hero["IsPlayer"] else 0, value)
+                elif array_index == 2:
+                    self.assertEqual(750 if hero["IsPlayer"] else 0, value)
             reader.readVInt()
             reader.readVInt()
             local = reader.readBoolean()
@@ -117,13 +130,15 @@ class BattleEndTests(unittest.TestCase):
             display = [reader.readVInt() for _ in range(4)]
             self.assertEqual(43000000 + (self.player.Namecolor if local else 0), display[2])
             self.assertFalse(reader.readBoolean())
-            self.assertEqual(0, reader.readByte())
-            self.assertEqual(0, reader.readByte())
+            self.assertEqual(1, reader.readByte())
+            self.assertEqual(0, reader.readVInt())
+            self.assertEqual(1, reader.readByte())
+            self.assertEqual(5 if local else 0, reader.readVInt())
             self.assertEqual([0, 0], [reader.readInt16(), reader.readInt16()])
             self.assertEqual([0, 0], [reader.readInt(), reader.readInt()])
             self.assertIsNone(reader.readDataReference())
         self.assertEqual([0, 0, 2], [reader.readVInt() for _ in range(3)])
-        self.assertEqual([1, 5, 755, 5, 5, 755], [reader.readVInt() for _ in range(6)])
+        self.assertEqual([1, 5, 5, 5, 5, 5], [reader.readVInt() for _ in range(6)])
         self.assertEqual([28, 0], reader.readDataReference())
         for _ in range(3): self.assertFalse(reader.readBoolean())
         for _ in range(2): self.assertEqual(0, reader.readVInt())

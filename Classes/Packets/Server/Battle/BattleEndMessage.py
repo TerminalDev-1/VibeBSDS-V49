@@ -67,7 +67,8 @@ class BattleEndMessage(PiranhaMessage):
             self.writeByte(1)
             self.writeVInt(player_brawler.get("PowerLevel", 1) if heroEntry["IsPlayer"] else 1)
             self.writeByte(1)
-            self.writeVInt(0)
+            # V49 hero scoreChanges reports this hero's trophy award.
+            self.writeVInt(trophy_change if heroEntry["IsPlayer"] else 0)
             self.writeVInt(0)
             self.writeVInt(0)
             self.writeBoolean(heroEntry["IsPlayer"])
@@ -79,8 +80,10 @@ class BattleEndMessage(PiranhaMessage):
             self.writeVInt(43000000 + player.Namecolor if heroEntry["IsPlayer"] else 43000000)
             self.writeVInt(46000000)
             self.writeBoolean(False) # no static upstream club attached to the player
-            self.writeByte(0) # hero statistics list
-            self.writeByte(0) # hero statistics list
+            self.writeByte(1) # masteryPoints before this battle
+            self.writeVInt(progression.get("previous_mastery", 0) if heroEntry["IsPlayer"] else 0)
+            self.writeByte(1) # masteryPointChanges from this battle
+            self.writeVInt(progression.get("mastery_delta", 0) if heroEntry["IsPlayer"] else 0)
             self.writeInt16(0)
             self.writeInt16(0)
             self.writeInt(0)
@@ -95,11 +98,13 @@ class BattleEndMessage(PiranhaMessage):
 
         self.writeVInt(1)
         self.writeVInt(previous_trophies)
-        self.writeVInt(current_trophies)
+        # Native 0x49c220 interprets these as score and previous high score,
+        # not before/after scores. Supplying the new total suppresses rank-ups.
+        self.writeVInt(progression.get("previous_highest_trophies", previous_trophies))
 
         self.writeVInt(5)
         self.writeVInt(player.Trophies - trophy_change)
-        self.writeVInt(player.Trophies)
+        self.writeVInt(progression.get("previous_account_highest_trophies", player.Trophies - trophy_change))
 
         self.writeDataReference(28, 0)
         self.writeBoolean(False)

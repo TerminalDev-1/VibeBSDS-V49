@@ -96,8 +96,9 @@ Do not advertise or claim working Brawl Ball.
   to that same player; do not write raw team IDs as enemy flags.
 - Hero display data has FOUR VInts after the name; hero footers contain two
   shorts, two fixed integers, and a data reference. Default skins can be None.
-- Hero trophies must be the pre-battle value; progression entries contain both
-  old and new values so the client can animate the change.
+- Hero trophies must be the pre-battle value; progression entries contain the
+  pre-battle score and pre-battle highest score. Sending the post-battle high
+  score suppresses native rank-up effects.
 - Implement the missing trophy-flying animation only when the corresponding
   client packet/state behavior is understood.
 - Validate the result screen, animation, database delta, home trophies, and
@@ -212,10 +213,9 @@ confirmed login and connectivity; it did not reverify battles or progression.
 ### V49 progression packet findings (2026-10-01)
 
 Native decoder inspection identified separate per-hero scoreChanges,
-masteryPoints, and masteryPointChanges arrays in Battle End. The existing
-server sends zero for scoreChanges and empty mastery arrays, even when the
-headline reward changes. These are candidates for restoring the client effects;
-visual fixes still require live verification.
+masteryPoints, and masteryPointChanges arrays in Battle End. At the initial
+inspection the server sent zero for scoreChanges and empty mastery arrays.
+The later animation checkpoint below records the corrected fields and live proof.
 
 Star Road command 562 opens the claim presentation. Command 560 consumes TWO
 data references (brawler and payment resource), rather than the one currently
@@ -249,8 +249,9 @@ On the Xiaomi Pad 6, Shelly's first three earned rewards were claimed once:
 750 coins, 100 shared power points and 75 credits. Reconnect showed 1,750 coins,
 148 Star Road credits, the shared upgrade resource and the three claimed nodes.
 Automated checks cover win/loss/draw awards, thresholds, the cap, invalid and
-duplicate claims, decoder alignment and cosmetic persistence. Cosmetic reward
-presentation and new Battle End mastery animations still need live proof.
+duplicate claims, decoder alignment and cosmetic persistence. Gold cosmetic reward
+presentation still needs live proof; Battle End +5 mastery was subsequently
+verified in the live Colt and Bull wins.
 Existing mastery totals are retained rather than reset.
 
 ## Star Road presentation checkpoint (2026-10-01)
@@ -272,3 +273,25 @@ client screens. This fixes the trapped flow; it does not remove every reveal.
 Database ownership and deduction were verified separately. Cosmetic ownership
 serialization follows the native decoder but Gold cosmetic UI proof is pending.
 Thirty automated tests, Classes compilation and diff checks passed.
+
+## Battle reward animation checkpoint (2026-10-01)
+
+Battle End now sends the local hero's score change and separate pre-battle
+mastery points / mastery gain arrays. Its progression entries are the previous
+score and previous HIGH score, not old/new totals. Sending the updated high
+score prevented the native rank controller from queuing rank-up effects.
+SQLite now captures both brawler and account high scores before updating them.
+
+Live Xiaomi Pad 6 recording (`screenshots/vibe-bull-rank2.mp4`, gitignored):
+Bull's win counted from 5 to 755 trophies, played rank-up bursts and showed
++5 mastery at 5/300. Persistence was checked for the awarded progression.
+Large awards still expose a native presentation defect: queued rank-up clips
+share their badge state, briefly showing rank 24/25 at earlier thresholds.
+Individual flying trophy sprites are not yet verified. Do not call the entire
+animation finished. Gold mastery cosmetic presentation is also pending;
+the 6,000-point daily mastery cap is not implemented.
+
+All 32 regression tests, Classes compilation and diff checks passed. Coverage
+includes pre-battle high scores when current trophies are below an earlier
+record, and repeated Star Road claims producing no duplicate reward or reload.
+These changes use the existing published APK; no replacement asset is needed.
