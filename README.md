@@ -472,3 +472,21 @@ guard patch matches the live-tested arena library byte for byte.
 When device access returns, restore Android `stay_on_while_plugged_in` to its
 original value 0 after testing. It was temporarily enabled while charging.
 The experimental APK could not be replaced while ADB was unavailable.
+
+
+### Showdown device reconnection checkpoint (2026-10-02)
+
+Direct multicast DNS discovery found the tablet again after its wireless ADB
+port changed; the stored endpoint was obsolete. Runtime discovery remains
+required. The installed APK digest matches the unpublished transition probe
+`849ba79462b10ea5a47421d2dcf509bbf8f9dba19301d3c15908dac5a41899db`.
+The laptop server established a TCP session with the tablet. A new Solo match
+submitted placement 7 with ten heroes; SQLite battle 20 records result 1,
+zero trophies, 10 tokens and 8 credits. Home retained account trophies 4563
+and Shelly 1543 (`screenshots/showdown-oct2-after-transition.png`).
+The reward screen remains unverified: the observed flow returned home, and a
+subsequent launch ended with SIGFPE in a WebView/Frida thread. The crash log is
+`screenshots/showdown-oct2-crash.txt`; this does not establish a game-library
+root cause or a fix. Do not publish the transition probe or enable Showdown
+based on these observations. Device controls await clarification about
+whether TerminalDev-1 is actively using the tablet.
