@@ -490,3 +490,19 @@ subsequent launch ended with SIGFPE in a WebView/Frida thread. The crash log is
 root cause or a fix. Do not publish the transition probe or enable Showdown
 based on these observations. Device controls await clarification about
 whether TerminalDev-1 is actively using the tablet.
+
+
+### Solo first-place persistence (2026-10-02)
+
+Live Solo Showdown submitted rank 1 with ten heroes (SQLite battle 21).
+It stored result 0, +32 trophies, 20 tokens and 20 credits. Account trophies
+4563 -> 4595 and Shelly 1543 -> 1575 survived reconnect; evidence is
+`screenshots/showdown-first-reconnect.png`. The arena also showed power-cube
+drops and closing poison, but cube pickup and the reward screen are not yet
+proven. The practice exit still bypasses the presentation.
+Native incoming-result dispatch stores the new result at instance+0x3e8,
+while the end overlay refuses to open when instance+0x3b4 is already set.
+An unpublished receipt probe resets that flag while preserving the handler
+return value; ARM emulation passes. This remains a hypothesis awaiting live
+verification, not a published fix. User permission to control the tablet has
+resumed; runtime ADB is connected.
