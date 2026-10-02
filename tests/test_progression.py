@@ -132,13 +132,13 @@ class ProgressionTests(unittest.TestCase):
         account, _ = self.db.load(self.low_id)
         self.assertEqual(0, account["battle_count"])
 
-    def test_home_advertises_two_client_proven_events(self):
+    def test_home_advertises_three_client_proven_events(self):
         events = active_events(0)
-        self.assertEqual(2, len(events))
-        self.assertEqual([33, 32], [event["event_index"] for event in events])
-        self.assertEqual([1, 1], [event["slot"] for event in events])
-        self.assertEqual([7, 5], [event["map_id"] for event in events])
-        self.assertEqual([0, 3], [event["variation"] for event in events])
+        self.assertEqual(3, len(events))
+        self.assertEqual([33, 32, 31], [event["event_index"] for event in events])
+        self.assertEqual([1, 1, 1], [event["slot"] for event in events])
+        self.assertEqual([7, 5, 13], [event["map_id"] for event in events])
+        self.assertEqual([0, 3, 6], [event["variation"] for event in events])
 
     def test_home_data_encodes_database_player(self):
         player = Player()

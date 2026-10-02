@@ -77,6 +77,7 @@ def brawl_pass_claim_masks(season, claims):
 EVENT_LANES = (
     (1, 33, 7, 0),               # Gem Grab: Hard Rock Mine
     (1, 32, 5, 3),               # Bounty: Shooting Star
+    (1, 31, 13, 6),              # Solo Showdown: Skull Creek
 )
 
 

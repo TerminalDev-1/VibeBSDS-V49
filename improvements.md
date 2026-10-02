@@ -36,7 +36,7 @@ The improvements include:
 | 9 | Star Road progression and brawler unlocking | Durable; same-session transition verified |
 | 10 | Duplicate Star Road unlock protection | Working |
 | 11 | Persistent brawler ownership and selection | Working |
-| 12 | Gem Grab plus playable Bounty | Working |
+| 12 | Gem Grab, Bounty, and Solo Showdown | Solo gameplay/results verified with development client; intermittent Play crashes remain |
 | 13 | Battle End tied to stored progression | Result/reward screens verified; flying trophy sprites incomplete |
 | 14 | Automated regression tests | Working |
 | 15 | Offline bot roster and special-skill crash guards | Gem Grab Play and completed matches verified on device |
@@ -173,14 +173,15 @@ reconnects.
 The V49 character/card mapping also accounts for disabled, non-contiguous
 character rows instead of incorrectly renumbering later brawlers.
 
-## 9. Two client-proven events
+## 9. Three client-proven events
 
 The stable event list is:
 
 1. Gem Grab - Hard Rock Mine
 2. Bounty - Shooting Star
+3. Solo Showdown - Skull Creek (Showdown development client required)
 
-Both remain on the client-safe event slot. Their instance IDs preserve the
+All three remain on the client-safe event slot. Their instance IDs preserve the
 requested chooser order. Bounty was verified on the Android device with its
 correct arena, star scoreboard, and bounty indicators.
 
@@ -751,3 +752,31 @@ the final client, then enable Solo and publish its signed APK as a release
 asset when stable. Keep binaries, signing material, logs, databases and
 screenshots gitignored. The public release remains the previously published
 7742556db316b4867ddf9843d3490bc91ae7c7d53100332b4a6832cb5cbff8b6 build.
+
+### Solo enabled on the normal server (2026-10-02)
+
+TerminalDev-1 explicitly requested enabling the most stable live-tested
+Showdown configuration now. Normal Core.py now advertises Solo Showdown on
+Skull Creek third, after Gem Grab and Bounty: slot 1, event index 31, map 13,
+variation 6. It retains real shared power points and inherited control mode 2;
+no testing wrapper or display-only currency override is used.
+
+The tablet retains the normal name-guard development APK, SHA-256
+14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d,
+which completed a first-place match, rewards, Exit and reconnect. Ten-player
+survival, poison, placements and persistence have live evidence; power-cube
+pickup is user-tested. This enables that verified gameplay at the user's
+request without claiming complete stability. Intermittent Play crashes remain,
+and the latest combined health guards are still experimental rather than the
+selected live-tested client. The existing public release APK lacks the Solo
+patches and has not been replaced by this server checkpoint. Self-hosters need
+the Showdown development client for this mode. Earlier disabled-event notes
+are historical and superseded by this explicit enablement.
+
+Enablement verification: all 34 tests, Classes compilation and diff checks
+passed. After restarting normal Core.py, the Xiaomi Pad 6 reconnected over
+192.168.1.103:9339 and its chooser displayed Gem Grab, Bounty, then Showdown
+on Skull Creek. Evidence: screenshots/solo-enabled-chooser.png (gitignored).
+This check verifies event deployment/order; the earlier completed matches and
+user pickup confirmation provide gameplay evidence. No new match was claimed
+for this enablement checkpoint.
