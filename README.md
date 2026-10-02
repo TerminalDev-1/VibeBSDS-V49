@@ -612,3 +612,23 @@ Showdown remains outside the public event list and the GitHub release asset
 is unchanged. The local probe still hides shared power points for the known
 upgrade tutorial issue; restore normal Core.py and the real balance after
 testing. The installed APK no longer contains the temporary fault diagnostic.
+
+### Play-crash signal origin (2026-10-02)
+
+A temporary native signal logger captured the original SIGFPE before Android's
+WebView handler forwarded it. Binary logcat records identify libc tgkill at
+0x9dddc and its caller in **libfmod.so at 0xdc288**, the return from the audio
+library's divide-by-zero handler calling raise(8). The saved frame points to
+libg.so 0x24dd18, following the actor-renderer constructor call. This narrows
+the shared Play crash to an audio arithmetic path; it does not yet identify
+the division site or justify suppressing every SIGFPE. The apparent WebView
+origin in ordinary crash reports is a subsequent handler, not the initial
+raiser. Evidence: screenshots/callers-crash-log.txt (gitignored).
+
+This is a verified investigation beyond the upstream BSDS client, not a crash
+fix. Diagnostic APKs remain gitignored and unpublished. The current temporary
+stack-caller build is SHA-256
+9387acbc3099a150f9979aab7cef6043352a008d7ba9972ad4122d322dc40bc2;
+restore the normal experimental client after tracing. Two more diagnostic
+Showdown matches reached first (+32) and third (+6) place, but power-cube
+pickup is still unverified. Public events and the GitHub APK asset are unchanged.
