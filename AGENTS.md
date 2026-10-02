@@ -559,3 +559,27 @@ Showdown, final normal-mode verification and APK publication remain pending.
 The test server still temporarily hides shared power points to bypass the
 upgrade tutorial; restore normal Core.py with the true balance after testing.
 Restore Android stay_on_while_plugged_in to 0 after device tests.
+
+
+### Normal Showdown client result proof (2026-10-02)
+
+The temporary fault-address diagnostic APK was replaced in place with the
+normal actor-name-guard build (SHA-256
+`14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d`).
+On the Xiaomi Pad 6 this build entered Skull Creek with ten players, survived
+to first place, displayed "You are #1!" and +32, then showed Shelly at 1,713
+trophies, +100 mastery (2,056/2,600) and 20 tokens. Exit returned to Home.
+SQLite battle 31 records map 13, rank 1, result 0, +32 trophies, 20 tokens and
+20 credits. Reconnect retained account trophies 4,738, Shelly 1,713 and
+109 Star Road credits. Evidence: screenshots/normal-solo-start.png,
+solo-position.png, solo-cube-attempt.png, solo-normal-rewards.png and
+solo-reconnected-home.png (all gitignored).
+
+This adds live result/reconnect proof for the normal experimental client
+beyond the upstream BSDS behavior. The name guard was exercised through a
+completed arena, but intermittent Play crashes remain unresolved. Power-cube
+pickup/counter proof is still missing; boxes alone do not establish it.
+Showdown remains outside the public event list and the GitHub release asset
+is unchanged. The local probe still hides shared power points for the known
+upgrade tutorial issue; restore normal Core.py and the real balance after
+testing. The installed APK no longer contains the temporary fault diagnostic.
