@@ -11,7 +11,7 @@ import zipfile
 from unicorn import Uc, UC_ARCH_ARM, UC_MODE_ARM, UC_HOOK_CODE
 from unicorn.arm_const import (
     UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_PC,
-    UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R8,
+    UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R8, UC_ARM_REG_R9,
     UC_ARM_REG_FP, UC_ARM_REG_R4, UC_ARM_REG_R5, UC_ARM_REG_R6, UC_ARM_REG_R7,
 )
 
@@ -146,6 +146,43 @@ def verify(apk):
         cpu.emu_start(0x241F8C, target, count=20)
         assert cpu.reg_read(UC_ARM_REG_PC) == target
         assert cpu.reg_read(UC_ARM_REG_R0) == (0x2002000 if present else 0)
+    for hook in (0x242624, 0x248544):
+        for numerator, maximum in ((0, 0), (0, 3800), (19000, 3800), (38000, 3800)):
+            cpu = emulator()
+            cpu.reg_write(UC_ARM_REG_R0, numerator)
+            cpu.reg_write(UC_ARM_REG_R1, maximum)
+            cpu.reg_write(UC_ARM_REG_R4, 10)
+            calls = []
+
+            def divide(cpu, address, size, user):
+                if address == 0xDCC020:
+                    divisor = cpu.reg_read(UC_ARM_REG_R1)
+                    assert divisor > 0
+                    calls.append(divisor)
+                    cpu.reg_write(UC_ARM_REG_R0, cpu.reg_read(UC_ARM_REG_R0) // divisor)
+                    cpu.reg_write(UC_ARM_REG_PC, cpu.reg_read(UC_ARM_REG_LR))
+
+            cpu.hook_add(UC_HOOK_CODE, divide)
+            cpu.emu_start(hook, hook + 4, count=20)
+            assert cpu.reg_read(UC_ARM_REG_PC) == hook + 4
+            assert cpu.reg_read(UC_ARM_REG_R0) == (numerator // maximum if maximum else 0)
+            assert calls == ([maximum] if maximum else [])
+            assert cpu.reg_read(UC_ARM_REG_R4) == 10
+    for index, count, present in ((-1, 6, False), (0, 6, True),
+                                  (5, 6, True), (6, 6, False),
+                                  (15, 6, False), (0, 6, False)):
+        cpu = emulator()
+        cpu.reg_write(UC_ARM_REG_R0, index & 0xFFFFFFFF)
+        cpu.reg_write(UC_ARM_REG_R6, 0x2002000)
+        cpu.reg_write(UC_ARM_REG_R9, 0)
+        cpu.mem_write(0x2002000, struct.pack("<III", 0x2003000, count, count))
+        if 0 <= index < count:
+            cpu.mem_write(0x2003000 + index * 4,
+                          struct.pack("<I", 0x2004000 if present else 0))
+            cpu.mem_write(0x20040E0, struct.pack("<I", 0x2005000))
+        cpu.emu_start(0x450248, 0x450258, count=30)
+        assert cpu.reg_read(UC_ARM_REG_PC) == 0x450258
+        assert cpu.reg_read(UC_ARM_REG_R9) == (0x2005000 if present else 0)
     for old_flag in (0, 1):
         cpu = emulator()
         cpu.reg_write(UC_ARM_REG_R4, 0x2000000)
@@ -158,7 +195,7 @@ def verify(apk):
         cpu.reg_write(UC_ARM_REG_R0, remaining)
         cpu.emu_start(0x2A34C4, 0x2A34CC)
         assert cpu.reg_read(UC_ARM_REG_PC) == 0x2A34CC
-    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profiles and result transition")
+    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profiles, health divisor and result transition")
 
 
 if __name__ == "__main__":

@@ -617,11 +617,13 @@ testing. The installed APK no longer contains the temporary fault diagnostic.
 
 A temporary native signal logger captured the original SIGFPE before Android's
 WebView handler forwarded it. Binary logcat records identify libc tgkill at
-0x9dddc and its caller in **libfmod.so at 0xdc288**, the return from the audio
-library's divide-by-zero handler calling raise(8). The saved frame points to
-libg.so 0x24dd18, following the actor-renderer constructor call. This narrows
-the shared Play crash to an audio arithmetic path; it does not yet identify
-the division site or justify suppressing every SIGFPE. The apparent WebView
+0x9dddc and its caller in **libfmod.so at 0xdc288**, the return from its
+exported divide-by-zero helper calling raise(8). The saved frame points to
+libg.so 0x24dd18, following the actor-renderer constructor call. A subsequent
+stack-return trace identified libg.so 0x242628, immediately after the renderer
+calls signed division at 0x242624. FMOD supplies that arithmetic helper; its
+presence does not establish an audio fault. The earlier audio-path inference
+is superseded by this renderer division evidence. Do not suppress every SIGFPE. The apparent WebView
 origin in ordinary crash reports is a subsequent handler, not the initial
 raiser. Evidence: screenshots/callers-crash-log.txt (gitignored).
 
@@ -632,3 +634,44 @@ stack-caller build is SHA-256
 restore the normal experimental client after tracing. Two more diagnostic
 Showdown matches reached first (+32) and third (+6) place, but power-cube
 pickup is still unverified. Public events and the GitHub APK asset are unchanged.
+
+### Renderer guard and user-assisted Showdown checkpoint (2026-10-02)
+
+Native signal traces identified zero-divisor calls at libg.so 0x242624
+(renderer setup) and 0x248544 (frame update), returning through FMOD's
+exported arithmetic helper. This supersedes the earlier audio-fault inference.
+A live null-profile crash at 0x450254 exposed another unchecked UI vector
+lookup. The reproducible patch adds zero-divisor guards to both health-frame
+paths and uses the existing no-profile path for negative/out-of-range indices
+and absent entries. Eight division cases and six additional profile cases
+pass ARM emulation, alongside the earlier native checks.
+
+The setup-divisor/profile build reached a ten-player arena and a Rank 5 result
+with +2 trophies and Exit to Home on Xiaomi Pad 6. Its next Play attempt
+exposed the frame-update division. The combined two-divisor build is an
+experimental checkpoint awaiting a live match; do not describe all Play
+crashes as fixed. Public events and the GitHub release asset are unchanged.
+All 34 server tests, Classes compilation and diff checks pass.
+
+TerminalDev-1 clarified that they helped control matches because ADB taps
+were slow, and personally confirmed power-cube pickup works. Record pickup
+as user-tested gameplay evidence. Codex did not capture the cube counter or
+health increase; that visual evidence is not required by the user. Do not
+attribute the assisted movement to an AI controller or Auto Clicker. The
+Auto Clicker app was temporarily force-stopped during isolation, without
+uninstalling it; its involvement was not established. A temporary control-mode
+0 probe was inconclusive because matches were user-assisted. Normal HomeData
+retains control mode 2. Existing live arena, poison, placement/reward and
+reconnect evidence remains valid, with user assistance explicitly credited.
+
+Testing stopped at the user's request. Normal Core.py was restored with
+Gem Grab/Bounty and real shared power points; its listener is 0.0.0.0:9339.
+Android charging stay-awake was restored to its original value 0. The normal
+name-guard experimental APK was restored in place without temporary signal
+hooks and with account data retained (SHA-256
+14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d).
+Next session: live-test both health guards, repeat normal-mode regression on
+the final client, then enable Solo and publish its signed APK as a release
+asset when stable. Keep binaries, signing material, logs, databases and
+screenshots gitignored. The public release remains the previously published
+7742556db316b4867ddf9843d3490bc91ae7c7d53100332b4a6832cb5cbff8b6 build.

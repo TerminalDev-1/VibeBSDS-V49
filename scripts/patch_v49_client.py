@@ -117,6 +117,55 @@ def patch_library(original):
             break
     else:
         raise ValueError("Expected executable ELF segment was not found")
+    # A health-bar frame divides current health by maximum health. Neutral
+    # offline actors can have zero maximum health. Render their empty frame
+    # instead of calling __aeabi_idiv with a zero divisor (SIGFPE).
+    health_at = 0xEB0470
+    health = [0xE3510000, 0x03A00000,
+              (branch(health_at + 8, 0xDCC020, True) & 0x0FFFFFFF) | 0x10000000,
+              branch(health_at + 12, 0x242628)]
+    if any(data[health_at:health_at + 16]):
+        raise ValueError("Health guard executable padding is unavailable")
+    struct.pack_into("<4I", data, health_at, *health)
+    struct.pack_into("<I", data, 0x242624, branch(0x242624, health_at))
+    for index in range(count):
+        header = phoff + stride * index
+        if struct.unpack_from("<III", data, header) == (1, 0xEAA000, 0xEAA000):
+            struct.pack_into("<II", data, header + 16,
+                             health_at + 16 - 0xEAA000, health_at + 16 - 0xEAA000)
+            break
+    else:
+        raise ValueError("Expected secondary executable ELF segment was not found")
+    # A second actor UI lookup indexes the profile vector directly. Neutral
+    # actors and extra offline bots use the existing no-profile path.
+    profile_at = health_at + 16
+    profile = [0xE3500000,
+               (branch(profile_at + 4, 0x450258) & 0x0FFFFFFF) | 0xB0000000,
+               0xE5961004, 0xE1500001,
+               (branch(profile_at + 16, 0x450258) & 0x0FFFFFFF) | 0xA0000000,
+               0xE5961000, 0xE7910100, 0xE3500000,
+               branch(profile_at + 32, 0x450258) & 0x0FFFFFFF,
+               0xE59090E0, branch(profile_at + 40, 0x450258)]
+    if any(data[profile_at:profile_at + len(profile) * 4]):
+        raise ValueError("Actor UI guard executable padding is unavailable")
+    struct.pack_into("<11I", data, profile_at, *profile)
+    struct.pack_into("<I", data, 0x450248, branch(0x450248, profile_at))
+    struct.pack_into("<II", data, header + 16,
+                     profile_at + len(profile) * 4 - 0xEAA000,
+                     profile_at + len(profile) * 4 - 0xEAA000)
+    # The per-frame renderer repeats the same health fraction as setup.
+    health_update_at = profile_at + len(profile) * 4
+    health_update = [0xE3510000, 0x03A00000,
+                     (branch(health_update_at + 8, 0xDCC020, True)
+                      & 0x0FFFFFFF) | 0x10000000,
+                     branch(health_update_at + 12, 0x248548)]
+    if any(data[health_update_at:health_update_at + 16]):
+        raise ValueError("Health update guard executable padding is unavailable")
+    struct.pack_into("<4I", data, health_update_at, *health_update)
+    struct.pack_into("<I", data, 0x248544, branch(0x248544, health_update_at))
+    struct.pack_into("<II", data, header + 16,
+                     health_update_at + 16 - 0xEAA000,
+                     health_update_at + 16 - 0xEAA000)
     # A received result supersedes the practice end state. Keep the handler's
     # zero return, but let the overlay consume the newly stored result once.
     struct.pack_into("<II", data, 0x431364, 0xE3A00000, 0xE5C403B4)
