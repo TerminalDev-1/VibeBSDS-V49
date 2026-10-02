@@ -68,7 +68,8 @@ The native receipt handler now clears the prior end-screen state at
 `0x2a34c8` no longer waits for all remaining bots. The live Xiaomi Pad 6
 first-place result displayed "You are #1!", +32 trophies, Shelly at 1607,
 +100 mastery and 20 tokens (`screenshots/receipt-probe-current.png`).
-The Exit button returned to Home. The reproducible patch matches this
+The Exit button advanced into the pending Barley credit unlock. The
+reproducible patch matches this
 installed library byte for byte; native emulation retains earlier guards,
 Bounty and rank behavior and checks result flags/counts. Eliminated-player
 presentation, cube pickup and normal-mode live regression remain pending.

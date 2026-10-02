@@ -486,9 +486,25 @@ The native receipt handler now clears the prior end-screen state at
 `0x2a34c8` no longer waits for all remaining bots. The live Xiaomi Pad 6
 first-place result displayed "You are #1!", +32 trophies, Shelly at 1607,
 +100 mastery and 20 tokens (`screenshots/receipt-probe-current.png`).
-The Exit button returned to Home. The reproducible patch matches this
+The Exit button advanced into the pending Barley credit unlock. The
+reproducible patch matches this
 installed library byte for byte; native emulation retains earlier guards,
 Bounty and rank behavior and checks result flags/counts. Eliminated-player
 presentation, cube pickup and normal-mode live regression remain pending.
 Showdown stays outside the public event list and this APK is not published
 until those checks are complete.
+
+
+### Solo elimination reward screen checkpoint (2026-10-02)
+
+Unlike the upstream BSDS base, the patched V49 client now opens the native
+placement result after elimination as well as first place. Live second-place
+proof displayed Rank: 2, +8 trophies, 10 tokens and unchanged mastery.
+SQLite battle 23 records rank=2, result=1 and trophy_delta=8; Home showed
+Shelly at 1615, account trophies 4640 and credits 9. Evidence is
+`screenshots/solo-second-rewards.png` and `solo-second-home.png` (gitignored).
+The first-place Exit had advanced into the pending Barley credit claim, rather
+than directly to Home; both reveal stages were dismissed and Home returned
+with El Primo as the next credit target. Lower-placement reward-screen proof,
+cube pickup and existing-mode regression remain pending. Showdown remains
+outside the public event list and the release APK is unchanged.
