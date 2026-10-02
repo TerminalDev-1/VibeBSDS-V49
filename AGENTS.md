@@ -71,7 +71,7 @@ Do not advertise or claim working Brawl Ball.
 - Keep the five-trophy safety floor required by this client build.
 - Solo Showdown is enabled as the third event with the tested development
   client. Places 1-5 award +32/+8/+6/+4/+2; places 6-10 lose zero.
-  Intermittent Play crashes remain; the public release APK lacks Solo guards.
+  Intermittent Play crashes remain; the public release now includes Solo guards.
 - HomeData and profile values should come from the database, not newly
   hardcoded rank/trophy/power values.
 - Do not claim a feature works merely because its packet encodes or its menu
@@ -676,3 +676,24 @@ on Skull Creek. Evidence: screenshots/solo-enabled-chooser.png (gitignored).
 This check verifies event deployment/order; the earlier completed matches and
 user pickup confirmation provide gameplay evidence. No new match was claimed
 for this enablement checkpoint.
+
+### Showdown APK release publication (2026-10-02)
+
+At TerminalDev-1's explicit request, the normal live-tested Showdown APK
+replaced the v49.194 release asset VibeBSDS-V49.apk. GitHub reports SHA-256
+14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d,
+matching the signed/installed 479,200,690-byte build. The existing download
+URL remains valid. Package com.projectbsds.v49 and the existing certificate
+were confirmed; zip alignment and V2/V3 signatures pass. Frida redirects to
+the laptop's runtime-confirmed 192.168.1.103:9339, with an established tablet
+connection. The normal Gadget matches the earlier release byte for byte;
+temporary signal diagnostics are absent. Use server 8501292 or newer.
+
+Release notes distinguish live ten-player arena, poison, placement/reward,
+Exit and reconnect proof from TerminalDev-1's user-tested cube pickup.
+Intermittent Play crashes remain disclosed. This publishes the selected
+completed-match build, not the newer unverified health-divisor experiment.
+Final normal-mode regression with this APK remains pending. Earlier notes
+about an unchanged public asset or a development-client requirement are
+superseded by this publication. Binaries, signing material and evidence remain
+outside Git; this checkpoint commits documentation only.

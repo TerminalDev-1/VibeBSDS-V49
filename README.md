@@ -51,7 +51,7 @@ limitations while retaining credit for the upstream BSDS foundation.
 - A playable Bounty event on Shooting Star, verified in a live device match
   with the correct star scoreboard and bounty indicators.
 - Gem Grab first, Bounty second, and Solo Showdown third, all kept on the
-  client-proven event path. Solo requires the Showdown development client.
+  client-proven event path. Solo uses the current Showdown release client.
 - Native offline-bot roster and special-skill guards that fix Gem Grab Play
   crashes, plus Bounty score enforcement that ends the match at 20.
 - Correct V49 Battle End packets with player-relative outcomes, result teams,
@@ -64,8 +64,7 @@ Team victories currently award `+32` trophies, 20 Brawl Pass tokens, and 20
 credits. Defeats award `0` trophy change, 10 tokens, and 8 credits, with a
 five-trophy floor required for V49.194 client stability. Solo Showdown awards
 +32/+8/+6/+4/+2 trophies for places 1-5 and zero trophy loss for places 6-10.
-Solo is enabled on Skull Creek with the live-tested development client; the
-current public release APK does not yet include its required native guards.
+Solo is enabled on Skull Creek with the live-tested Showdown release client.
 Intermittent Play crashes remain under investigation.
 
 
@@ -88,7 +87,7 @@ not a separate live defeat. This server change works with the published APK.
 - Brawl Pass display, token progression, and persistent credit rewards
 - Gem Grab as the first mode
 - Bounty as the second mode
-- Solo Showdown as the third mode (development client required; Play can crash)
+- Solo Showdown as the third mode (current release client; Play can crash)
 - Selected-brawler persistence
 - Gem Grab and Bounty using the client's local/offline bot battles
 - Battle history and reconnect persistence
@@ -173,15 +172,16 @@ because a convincing menu card is not proof of working gameplay.
 Download the V49.194 APK from this repository's GitHub release:
 
 - [Download `VibeBSDS-V49.apk`](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/VibeBSDS-V49.apk)
-- SHA-256: `1B22AB6C97A8ED894AF5F9918FED4C5FD93AF4BAB83203B97097921F8EAA28BB`
+- SHA-256: `14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d`
 - Android package: `com.projectbsds.v49`
 
-The 2026-10-01 APK update redirects to the current laptop-hosted game server
-at `192.168.1.103:9339`. It was installed in place on the Xiaomi Pad 6, and
-login to the home screen and the laptop's TCP connection were verified over
-Wi-Fi. The published battle build also passed live Gem Grab and Bounty win,
-result-screen, reward, and reconnect checks. Bounty ended at exactly 20/20
-with 1:19 remaining. Individual flying trophy sprites remain unfinished.
+The 2026-10-02 Showdown APK redirects to the laptop-hosted game server at
+`192.168.1.103:9339`. This normal build completed ten-player Solo Showdown,
+placement/reward screens, Exit and reconnect on Xiaomi Pad 6. TerminalDev-1
+helped play matches and confirmed cube pickup. Intermittent Play crashes
+remain; the newer experimental health guards are not included in this asset.
+Use server checkpoint `8501292` or newer. Earlier Gem Grab/Bounty gameplay
+proof remains documented below; final regression with this APK is pending.
 For your own installation, discover your game-server computer's current LAN
 address and configure the client accordingly; LAN addresses can change.
 
@@ -706,3 +706,24 @@ on Skull Creek. Evidence: screenshots/solo-enabled-chooser.png (gitignored).
 This check verifies event deployment/order; the earlier completed matches and
 user pickup confirmation provide gameplay evidence. No new match was claimed
 for this enablement checkpoint.
+
+### Showdown APK release publication (2026-10-02)
+
+At TerminalDev-1's explicit request, the normal live-tested Showdown APK
+replaced the v49.194 release asset VibeBSDS-V49.apk. GitHub reports SHA-256
+14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d,
+matching the signed/installed 479,200,690-byte build. The existing download
+URL remains valid. Package com.projectbsds.v49 and the existing certificate
+were confirmed; zip alignment and V2/V3 signatures pass. Frida redirects to
+the laptop's runtime-confirmed 192.168.1.103:9339, with an established tablet
+connection. The normal Gadget matches the earlier release byte for byte;
+temporary signal diagnostics are absent. Use server 8501292 or newer.
+
+Release notes distinguish live ten-player arena, poison, placement/reward,
+Exit and reconnect proof from TerminalDev-1's user-tested cube pickup.
+Intermittent Play crashes remain disclosed. This publishes the selected
+completed-match build, not the newer unverified health-divisor experiment.
+Final normal-mode regression with this APK remains pending. Earlier notes
+about an unchanged public asset or a development-client requirement are
+superseded by this publication. Binaries, signing material and evidence remain
+outside Git; this checkpoint commits documentation only.

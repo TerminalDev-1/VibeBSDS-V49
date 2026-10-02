@@ -179,7 +179,7 @@ The stable event list is:
 
 1. Gem Grab - Hard Rock Mine
 2. Bounty - Shooting Star
-3. Solo Showdown - Skull Creek (Showdown development client required)
+3. Solo Showdown - Skull Creek (current Showdown release client)
 
 All three remain on the client-safe event slot. Their instance IDs preserve the
 requested chooser order. Bounty was verified on the Android device with its
@@ -280,15 +280,16 @@ Reproducible patching and ARM32 verification scripts are documented in
 [scripts/README.md](scripts/README.md). Rebuilding requires a compatible original
 V49.194 native library; unsupported hashes are rejected.
 
-The tested build is published as the
+The live-tested normal Showdown build is published as the
 [VibeBSDS-V49.apk release asset](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/VibeBSDS-V49.apk).
 Its SHA-256 is
-`7742556db316b4867ddf9843d3490bc91ae7c7d53100332b4a6832cb5cbff8b6`;
-GitHub's uploaded digest matches the installed build. Use server checkpoint
-`c37019ae9fa4e70cf0ed76940dac6520f496c092` or newer for its Battle End packet.
-The release redirects to `192.168.1.103:9339`; discover and configure your own
-server's current LAN address. The matching certificate allowed an in-place
-update of `com.projectbsds.v49` with app data retained.
+`14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d`.
+Use server checkpoint `8501292` or newer for the three enabled events.
+The release redirects to `192.168.1.103:9339`; discover/configure your own
+server's current address. Its existing certificate preserves app data during
+an in-place update. Solo arena/results/reconnect have live proof and cube
+pickup is user-tested. Intermittent Play crashes and final normal-mode
+regression remain; experimental health guards are outside this release.
 
 
 ### V49 progression packet findings (2026-10-01)
@@ -780,3 +781,24 @@ on Skull Creek. Evidence: screenshots/solo-enabled-chooser.png (gitignored).
 This check verifies event deployment/order; the earlier completed matches and
 user pickup confirmation provide gameplay evidence. No new match was claimed
 for this enablement checkpoint.
+
+### Showdown APK release publication (2026-10-02)
+
+At TerminalDev-1's explicit request, the normal live-tested Showdown APK
+replaced the v49.194 release asset VibeBSDS-V49.apk. GitHub reports SHA-256
+14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d,
+matching the signed/installed 479,200,690-byte build. The existing download
+URL remains valid. Package com.projectbsds.v49 and the existing certificate
+were confirmed; zip alignment and V2/V3 signatures pass. Frida redirects to
+the laptop's runtime-confirmed 192.168.1.103:9339, with an established tablet
+connection. The normal Gadget matches the earlier release byte for byte;
+temporary signal diagnostics are absent. Use server 8501292 or newer.
+
+Release notes distinguish live ten-player arena, poison, placement/reward,
+Exit and reconnect proof from TerminalDev-1's user-tested cube pickup.
+Intermittent Play crashes remain disclosed. This publishes the selected
+completed-match build, not the newer unverified health-divisor experiment.
+Final normal-mode regression with this APK remains pending. Earlier notes
+about an unchanged public asset or a development-client requirement are
+superseded by this publication. Binaries, signing material and evidence remain
+outside Git; this checkpoint commits documentation only.
