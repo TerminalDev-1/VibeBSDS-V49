@@ -137,7 +137,19 @@ def verify(apk):
         assert u.reg_read(UC_ARM_REG_PC)==target
         if present:assert u.reg_read(UC_ARM_REG_R0)==0x2005000
         print('UI',index,count,present,hex(target),'PASS')
-    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profile bounds")
+    for old_flag in (0, 1):
+        cpu = emulator()
+        cpu.reg_write(UC_ARM_REG_R4, 0x2000000)
+        cpu.mem_write(0x20003B4, bytes([old_flag]))
+        cpu.emu_start(0x431364, 0x43136C)
+        assert cpu.reg_read(UC_ARM_REG_R0) == 0
+        assert cpu.mem_read(0x20003B4, 1) == b"\0"
+    for remaining in (1, 3, 10):
+        cpu = emulator()
+        cpu.reg_write(UC_ARM_REG_R0, remaining)
+        cpu.emu_start(0x2A34C4, 0x2A34CC)
+        assert cpu.reg_read(UC_ARM_REG_PC) == 0x2A34CC
+    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profiles and result transition")
 
 
 if __name__ == "__main__":

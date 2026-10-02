@@ -107,6 +107,12 @@ def patch_library(original):
             break
     else:
         raise ValueError("Expected executable ELF segment was not found")
+    # A received result supersedes the practice end state. Keep the handler's
+    # zero return, but let the overlay consume the newly stored result once.
+    struct.pack_into("<II", data, 0x431364, 0xE3A00000, 0xE5C403B4)
+    # This branch is already guarded by a pending result and variation 6.
+    # Eliminated Solo players should proceed without waiting for all bots.
+    struct.pack_into("<I", data, 0x2A34C8, 0xE320F000)
     return bytes(data)
 
 

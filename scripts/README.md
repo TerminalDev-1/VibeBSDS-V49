@@ -59,3 +59,18 @@ paths. Real-device verification is still required.
   The ARM verifier checks old/new rank values and preserved registers at
   ranks 2, 7, 25 and 35. Live Brock +750 proof reached rank 25 at 755/800.
   Individual flying trophy sprites are still unfinished.
+
+
+### Solo result-screen checkpoint (2026-10-02)
+
+The native receipt handler now clears the prior end-screen state at
+`0x431364`, retaining its zero return. The Solo pending-result branch at
+`0x2a34c8` no longer waits for all remaining bots. The live Xiaomi Pad 6
+first-place result displayed "You are #1!", +32 trophies, Shelly at 1607,
++100 mastery and 20 tokens (`screenshots/receipt-probe-current.png`).
+The Exit button returned to Home. The reproducible patch matches this
+installed library byte for byte; native emulation retains earlier guards,
+Bounty and rank behavior and checks result flags/counts. Eliminated-player
+presentation, cube pickup and normal-mode live regression remain pending.
+Showdown stays outside the public event list and this APK is not published
+until those checks are complete.
