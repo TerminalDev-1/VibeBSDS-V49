@@ -137,6 +137,15 @@ def verify(apk):
         assert u.reg_read(UC_ARM_REG_PC)==target
         if present:assert u.reg_read(UC_ARM_REG_R0)==0x2005000
         print('UI',index,count,present,hex(target),'PASS')
+    for present in (False, True):
+        cpu = emulator()
+        profile = 0x2001000 if present else 0
+        cpu.reg_write(UC_ARM_REG_R0, profile)
+        cpu.mem_write(0x20010EC, struct.pack("<I", 0x2002000))
+        target = 0x241F90 if present else 0x241FE8
+        cpu.emu_start(0x241F8C, target, count=20)
+        assert cpu.reg_read(UC_ARM_REG_PC) == target
+        assert cpu.reg_read(UC_ARM_REG_R0) == (0x2002000 if present else 0)
     for old_flag in (0, 1):
         cpu = emulator()
         cpu.reg_write(UC_ARM_REG_R4, 0x2000000)

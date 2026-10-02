@@ -75,3 +75,28 @@ Bounty and rank behavior and checks result flags/counts. Eliminated-player
 presentation, cube pickup and normal-mode live regression remain pending.
 Showdown stays outside the public event list and this APK is not published
 until those checks are complete.
+
+
+### Showdown actor-name guard investigation (2026-10-02)
+
+A later Play attempt crashed at native `0x6e3244`, reading a missing profile's
+name (`null + 0xec`). Caller `0x241f8c` already permits a null profile when its
+owner index falls outside the vector; its existing skip path is `0x241fe8`.
+The reproducible patch now routes missing names to that path and preserves
+the original getter for present profiles. Two ARM emulation cases pass; the
+additional guard still needs live proof. It uses the two padding words after
+the passive stub and the final two executable-page words, without growing
+into the next ELF segment.
+
+Live fifth place showed Rank: 5 and +2; SQLite battle 24 stores that delta.
+Battle 25 records ninth place and zero trophy change, with Home still showing
+4642 account trophies. The ninth-place screen was not captured. TerminalDev-1
+helped play those matches, then handed gameplay controls back to Codex.
+Independent repeated Play crashes have a WebView/Frida SIGFPE stack; they are
+not explained or fixed by this actor-name guard. Logs/evidence remain under
+`screenshots/` and outside Git. Cube pickup, normal-mode regression and final
+release publication remain pending; public Showdown is still disabled.
+
+Experimental signed APK SHA-256:
+`14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d`.
+All 34 server tests, Classes compilation and diff checks passed.

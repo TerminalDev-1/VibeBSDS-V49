@@ -81,12 +81,21 @@ def patch_library(original):
           0xE5950000, 0xE7900106, 0xE3500000,
           branch(ui_at + 24, 0x44EBE8) & 0x0FFFFFFF,
           0xE59000E0, branch(ui_at + 32, 0x44EB50)]
-    end = ui_at + len(ui) * 4
+    name_at = CAVE + 24
+    name_tail_at = ui_at + len(ui) * 4
+    # Actor-name lookup can receive no profile for a neutral actor. Reuse
+    # the two padding words after the passive guard and the last two words
+    # of this page; skip the caller's name-dependent block when absent.
+    name = [0xE3500000, branch(name_at + 4, name_tail_at)]
+    name_tail = [branch(name_tail_at, 0x241FE8) & 0x0FFFFFFF,
+                 branch(name_tail_at + 4, 0x6E3244)]
+    end = name_tail_at + len(name_tail) * 4
     if end > 0xDCE000 or any(data[CAVE:end]):
         raise ValueError("Executable padding is unavailable")
     for address, words in [(CAVE, passive), (gadget_at, gadget),
                            (bounty_at, bounty), (skill_at, skill), (rank_at, rank),
-                           (actor_at, actor), (ui_at, ui)]:
+                           (actor_at, actor), (ui_at, ui),
+                           (name_at, name), (name_tail_at, name_tail)]:
         struct.pack_into("<" + "I" * len(words), data, address, *words)
     for address, target, link in [(0x6E4448, CAVE, False),
                                   (0x61B77C, gadget_at, False),
@@ -95,7 +104,8 @@ def patch_library(original):
                                   (0x652318, skill_at, False),
                                   (0x49C570, rank_at, False),
                                   (0x61A2C8, actor_at, False),
-                                  (0x44EB44, ui_at, False)]:
+                                  (0x44EB44, ui_at, False),
+                                  (0x241F8C, name_at, True)]:
         struct.pack_into("<I", data, address, branch(address, target, link))
     phoff = struct.unpack_from("<I", data, 28)[0]
     stride, count = struct.unpack_from("<HH", data, 42)
