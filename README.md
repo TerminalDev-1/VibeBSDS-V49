@@ -562,3 +562,29 @@ release publication remain pending; public Showdown is still disabled.
 Experimental signed APK SHA-256:
 `14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d`.
 All 34 server tests, Classes compilation and diff checks passed.
+
+
+### Existing-mode regression and shared crash investigation (2026-10-02)
+
+The actor-name build reached a live Gem Grab match; SQLite battle 27 stores a
+win, +32 trophies, 20 tokens and 20 credits. Home showed 4674 account trophies
+and Shelly 1649. Its result screen was not captured. Bounty also hit the
+WebView/Frida SIGFPE stack before starting, so that stack is not specific to
+Showdown and does not establish a Showdown roster cause.
+
+A temporary diagnostic APK changes the Frida signal-forwarding path solely
+to expose the original fault address if another exception occurs. It must
+NOT be published, and must be replaced with a normal signed build after the
+investigation. Its signed SHA-256 is
+`a7ac103ab2f45b0fa201e8388cdd472225c6582296a59d9e1c9ed9a0aaaa083d`.
+The instrumentation passed native emulation. No source gameplay fix is
+claimed from this diagnostic change. That build completed two Bounty defeats:
+screenshots `diagnostic-bounty-end.png` and `diagnostic-now.png` show DEFEAT
+and 0 trophies, and SQLite battles 28/29 each store result=1, trophy_delta=0,
+tokens=10 and credits=8. This adds live zero-loss Bounty proof beyond the
+upstream BSDS foundation; it is not final release-build regression proof.
+
+Showdown, final normal-mode verification and APK publication remain pending.
+The test server still temporarily hides shared power points to bypass the
+upgrade tutorial; restore normal Core.py with the true balance after testing.
+Restore Android stay_on_while_plugged_in to 0 after device tests.
