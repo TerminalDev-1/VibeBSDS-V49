@@ -41,9 +41,13 @@ the Android client.
   `f046410f9b0aeb3858494316d0e9df3ab315a8b1242e00b13c28def11d8de18d`, built by
   the gitignored `tools/build_health_port_9340.py` from the current
   `scripts/patch_v49_client.py`). It completed Showdown battles 48-50 without a
-  crash. The `0x88fc00` null read (called from `0x454590`) is still unguarded.
-  Do not start the per-site guard chain again without first checking whether
-  the off-map actor can be prevented at spawn. Crash logs are in
+  crash. It was then superseded by the entry-guard build (SHA-256
+  `22c999e1dbda9a7b1c8c892049d7c8c00b100e1770c0b6c8f46638c690dd7aef`), which
+  also guards `0x88fbf4` (null list from actor UI `0x454590`). Battles 52-53
+  ran with an empty crash log, and the +100 result screen was user-confirmed.
+  All four observed sites are guarded, but the broken actors still spawn. If new
+  crash sites appear, check whether the off-map actor can be prevented at spawn
+  before adding more per-site guards. Crash logs are in
   `screenshots/port-9340-health/crash-*.txt`.
 - The replay guard's 30 s margin is narrower than first measured: battles 48 and
   49 were 42 s apart after a quick elimination.

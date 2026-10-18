@@ -811,3 +811,21 @@ The crash is spawn-dependent, not trophy-dependent: Shelly played at 1931 after
 the crashes. A fourth null read at `0x88fc00` (from `0x454590`, null+0x14) was
 seen once before these matches and is still unguarded, so Showdown can still
 crash occasionally. The public release is unchanged.
+
+### Fourth Showdown actor guard (2026-10-18)
+
+The previously unguarded null read is now guarded. `0x88fbf4` searches a list
+(count at +0x14, 0xe4-byte entries at +0x10) and returns 0 when nothing
+matches. Actor UI at `0x454590` already handles that, but it passed a null list
+for the same broken offline actors. A null list is now treated as empty, the
+same as the existing empty-list result, for all 24 callers. Four ARM emulation
+cases cover a null list, an empty list, and a two-entry list with and without
+a match.
+
+On the Xiaomi Pad 6 (unpublished port-9340 build, SHA-256
+`22c999e1dbda9a7b1c8c892049d7c8c00b100e1770c0b6c8f46638c690dd7aef`), Solo
+Showdown battles 52 (1st, +100) and 53 (3rd, +60) completed with an empty
+crash log. TerminalDev-1 confirmed the +100 result screen. The +60 confirms a
+mid-table placement value live. All four observed crash sites from this
+investigation are now guarded. Broken actors are still spawned; the guards stop
+them crashing the client. The public release is unchanged.

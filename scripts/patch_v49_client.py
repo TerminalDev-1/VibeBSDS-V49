@@ -188,6 +188,19 @@ def patch_library(original):
     struct.pack_into("<I", data, 0x85D944, branch(0x85D944, child_at))
     struct.pack_into("<II", data, header + 16,
                      child_at + 16 - 0xEAA000, child_at + 16 - 0xEAA000)
+    # Entry search (0x88fbf4) returns 0 for an empty list. Actor UI at
+    # 0x454590 passes a null list for the same broken actors; treat it as empty.
+    entry_at = child_at + 16
+    push = struct.unpack_from("<I", data, 0x88FBF4)[0]
+    if push != 0xE92D4DF0:
+        raise ValueError("Unexpected entry search prologue")
+    entry = [0xE3500000, 0x012FFF1E, push, branch(entry_at + 12, 0x88FBF8)]
+    if any(data[entry_at:entry_at + 16]):
+        raise ValueError("Entry search guard executable padding is unavailable")
+    struct.pack_into("<4I", data, entry_at, *entry)
+    struct.pack_into("<I", data, 0x88FBF4, branch(0x88FBF4, entry_at))
+    struct.pack_into("<II", data, header + 16,
+                     entry_at + 16 - 0xEAA000, entry_at + 16 - 0xEAA000)
     # A received result supersedes the practice end state. Keep the handler's
     # zero return, but let the overlay consume the newly stored result once.
     struct.pack_into("<II", data, 0x431364, 0xE3A00000, 0xE5C403B4)

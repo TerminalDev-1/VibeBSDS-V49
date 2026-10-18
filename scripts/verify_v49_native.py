@@ -11,7 +11,7 @@ import zipfile
 from unicorn import Uc, UC_ARCH_ARM, UC_MODE_ARM, UC_HOOK_CODE
 from unicorn.arm_const import (
     UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_PC,
-    UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R8, UC_ARM_REG_R9,
+    UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2, UC_ARM_REG_R8, UC_ARM_REG_R9,
     UC_ARM_REG_FP, UC_ARM_REG_R4, UC_ARM_REG_R5, UC_ARM_REG_R6, UC_ARM_REG_R7,
 )
 
@@ -193,6 +193,25 @@ def verify(apk):
         assert cpu.reg_read(UC_ARM_REG_PC) == 0x2447E4
         assert cpu.reg_read(UC_ARM_REG_R4) == (flag or 0)
         print('tile', hex(tile), flag, 'PASS')
+    for entries, count, matches in ((0, None, False), (0x2008000, 0, False),
+                                    (0x2008000, 2, False), (0x2008000, 2, True)):
+        cpu = emulator()
+        if entries:
+            cpu.mem_write(entries + 0x10, struct.pack("<II", 0x2008100, count))
+
+        def compare(cpu, address, size, user):
+            # Stand-in for the entry comparison at 0x727b40.
+            cpu.reg_write(UC_ARM_REG_R0, int(matches))
+            cpu.reg_write(UC_ARM_REG_PC, cpu.reg_read(UC_ARM_REG_LR))
+
+        cpu.hook_add(UC_HOOK_CODE, compare, begin=0x727B40, end=0x727B40)
+        cpu.reg_write(UC_ARM_REG_R0, entries)
+        cpu.reg_write(UC_ARM_REG_R1, 7)
+        cpu.reg_write(UC_ARM_REG_R2, 0)
+        cpu.emu_start(0x88FBF4, 0x1000, count=200)
+        assert cpu.reg_read(UC_ARM_REG_SP) == 0x200FFF0
+        assert (cpu.reg_read(UC_ARM_REG_R0) != 0) == matches
+        print('entries', hex(entries), count, matches, 'PASS')
     for container, children, wanted in ((0, [], 0x16), (0x2007000, [], 0x16),
                                         (0x2007000, [0x15, 0x16], 0x16),
                                         (0x2007000, [0x15], 0x16)):
@@ -222,7 +241,7 @@ def verify(apk):
         cpu.reg_write(UC_ARM_REG_R0, remaining)
         cpu.emu_start(0x2A34C4, 0x2A34CC)
         assert cpu.reg_read(UC_ARM_REG_PC) == 0x2A34CC
-    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profiles, health divisor, off-map tile, null child lookup and result transition")
+    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profiles, health divisor, off-map tile, null child lookup, null entry search and result transition")
 
 
 if __name__ == "__main__":
