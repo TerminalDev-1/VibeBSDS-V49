@@ -220,6 +220,10 @@ python Core.py
 The game server binds to `0.0.0.0:9339`. Allow TCP port `9339` through the host
 firewall when another device connects over the local network.
 
+On Windows you can instead double-click `Start VibeBSDS Server.bat`. It refuses
+to start, and says why, if another server already uses port 9339; close that
+server first. You can make a desktop shortcut to it.
+
 Run the test suite with:
 
 ```powershell
