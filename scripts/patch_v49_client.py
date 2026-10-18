@@ -201,6 +201,94 @@ def patch_library(original):
     struct.pack_into("<I", data, 0x88FBF4, branch(0x88FBF4, entry_at))
     struct.pack_into("<II", data, header + 16,
                      entry_at + 16 - 0xEAA000, entry_at + 16 - 0xEAA000)
+    # Renderer setup fetches a data row by the actor's 1-based index at +0xf8
+    # through 0x5e9aa0, which does not bounds-check. Broken Showdown actors can
+    # carry garbage there. Skip to the existing "no row" path (0x249488) unless
+    # the index is below the table's count (its vtable +0x10, as 0x5e9934 uses).
+    row_at = entry_at + 16
+    globals_at = 0xE88AE0
+    row = [0xE2400001,                     # sub r0, r0, #1
+           0xE92D0003,                     # push {r0, r1}
+           0xE59F0024,                     # ldr r0, [pc, #0x24] (literal)
+           0xE08F0000,                     # add r0, pc, r0
+           0xE5900074,                     # ldr r0, [r0, #0x74] (table)
+           0xE5901000, 0xE5911010,         # ldr r1, [r0]; ldr r1, [r1, #0x10]
+           0xE12FFF31,                     # blx r1 (count)
+           0xE8BD0006,                     # pop {r1, r2}
+           0xE1510000,                     # cmp r1, r0
+           (branch(row_at + 40, 0x249488) & 0x0FFFFFFF) | 0xA0000000,
+           0xE1A00001,                     # mov r0, r1
+           branch(row_at + 48, 0x24944C),  # original bl 0x5e9aa0, then 0x249450
+           (globals_at - (row_at + 20)) & 0xFFFFFFFF]
+    if struct.unpack_from("<I", data, 0x249448)[0] != 0xE2400001:
+        raise ValueError("Unexpected renderer row index instruction")
+    if any(data[row_at:row_at + len(row) * 4]):
+        raise ValueError("Renderer row guard executable padding is unavailable")
+    struct.pack_into(f"<{len(row)}I", data, row_at, *row)
+    struct.pack_into("<I", data, 0x249448, branch(0x249448, row_at))
+    struct.pack_into("<II", data, header + 16,
+                     row_at + len(row) * 4 - 0xEAA000, row_at + len(row) * 4 - 0xEAA000)
+    # Two more getTile callers read the same +0x38 tile flag without a null
+    # check (actor UI at 0x46a7c0, and 0x62f664). Read a null tile as clear,
+    # as at 0x2447e0.
+    flag_at = row_at + len(row) * 4
+    for site in (0x46A7C0, 0x62F664):
+        if struct.unpack_from("<I", data, site)[0] != 0xE5D00038:
+            raise ValueError(f"Unexpected tile flag read at {site:#x}")
+        cave = [0xE3500000, 0x15D00038, branch(flag_at + 8, site + 4)]
+        if any(data[flag_at:flag_at + 12]):
+            raise ValueError("Tile flag guard executable padding is unavailable")
+        struct.pack_into("<3I", data, flag_at, *cave)
+        struct.pack_into("<I", data, site, branch(site, flag_at))
+        flag_at += 12
+    struct.pack_into("<II", data, header + 16,
+                     flag_at - 0xEAA000, flag_at - 0xEAA000)
+    # Broken Showdown actors reach many renderer divisions with a zero divisor
+    # (0x248430 was the next one live). FMOD's EABI helpers then raise SIGFPE.
+    # Wrap the libg PLT stubs: a zero divisor yields quotient 0 (remainder =
+    # dividend for the divmod forms); any other divisor uses the real helper.
+    def plt_got(stub):
+        a, b, c = struct.unpack_from("<III", data, stub)
+        if a != 0xE28FC600 or b & 0xFFFFFF00 != 0xE28CCA00 or c & 0xFFFFF000 != 0xE5BCF000:
+            raise ValueError(f"Unexpected PLT stub at {stub:#x}")
+        rot = ((b >> 8) & 0xF) * 2
+        imm = ((b & 0xFF) >> rot | (b & 0xFF) << (32 - rot)) & 0xFFFFFFFF
+        return stub + 8 + imm + (c & 0xFFF)
+    division_at = flag_at
+    stubs = {}
+    for stub in range(0xDCB000, 0xDCD000, 16):
+        try:
+            stubs[plt_got(stub)] = stub
+        except ValueError:
+            continue
+    for got, divmod in ((0xE0BB2C, False),   # __aeabi_idiv
+                        (0xE0BAD8, False),   # __aeabi_uidiv
+                        (0xE0BB14, True),    # __aeabi_idivmod
+                        (0xE0BB5C, True)):   # __aeabi_uidivmod
+        stub = stubs[got]
+        zero = ([0xE3510000, 0x01A01000, 0x03A00000, 0x012FFF1E] if divmod
+                else [0xE3510000, 0x03A00000, 0x012FFF1E])
+        tail_at = division_at + len(zero) * 4
+        wrapper = zero + [0xE59FC004, 0xE08FC00C, 0xE59CF000,
+                          (got - (tail_at + 12)) & 0xFFFFFFFF]
+        if any(data[division_at:division_at + len(wrapper) * 4]):
+            raise ValueError("Division wrapper executable padding is unavailable")
+        struct.pack_into(f"<{len(wrapper)}I", data, division_at, *wrapper)
+        struct.pack_into("<I", data, stub, branch(stub, division_at))
+        division_at += len(wrapper) * 4
+    struct.pack_into("<II", data, header + 16,
+                     division_at - 0xEAA000, division_at - 0xEAA000)
+    # The battle HUD builds an "edit controls" button (clip edit_controls,
+    # click ID 1003) and only sets its visibility byte (+4) to 1 through this
+    # eor. Keep it 0 so the button is never shown in matches.
+    if struct.unpack_from("<I", data, 0x296F04)[0] != 0xE2207001:
+        raise ValueError("Unexpected edit-controls visibility instruction")
+    struct.pack_into("<I", data, 0x296F04, 0xE3A07000)
+    # The per-frame HUD button loop recomputes button 1003's visibility at
+    # 0x2a68f8 and stores it via 0x2a6748. Store 0 (hidden) for it every frame.
+    if struct.unpack_from("<II", data, 0x2A68F8) != (branch(0x2A68F8, 0x54CA6C, True), 0xE3500000):
+        raise ValueError("Unexpected edit-controls frame visibility code")
+    struct.pack_into("<II", data, 0x2A68F8, 0xE3A00000, branch(0x2A68FC, 0x2A6748))
     # A received result supersedes the practice end state. Keep the handler's
     # zero return, but let the overlay consume the newly stored result once.
     struct.pack_into("<II", data, 0x431364, 0xE3A00000, 0xE5C403B4)

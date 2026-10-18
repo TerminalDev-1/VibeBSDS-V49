@@ -71,10 +71,20 @@ the Android client.
   sprites remain unfinished. Offline requests do not include kills/damage/
   healing/MVP.
 - Public release asset: `v49.194` / `VibeBSDS-V49.apk`, SHA-256
-  `45b16d350b4e2233dee52507998810398411d082c5162ed51d9cdca2ab721eaa`
-  (2026-10-18 guarded Showdown build, port 9339; libg SHA-256 `c3715425...`).
-  It supersedes `14ca4208...` and `7742556d...` in older sections below. The
-  tablet normally runs its port-9340 twin (`22c999e1...`).
+  `349a44b77b9e9af05f9e1efaca2b9a1a7bed08f4a8914985d1b4e35396cd1ea1`
+  (2026-10-18: Showdown guards, division wrappers and hidden Edit Controls;
+  port 9339; libg SHA-256 `c3880337...`). It supersedes `45b16d35...`,
+  `14ca4208...` and `7742556d...` in older sections below. The tablet normally
+  runs its port-9340 twin (`63221dd7...`, normal gadget), built by the
+  gitignored `tools/build_health_port_9340.py`. `tools/swap_diag_gadget.py`
+  makes a crash-logging test copy using the 2026-10-02 fault-stack gadget;
+  never publish one. Read the log with `logcat -B` (priority-6 entries naming a
+  library and offset).
+- Broken Showdown actors still spawn. The likely root cause is offline
+  Showdown creating more players than player profiles (6 profiles,
+  10 players), so the extra actors keep uninitialised fields. Integer
+  division is now globally safe. If new null or garbage crash sites appear,
+  investigate spawn/profile creation rather than adding more per-site guards.
 - Older dated sections below are kept as history. When one conflicts with a
   later section, the later section wins (for example, +750 was replaced by +32).
 

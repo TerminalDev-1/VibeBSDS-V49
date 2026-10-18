@@ -919,3 +919,31 @@ the Xiaomi Pad 6 and logged in through a temporary 9339 server, and Home matched
 SQLite (5266 trophies, Shelly 2231). Showdown gameplay was proven on its
 port-9340 twin, which differs only in `redirectPort`. The release notes were
 updated, and the download URL is unchanged.
+
+### Hidden Edit Controls button and division safety (2026-10-18)
+
+Unlike the upstream BSDS client, the in-match Edit Controls button (HUD
+button 1003, clip `edit_controls`) is hidden. Hiding it at creation
+(`0x296f04`) was not enough, because the per-frame HUD button loop recomputed
+its visibility byte. Its 1003 branch (`0x2a68f8`) now always stores hidden.
+TerminalDev-1 confirmed live that the button is gone.
+
+More broken-actor crashes appeared during that testing: a garbage data-row
+index (`0x249454`), two more off-map tile flag reads (`0x46a7c0`, `0x62f664`)
+and another renderer division (`0x248430`). A temporary crash-logging gadget
+located the division; it was never published. The patch now bounds-checks the
+row index against the table count. It also reads both tile flags as clear when
+the tile is null, and wraps libg's `__aeabi_idiv`, `uidiv`, `idivmod` and
+`uidivmod` PLT stubs. A zero divisor now returns quotient 0 (remainder =
+dividend); other divisors use the real helper unchanged. All of this has ARM
+emulation cases.
+
+Live, on the port-9340 twin with the logging gadget: several Showdown matches
+were played with an empty crash log and the button hidden (saved battles 56,
+10th, and 57, 4th +40). The v49.194 release asset was replaced. GitHub reports
+SHA-256 `349a44b77b9e9af05f9e1efaca2b9a1a7bed08f4a8914985d1b4e35396cd1ea1`
+(479,217,074 bytes, libg `c3880337...`), matching the local build. It differs
+from the previous asset only in `libg.so`. It uses port 9339 and logged in
+live with Home matching SQLite (5306 trophies, Shelly 2271). Broken actors
+still spawn, and their root cause (offline Showdown spawning more players
+than profiles) is not fixed.

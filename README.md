@@ -172,16 +172,16 @@ because a convincing menu card is not proof of working gameplay.
 Download the V49.194 APK from this repository's GitHub release:
 
 - [Download `VibeBSDS-V49.apk`](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/VibeBSDS-V49.apk)
-- SHA-256: `45b16d350b4e2233dee52507998810398411d082c5162ed51d9cdca2ab721eaa`
+- SHA-256: `349a44b77b9e9af05f9e1efaca2b9a1a7bed08f4a8914985d1b4e35396cd1ea1`
 - Android package: `com.projectbsds.v49`
 
-The 2026-10-18 APK redirects to the laptop-hosted game server at
-`192.168.1.103:9339`. It adds the four Showdown actor guards (health-divisor,
-off-map tile, null child container and null entry list) to the 2026-10-02
-Showdown build; only `libg.so` differs from that asset. Its port-9340 twin
-completed five consecutive Showdown matches without a crash on Xiaomi Pad 6,
-and this exact APK logged in on 9339 with Home matching SQLite. Use server
-checkpoint `48fbc6c` or newer. Earlier Gem Grab/Bounty gameplay
+The latest 2026-10-18 APK redirects to the laptop-hosted game server at
+`192.168.1.103:9339`. It hides the in-match Edit Controls button and adds
+Showdown protection for broken offline actors: off-map tile reads, null UI
+containers and lists, unchecked data rows, and zero-divisor integer division,
+which now yields 0 instead of SIGFPE. Its port-9340 twin ran several Showdown
+matches with an empty crash log on Xiaomi Pad 6, and this exact APK logged in
+on 9339 with Home matching SQLite. Use server checkpoint `48fbc6c` or newer. Earlier Gem Grab/Bounty gameplay
 proof remains documented below; final regression with this APK is pending.
 For your own installation, discover your game-server computer's current LAN
 address and configure the client accordingly; LAN addresses can change.
@@ -845,3 +845,31 @@ the Xiaomi Pad 6 and logged in through a temporary 9339 server, and Home matched
 SQLite (5266 trophies, Shelly 2231). Showdown gameplay was proven on its
 port-9340 twin, which differs only in `redirectPort`. The release notes were
 updated, and the download URL is unchanged.
+
+### Hidden Edit Controls button and division safety (2026-10-18)
+
+Unlike the upstream BSDS client, the in-match Edit Controls button (HUD
+button 1003, clip `edit_controls`) is hidden. Hiding it at creation
+(`0x296f04`) was not enough, because the per-frame HUD button loop recomputed
+its visibility byte. Its 1003 branch (`0x2a68f8`) now always stores hidden.
+TerminalDev-1 confirmed live that the button is gone.
+
+More broken-actor crashes appeared during that testing: a garbage data-row
+index (`0x249454`), two more off-map tile flag reads (`0x46a7c0`, `0x62f664`)
+and another renderer division (`0x248430`). A temporary crash-logging gadget
+located the division; it was never published. The patch now bounds-checks the
+row index against the table count. It also reads both tile flags as clear when
+the tile is null, and wraps libg's `__aeabi_idiv`, `uidiv`, `idivmod` and
+`uidivmod` PLT stubs. A zero divisor now returns quotient 0 (remainder =
+dividend); other divisors use the real helper unchanged. All of this has ARM
+emulation cases.
+
+Live, on the port-9340 twin with the logging gadget: several Showdown matches
+were played with an empty crash log and the button hidden (saved battles 56,
+10th, and 57, 4th +40). The v49.194 release asset was replaced. GitHub reports
+SHA-256 `349a44b77b9e9af05f9e1efaca2b9a1a7bed08f4a8914985d1b4e35396cd1ea1`
+(479,217,074 bytes, libg `c3880337...`), matching the local build. It differs
+from the previous asset only in `libg.so`. It uses port 9339 and logged in
+live with Home matching SQLite (5306 trophies, Shelly 2271). Broken actors
+still spawn, and their root cause (offline Showdown spawning more players
+than profiles) is not fixed.

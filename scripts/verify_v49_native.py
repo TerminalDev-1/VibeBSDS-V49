@@ -212,6 +212,16 @@ def verify(apk):
         assert cpu.reg_read(UC_ARM_REG_SP) == 0x200FFF0
         assert (cpu.reg_read(UC_ARM_REG_R0) != 0) == matches
         print('entries', hex(entries), count, matches, 'PASS')
+    for site in (0x46A7C0, 0x62F664):
+        for tile, flag in ((0, None), (0x2006000, 0), (0x2006000, 9)):
+            cpu = emulator()
+            cpu.reg_write(UC_ARM_REG_R0, tile)
+            if flag is not None:
+                cpu.mem_write(tile + 0x38, bytes([flag]))
+            cpu.emu_start(site, site + 4, count=10)
+            assert cpu.reg_read(UC_ARM_REG_PC) == site + 4
+            assert cpu.reg_read(UC_ARM_REG_R0) == (flag or 0)
+            print('tile flag', hex(site), hex(tile), flag, 'PASS')
     for container, children, wanted in ((0, [], 0x16), (0x2007000, [], 0x16),
                                         (0x2007000, [0x15, 0x16], 0x16),
                                         (0x2007000, [0x15], 0x16)):
@@ -229,6 +239,66 @@ def verify(apk):
         assert cpu.reg_read(UC_ARM_REG_R0) == expected
         assert cpu.reg_read(UC_ARM_REG_SP) == 0x200FFF0
         print('child', hex(container), children, hex(expected), 'PASS')
+    for index, rows in ((1, 5), (5, 5), (6, 5), (0x7FFF, 5)):
+        # Fake data table at globals+0x74: count stub at vtable+0x10 and a
+        # getItemAt stub at +0x14 that returns index + 0x100.
+        cpu = emulator()
+        cpu.mem_write(0xE88AE0 + 0x74, struct.pack("<I", 0x200A000))
+        cpu.mem_write(0x200A000, struct.pack("<I", 0x200A100))
+        cpu.mem_write(0x200A110, struct.pack("<II", 0x200A200, 0x200A210))
+        cpu.mem_write(0x200A200, struct.pack("<II", 0xE3A00000 | rows, 0xE12FFF1E))
+        cpu.mem_write(0x200A210, struct.pack("<II", 0xE2810C01, 0xE12FFF1E))
+        cpu.reg_write(UC_ARM_REG_R0, index)
+        stop = 0x249450 if index <= rows else 0x249488
+        cpu.emu_start(0x249448, stop, count=60)
+        assert cpu.reg_read(UC_ARM_REG_PC) == stop
+        assert cpu.reg_read(UC_ARM_REG_SP) == 0x200FFF0
+        if index <= rows:
+            assert cpu.reg_read(UC_ARM_REG_R0) == index - 1 + 0x100
+        print('row', index, rows, hex(stop), 'PASS')
+    for got, divmod in ((0xE0BB2C, False), (0xE0BAD8, False),
+                        (0xE0BB14, True), (0xE0BB5C, True)):
+        # The patched stub keeps its 2nd/3rd words, which still name the GOT slot.
+        target = None
+        for s in range(0xDCB000, 0xDCD000, 16):
+            a, b, c = struct.unpack_from("<III", library, s)
+            if a >> 24 == 0xEA and b & 0xFFFFFF00 == 0xE28CCA00 and c & 0xFFFFF000 == 0xE5BCF000:
+                rot = ((b >> 8) & 0xF) * 2
+                imm = ((b & 0xFF) >> rot | (b & 0xFF) << (32 - rot)) & 0xFFFFFFFF
+                if s + 8 + imm + (c & 0xFFF) == got:
+                    target = s
+                    break
+        assert target is not None
+        for divisor in (0, 7):
+            cpu = emulator()
+            # Resolve the GOT slot to a fake helper that returns 4 (quotient) and 1.
+            cpu.mem_write(got, struct.pack("<I", 0x200B000))
+            cpu.mem_write(0x200B000, struct.pack("<III", 0xE3A00004, 0xE3A01001, 0xE12FFF1E))
+            cpu.reg_write(UC_ARM_REG_R0, 30)
+            cpu.reg_write(UC_ARM_REG_R1, divisor)
+            cpu.emu_start(target, 0x1000, count=30)
+            assert cpu.reg_read(UC_ARM_REG_R0) == (4 if divisor else 0)
+            if divmod:
+                assert cpu.reg_read(UC_ARM_REG_R1) == (1 if divisor else 30)
+            print('division', hex(got), divisor, 'PASS')
+    for editable in (0, 1):
+        # 0x296f04 previously computed visible = !r0; it must now stay hidden.
+        cpu = emulator()
+        cpu.reg_write(UC_ARM_REG_R0, editable)
+        cpu.reg_write(UC_ARM_REG_R6, 0x2009000)
+        cpu.reg_write(UC_ARM_REG_R7, 0x55)
+        cpu.mem_write(0x2009004, b"\x01")
+        cpu.emu_start(0x296F04, 0x296F0C)
+        assert cpu.mem_read(0x2009004, 1) == b"\0"
+        print('edit controls hidden', editable, 'PASS')
+    # Per-frame loop: button 1003's branch must store 0 through 0x2a6748.
+    cpu = emulator()
+    cpu.reg_write(UC_ARM_REG_R4, 0x2009100)
+    cpu.mem_write(0x2009104, b"\x01")
+    cpu.emu_start(0x2A68F8, 0x2A674C, count=5)
+    assert cpu.reg_read(UC_ARM_REG_PC) == 0x2A674C
+    assert cpu.mem_read(0x2009104, 1) == b"\0"
+    print('edit controls frame update hidden PASS')
     for old_flag in (0, 1):
         cpu = emulator()
         cpu.reg_write(UC_ARM_REG_R4, 0x2000000)
@@ -241,7 +311,7 @@ def verify(apk):
         cpu.reg_write(UC_ARM_REG_R0, remaining)
         cpu.emu_start(0x2A34C4, 0x2A34CC)
         assert cpu.reg_read(UC_ARM_REG_PC) == 0x2A34CC
-    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profiles, health divisor, off-map tile, null child lookup, null entry search and result transition")
+    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profiles, health divisor, off-map tile, null child lookup, null entry search, hidden edit controls, renderer row bounds and result transition")
 
 
 if __name__ == "__main__":
