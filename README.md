@@ -128,6 +128,8 @@ server deliberately advertises Bounty rather than shipping a fake hybrid mode.
 
 ## Remaining work and known boundaries
 
+Open bugs are tracked in [bugs-to-fix.md](bugs-to-fix.md).
+
 - Battles use the client's local/offline bot simulation. This is not a
   server-authoritative real-time multiplayer battle engine.
 - Battle End now reaches the result screen, reward screen, and Home. Trophy

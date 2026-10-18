@@ -4,6 +4,13 @@ This file is the durable operating context for future Codex sessions working in
 this repository. Read it before changing code, packets, events, progression, or
 the Android client.
 
+**Open bugs live in [bugs-to-fix.md](bugs-to-fix.md). Every new session must
+read it at the start, prefer those items when deciding what to fix, and update
+it: add newly reported bugs, and move fixed ones to its "Fixed" section with
+evidence.** The current top item is the Solo Showdown arena chaos seen after
+the 2026-10-18 crash guards (flying brawlers and boxes, mismatched blue/red
+box rings, endless heal numbers).
+
 ## Project identity
 
 - Project name: **VibeBSDS V49**.
