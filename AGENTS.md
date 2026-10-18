@@ -71,10 +71,10 @@ the Android client.
   sprites remain unfinished. Offline requests do not include kills/damage/
   healing/MVP.
 - Public release asset: `v49.194` / `VibeBSDS-V49.apk`, SHA-256
-  `14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d`
-  (Solo Showdown name-guard build). It supersedes the earlier `7742556d...`
-  rank-animation build mentioned in older sections below. The newer
-  health-divisor guard build is experimental and unpublished.
+  `45b16d350b4e2233dee52507998810398411d082c5162ed51d9cdca2ab721eaa`
+  (2026-10-18 guarded Showdown build, port 9339; libg SHA-256 `c3715425...`).
+  It supersedes `14ca4208...` and `7742556d...` in older sections below. The
+  tablet normally runs its port-9340 twin (`22c999e1...`).
 - Older dated sections below are kept as history. When one conflicts with a
   later section, the later section wins (for example, +750 was replaced by +32).
 
@@ -253,6 +253,15 @@ to find out why the client does not save or resend the LoginOk token.
 
 ### Publishing Android client updates
 
+- MANDATORY (TerminalDev-1, 2026-10-18): every verified client-side change
+  (native `libg.so` patches, Frida script or config, or any other APK content)
+  must be published as the public `v49.194` release asset so the public release
+  can be checked against the source. A client change is not finished until the
+  release asset, release notes and documented SHA-256 match. Only changes that
+  are entirely server-side may skip publishing. Public builds always use
+  `redirectPort` 9339 to match the committed server default; a machine-local
+  port variant (such as the maintainer's 9340 tablet build) is not a substitute
+  for the public asset.
 - Publish signed APKs as GitHub release assets, never as tracked Git files.
 - Use the `v49.194` release asset `VibeBSDS-V49.apk` for the current client.
   Replace that asset when publishing an updated compatible APK, preserving the

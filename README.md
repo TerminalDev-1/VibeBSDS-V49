@@ -172,15 +172,16 @@ because a convincing menu card is not proof of working gameplay.
 Download the V49.194 APK from this repository's GitHub release:
 
 - [Download `VibeBSDS-V49.apk`](https://github.com/TerminalDev-1/VibeBSDS-V49/releases/download/v49.194/VibeBSDS-V49.apk)
-- SHA-256: `14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d`
+- SHA-256: `45b16d350b4e2233dee52507998810398411d082c5162ed51d9cdca2ab721eaa`
 - Android package: `com.projectbsds.v49`
 
-The 2026-10-02 Showdown APK redirects to the laptop-hosted game server at
-`192.168.1.103:9339`. This normal build completed ten-player Solo Showdown,
-placement/reward screens, Exit and reconnect on Xiaomi Pad 6. TerminalDev-1
-helped play matches and confirmed cube pickup. Intermittent Play crashes
-remain; the newer experimental health guards are not included in this asset.
-Use server checkpoint `8501292` or newer. Earlier Gem Grab/Bounty gameplay
+The 2026-10-18 APK redirects to the laptop-hosted game server at
+`192.168.1.103:9339`. It adds the four Showdown actor guards (health-divisor,
+off-map tile, null child container and null entry list) to the 2026-10-02
+Showdown build; only `libg.so` differs from that asset. Its port-9340 twin
+completed five consecutive Showdown matches without a crash on Xiaomi Pad 6,
+and this exact APK logged in on 9339 with Home matching SQLite. Use server
+checkpoint `48fbc6c` or newer. Earlier Gem Grab/Bounty gameplay
 proof remains documented below; final regression with this APK is pending.
 For your own installation, discover your game-server computer's current LAN
 address and configure the client accordingly; LAN addresses can change.
@@ -829,3 +830,18 @@ crash log. TerminalDev-1 confirmed the +100 result screen. The +60 confirms a
 mid-table placement value live. All four observed crash sites from this
 investigation are now guarded. Broken actors are still spawned; the guards stop
 them crashing the client. The public release is unchanged.
+
+### Guarded Showdown APK published (2026-10-18)
+
+The v49.194 release asset `VibeBSDS-V49.apk` now contains all four Showdown
+actor guards. GitHub reports SHA-256
+`45b16d350b4e2233dee52507998810398411d082c5162ed51d9cdca2ab721eaa` and
+479,217,074 bytes, matching the signed local build. It is the previous
+`14ca4208...` asset with only `libg.so` replaced by the current
+`scripts/patch_v49_client.py` output (libg SHA-256 `c3715425...`). It uses
+`redirectHost` 192.168.1.103 and `redirectPort` 9339, with the existing
+certificate, zip alignment and v2/v3 signatures. It was installed in place on
+the Xiaomi Pad 6 and logged in through a temporary 9339 server, and Home matched
+SQLite (5266 trophies, Shelly 2231). Showdown gameplay was proven on its
+port-9340 twin, which differs only in `redirectPort`. The release notes were
+updated, and the download URL is unchanged.
