@@ -78,9 +78,11 @@ box rings, endless heal numbers).
   sprites remain unfinished. Offline requests do not include kills/damage/
   healing/MVP.
 - Public release asset: `v49.194` / `VibeBSDS-V49.apk`, SHA-256
-  `349a44b77b9e9af05f9e1efaca2b9a1a7bed08f4a8914985d1b4e35396cd1ea1`
-  (2026-10-18: Showdown guards, division wrappers and hidden Edit Controls;
-  port 9339; libg SHA-256 `c3880337...`). It supersedes `45b16d35...`,
+  `45b16d350b4e2233dee52507998810398411d082c5162ed51d9cdca2ab721eaa`
+  (four Showdown guards, port 9339). It was RESTORED on 2026-10-18 after
+  TerminalDev-1 withdrew `349a44b7...` (division wrappers, hidden Edit
+  Controls) because of flying actors and continued crashes; see
+  bugs-to-fix.md entry 0. Do not republish the withdrawn build. It supersedes
   `14ca4208...` and `7742556d...` in older sections below. The tablet normally
   runs its port-9340 twin (`63221dd7...`, normal gadget), built by the
   gitignored `tools/build_health_port_9340.py`. `tools/swap_diag_gadget.py`

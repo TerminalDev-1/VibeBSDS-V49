@@ -8,6 +8,32 @@ verified live. Do not delete it.
 
 ## Open
 
+### 0. Release rollback and crashes on the division-wrapper build (2026-10-18)
+
+TerminalDev-1 asked for the `349a44b7...` release (hidden Edit Controls,
+global zero-safe division, row-bounds and extra tile guards) to be pulled
+immediately. The `v49.194` asset was restored to the previous public build
+`45b16d350b4e2233dee52507998810398411d082c5162ed51d9cdca2ab721eaa`, and its
+notes carry a rollback notice. GitHub's digest matched after the restore.
+The tablet still runs the withdrawn build's port-9340 twin (`63221dd7...`).
+
+Reported on that build:
+
+- **Everything starts flying as soon as a match loads** (see entry 1).
+- **A crash during the startup Brawl Stars logo**, before reaching Home. It is
+  not in the crash buffer read at 21:30, so no native evidence yet. Capture it
+  with `adb logcat -b crash` (or the crash-logging gadget) next time.
+- **Continued in-match crashes.** Two were logged (`screenshots/port-9340-health/crash-10.txt`):
+  - 21:30:04, uptime 313 s: SIGSEGV null+0xc at `libg.so 0x60e850`, from
+    actor UI `0x451d10`, then `0x247b68`, then the renderer loop `0x24dc6c`.
+  - 21:30:32, uptime 24 s: SIGSEGV null+0x4 at `libg.so 0x246d34`, directly
+    from the renderer loop `0x24dc6c`.
+  These are the same broken-actor family as the nine guarded sites. Per-site
+  guarding is not converging; fix the spawn/profile root cause instead.
+
+Keep the hidden Edit Controls button (`0x296f04` + `0x2a68f8`); it worked live.
+Re-evaluate everything else in the withdrawn build before publishing again.
+
 ### 1. Solo Showdown arena chaos after the 2026-10-18 crash guards
 
 Reported by TerminalDev-1 on 2026-10-18 after playing the guarded client
