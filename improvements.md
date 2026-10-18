@@ -849,3 +849,13 @@ re-signed with the existing certificate and installed in place on the Xiaomi Pad
 4887 trophies, Shelly at 1857, 1750 coins and 69 credits, matching SQLite. No
 match has been played on this build yet. It is not published; the GitHub release
 remains the 9339 build.
+
+### Scaled Solo Showdown placement trophies (2026-10-18)
+
+At TerminalDev-1's request, Solo Showdown placements now award +100 (1st),
++80, +60, +40 and +20 (5th). Places 6-10 still lose zero trophies, and team-mode
+wins remain +32. The previous +32/+8/+6/+4/+2 table made second place worth a
+quarter of a win. The values come only from `trophy_delta` in `GameData.py`;
+Battle End displays the stored delta. Regression tests cover all ten
+placements, and the server change needs no new APK. Not yet live-tested in a
+Showdown match.

@@ -118,6 +118,7 @@ def star_road_remaining(owned_brawlers):
 
 def trophy_delta(result, rank):
     if rank > 0:
-        return {1: 32, 2: 8, 3: 6, 4: 4, 5: 2}.get(rank, 0)
+        # Solo Showdown placements scale evenly from first place; 6-10 lose nothing.
+        return {1: 100, 2: 80, 3: 60, 4: 40, 5: 20}.get(rank, 0)
     # V49 uses 0 for victory, 1 for defeat and 2 for draw in team modes.
     return {0: 32, 1: 0, 2: 0}.get(result, 0)

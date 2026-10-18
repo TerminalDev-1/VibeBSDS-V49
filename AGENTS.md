@@ -107,7 +107,8 @@ Do not advertise or claim working Brawl Ball.
 - Team loss: `0` trophy change, 10 tokens, 8 credits.
 - Keep the five-trophy safety floor required by this client build.
 - Solo Showdown is enabled as the third event with the tested development
-  client. Places 1-5 award +32/+8/+6/+4/+2; places 6-10 lose zero.
+  client. Places 1-5 award +100/+80/+60/+40/+20 (since 2026-10-18; earlier
+  sections quoting +32/+8/+6/+4/+2 are historical); places 6-10 lose zero.
   Intermittent Play crashes remain; the public release now includes Solo guards.
 - HomeData and profile values should come from the database, not newly
   hardcoded rank/trophy/power values.

@@ -63,7 +63,7 @@ limitations while retaining credit for the upstream BSDS foundation.
 Team victories currently award `+32` trophies, 20 Brawl Pass tokens, and 20
 credits. Defeats award `0` trophy change, 10 tokens, and 8 credits, with a
 five-trophy floor required for V49.194 client stability. Solo Showdown awards
-+32/+8/+6/+4/+2 trophies for places 1-5 and zero trophy loss for places 6-10.
++100/+80/+60/+40/+20 trophies for places 1-5 and zero trophy loss for places 6-10.
 Solo is enabled on Skull Creek with the live-tested Showdown release client.
 Intermittent Play crashes remain under investigation.
 
@@ -774,3 +774,13 @@ Verification: 46 automated tests (12 new), Classes compilation and diff checks
 pass. Not yet live-tested on the device. Login, keep-alive, a full match result
 and reconnect should be checked after restarting `Core.py`. No replacement APK
 is needed.
+
+### Scaled Solo Showdown placement trophies (2026-10-18)
+
+At TerminalDev-1's request, Solo Showdown placements now award +100 (1st),
++80, +60, +40 and +20 (5th). Places 6-10 still lose zero trophies, and team-mode
+wins remain +32. The previous +32/+8/+6/+4/+2 table made second place worth a
+quarter of a win. The values come only from `trophy_delta` in `GameData.py`;
+Battle End displays the stored delta. Regression tests cover all ten
+placements, and the server change needs no new APK. Not yet live-tested in a
+Showdown match.

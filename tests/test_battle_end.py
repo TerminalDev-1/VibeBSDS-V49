@@ -65,7 +65,7 @@ class BattleEndTests(unittest.TestCase):
         self.assertEqual(0, self.finish(1, 0, rank=1)["Result"])
 
     def test_showdown_placements_persist_zero_losses_and_first_place_award(self):
-        for rank, delta in [(1, 32), (2, 8), (3, 6), (4, 4), (5, 2),
+        for rank, delta in [(1, 100), (2, 80), (3, 60), (4, 40), (5, 20),
                             (6, 0), (7, 0), (8, 0), (9, 0), (10, 0)]:
             with self.subTest(rank=rank):
                 before = self.player.Trophies
