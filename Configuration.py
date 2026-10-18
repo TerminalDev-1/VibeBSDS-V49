@@ -12,3 +12,11 @@ settings = {
     "PrintEnabled": True,
     "MinSecondsBetweenBattleResults": 30,
 }
+
+# Machine-specific overrides live in LocalConfiguration.py (gitignored), e.g.
+# settings = {"Port": 9340} when the installed client redirects to 9340.
+try:
+    from LocalConfiguration import settings as _local_settings
+except ImportError:
+    _local_settings = {}
+settings.update(_local_settings)

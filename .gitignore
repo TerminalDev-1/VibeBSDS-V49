@@ -15,3 +15,5 @@ __pycache__/
 build/
 tools/
 /screenshots/
+/LocalConfiguration.py
+/player.sqlite-*

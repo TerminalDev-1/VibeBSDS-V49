@@ -226,7 +226,9 @@ server first. You can make a desktop shortcut to it.
 
 The listening port is `Port` in `Configuration.py` (default `9339`). It must
 match `redirectPort` in the client APK's `lib/armeabi-v7a/libkagenay.c.so`, so
-moving the server to another port also needs a re-signed client.
+moving the server to another port also needs a re-signed client. To override
+settings on one computer only, create a gitignored `LocalConfiguration.py`
+containing, for example, `settings = {"Port": 9340}`.
 
 Run the test suite with:
 

@@ -837,3 +837,15 @@ is built and installed. `Start VibeBSDS Server.bat` starts the server on that
 port and refuses, with an explanation, when another server (for example
 OpenMoco) already holds it. Verified locally: the launcher refused while the
 port was taken and started the server once it was free. All 46 tests pass.
+
+### Running alongside another server on port 9340 (2026-10-18)
+
+Settings can now be overridden per computer with a gitignored
+`LocalConfiguration.py`, while the committed default stays 9339 for the public
+client. On the maintainer's machine VibeBSDS runs on 9340 so OpenMoco can keep
+9339. A copy of the published APK with only `redirectPort` changed to 9340 was
+re-signed with the existing certificate and installed in place on the Xiaomi Pad
+6, keeping account data. Live check: the tablet connected on 9340 and Home showed
+4887 trophies, Shelly at 1857, 1750 coins and 69 credits, matching SQLite. No
+match has been played on this build yet. It is not published; the GitHub release
+remains the 9339 build.

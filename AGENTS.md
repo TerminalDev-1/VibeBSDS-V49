@@ -22,9 +22,20 @@ the Android client.
 - TCP listener: `0.0.0.0:9339`, set by `Port` in `Configuration.py`. It must
   match the APK's `redirectPort` in `lib/armeabi-v7a/libkagenay.c.so`.
 - TerminalDev-1 also runs an OpenMoco server (`Desktop\MO.CO V13.5`, started
-  by `Desktop\Run OpenMoco Server.bat`) on port 9339. Only one can listen at a
-  time. Never stop OpenMoco without asking. The requested long-term fix is a
-  different VibeBSDS port, which needs a re-signed APK installed on the tablet.
+  by `Desktop\Run OpenMoco Server.bat`) on port 9339. Never stop OpenMoco
+  without asking. Since 2026-10-18 this computer runs VibeBSDS on 9340 through
+  the gitignored `LocalConfiguration.py` (`settings = {"Port": 9340}`), so both
+  servers can run together. The committed default stays 9339 to match the public
+  release APK.
+- The tablet has an UNPUBLISHED port-9340 build installed in place (same
+  certificate, data kept; first install date 2026-08-06 retained). It is the
+  published 14ca... APK with only `redirectPort` changed, SHA-256
+  `7938519b8b2bbdabc4be5190110a632a5190858bebc3ed6b875b22ed23ea323e`,
+  saved at `screenshots/port-9340/VibeBSDS-V49-port9340.apk` and built by
+  `tools/build_port_9340.py` (gitignored). Login was verified on 9340: Home showed
+  4887 trophies, Shelly 1857, 1750 coins and 69 credits, matching SQLite
+  (`screenshots/port-9340/login-home.png`). No match was played on this build.
+  The public GitHub release is unchanged at 9339 by request.
 - `Start VibeBSDS Server.bat` (Desktop shortcut "Start VibeBSDS Brawl Stars
   Server") starts Core.py and refuses if the configured port is already taken.
 - Android package: `com.projectbsds.v49`.
