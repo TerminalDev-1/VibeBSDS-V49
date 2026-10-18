@@ -32,9 +32,18 @@ the Android client.
   and brawler unlocking work. Exact pass-credit amounts and claimed nodes are
   durable and synchronize back into HomeData after the reward animation.
 - Brawl Pass display/token progression only partly works; see TODOs below.
-- Battle End has a shared result/reward screen path for Gem Grab and Bounty.
-  Trophy bars and token counters animate; individual flying trophy sprites
-  remain unfinished. Offline requests do not include kills/damage/healing/MVP.
+- Battle End has a shared result/reward screen path for Gem Grab and Bounty,
+  and a placement result path for Solo Showdown (first, second and fifth place
+  shown live). Trophy bars and token counters animate; individual flying trophy
+  sprites remain unfinished. Offline requests do not include kills/damage/
+  healing/MVP.
+- Public release asset: `v49.194` / `VibeBSDS-V49.apk`, SHA-256
+  `14ca420853d26607788550c8c8cd6a1ce0723ceefdb665955852b76530b4fc9d`
+  (Solo Showdown name-guard build). It supersedes the earlier `7742556d...`
+  rank-animation build mentioned in older sections below. The newer
+  health-divisor guard build is experimental and unpublished.
+- Older dated sections below are kept as history. When one conflicts with a
+  later section, the later section wins (for example, +750 was replaced by +32).
 
 ## Event configuration - do not rediscover this the hard way
 
@@ -63,6 +72,16 @@ Do not advertise or claim working Brawl Ball.
 - Do not restart this investigation unless TerminalDev-1 explicitly requests
   it. If it is ever retried, require live arena proof: a real ball, goals,
   correct scoring, no gem mine, no carried-gem counters, and no roulette.
+- 2026-10-18 read-only audit (no device or code changes): the APK's
+  `locations.csv` maps location 24 to `Ball1` (BrawlBall, `Laserball_1`) and
+  `game_mode_variations.csv` keeps BrawlBall (variation 5) enabled; `libg.so`
+  contains LaserBall logic. The hybrid therefore came from the correct map and
+  variation, so the gem mine is chosen by some other native path. That path is
+  unidentified. A time-boxed native investigation was offered and declined for
+  now; the estimate above has not been re-proven either way.
+- `active_events()` still has the old `VIBEBSDS_EVENT_SLOT`/`VIBEBSDS_EVENT_MAP`
+  debug override from that attempt. Its variation table maps map 13 to 0 (not
+  6), so do not use it for Showdown.
 
 ## Progression details
 
@@ -77,9 +96,12 @@ Do not advertise or claim working Brawl Ball.
 - Do not claim a feature works merely because its packet encodes or its menu
   renders. Verify persistence across reconnect when relevant.
 
-### Trophy policy verification (2026-10-01)
+### Trophy policy verification (2026-10-01) - SUPERSEDED
 
-- Team wins now add 750 trophies; defeats remove none. Token/credit amounts,
+Historical only. The +750 policy was replaced by +32 wins in "Correct outcome
+field and +32 policy" below; its live results also predate the outcome-field fix.
+
+- Team wins then added 750 trophies; defeats remove none. Token/credit amounts,
   draw behavior, and the unadvertised Showdown placement table are unchanged.
 - Live Bounty result displayed Victory +750. Account trophies 60 -> 810 and
   Shelly 55 -> 805 matched SQLite and Home after reconnect.
@@ -115,6 +137,38 @@ Do not advertise or claim working Brawl Ball.
 - Some brawler-specific behavior/content remains unfinished.
 - Additional modes must be proven in a live match before being advertised.
 - Real server-authoritative multiplayer is not implemented.
+
+### Known code defects from the 2026-10-18 static audit (unfixed)
+
+These come from reading the code, not from live reproduction. Fix each one
+narrowly and add a regression test before claiming it is fixed.
+
+- `EndClientTurnMessage.decode`: a command ID that has no decoder class (an
+  unknown ID or a string placeholder in `LogicCommandManager`) is not consumed.
+  Every later command in that turn is then read from the wrong offset.
+- `LogicPurchaseOfferCommand.execute` takes two arguments but is called with
+  three, and its `Messaging.sendMessage` call omits `cryptoInit`. Purchasing
+  raises `TypeError`, which also drops the rest of that turn's commands. Its
+  hardcoded `OwnedBrawlersLatest`/`OwnedPinsLatest` tables are unused upstream
+  leftovers.
+- `Database.login`: if the token check fails, the account is found by
+  `AndroidID` alone, so any client that sends another device's Android ID gets
+  that account.
+- `AskForBattleEndMessage`: Outcome and Rank are trusted from the client with no
+  server-issued match to compare against, so repeated 14110 messages each award
+  trophies, tokens and credits. This is inherent to offline battles, but nothing
+  limits replays.
+- `Connection.run` uses `self.client.recv(7)` rather than its exact-length
+  `recv` helper, so a split header desynchronises the stream. With no socket
+  timeout, a silent client blocks forever and the 7-second idle check never runs.
+- `Crypto.decryptClient` ignores the return value of `secretbox_open`, so a
+  failed MAC is decoded as payload instead of being rejected. The server private
+  key is the shared upstream BSDS key.
+- `MessageManager.receiveMessage` sends LobbyInfo (23457) after every client
+  message above 10100, including keep-alives and failed handlers.
+- `ByteStream.readString` reads the length as unsigned, so its `<= -1` branch
+  cannot run. A null string (-1) takes the "too long" path and returns bytes
+  `b''` instead of a string.
 
 ## Android and device safety
 
