@@ -183,6 +183,33 @@ def verify(apk):
         cpu.emu_start(0x450248, 0x450258, count=30)
         assert cpu.reg_read(UC_ARM_REG_PC) == 0x450258
         assert cpu.reg_read(UC_ARM_REG_R9) == (0x2005000 if present else 0)
+    for tile, flag in ((0, None), (0x2006000, 0), (0x2006000, 7)):
+        cpu = emulator()
+        cpu.reg_write(UC_ARM_REG_R0, tile)
+        cpu.reg_write(UC_ARM_REG_R4, 0x55)
+        if flag is not None:
+            cpu.mem_write(tile + 0x38, bytes([flag]))
+        cpu.emu_start(0x2447E0, 0x2447E4, count=10)
+        assert cpu.reg_read(UC_ARM_REG_PC) == 0x2447E4
+        assert cpu.reg_read(UC_ARM_REG_R4) == (flag or 0)
+        print('tile', hex(tile), flag, 'PASS')
+    for container, children, wanted in ((0, [], 0x16), (0x2007000, [], 0x16),
+                                        (0x2007000, [0x15, 0x16], 0x16),
+                                        (0x2007000, [0x15], 0x16)):
+        cpu = emulator()
+        if container:
+            cpu.mem_write(container, struct.pack("<IIII", 0, 0x2007100, 0, len(children)))
+            for index, child_id in enumerate(children):
+                child = 0x2007200 + index * 0x40
+                cpu.mem_write(0x2007100 + index * 4, struct.pack("<I", child))
+                cpu.mem_write(child + 0x24, struct.pack("<I", child_id))
+        cpu.reg_write(UC_ARM_REG_R0, container)
+        cpu.reg_write(UC_ARM_REG_R1, wanted)
+        cpu.emu_start(0x85D944, 0x1000, count=200)
+        expected = 0x2007200 + children.index(wanted) * 0x40 if wanted in children else 0
+        assert cpu.reg_read(UC_ARM_REG_R0) == expected
+        assert cpu.reg_read(UC_ARM_REG_SP) == 0x200FFF0
+        print('child', hex(container), children, hex(expected), 'PASS')
     for old_flag in (0, 1):
         cpu = emulator()
         cpu.reg_write(UC_ARM_REG_R4, 0x2000000)
@@ -195,7 +222,7 @@ def verify(apk):
         cpu.reg_write(UC_ARM_REG_R0, remaining)
         cpu.emu_start(0x2A34C4, 0x2A34CC)
         assert cpu.reg_read(UC_ARM_REG_PC) == 0x2A34CC
-    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profiles, health divisor and result transition")
+    print("Native ARM checks passed: Bounty, null guards, rank badges, Showdown profiles, health divisor, off-map tile, null child lookup and result transition")
 
 
 if __name__ == "__main__":

@@ -34,8 +34,19 @@ the Android client.
   saved at `screenshots/port-9340/VibeBSDS-V49-port9340.apk` and built by
   `tools/build_port_9340.py` (gitignored). Login was verified on 9340: Home showed
   4887 trophies, Shelly 1857, 1750 coins and 69 credits, matching SQLite
-  (`screenshots/port-9340/login-home.png`). No match was played on this build.
+  (`screenshots/port-9340/login-home.png`).
   The public GitHub release is unchanged at 9339 by request.
+- SUPERSEDED on the tablet the same evening by the unpublished port-9340
+  renderer-guard build (SHA-256
+  `f046410f9b0aeb3858494316d0e9df3ab315a8b1242e00b13c28def11d8de18d`, built by
+  the gitignored `tools/build_health_port_9340.py` from the current
+  `scripts/patch_v49_client.py`). It completed Showdown battles 48-50 without a
+  crash. The `0x88fc00` null read (called from `0x454590`) is still unguarded.
+  Do not start the per-site guard chain again without first checking whether
+  the off-map actor can be prevented at spawn. Crash logs are in
+  `screenshots/port-9340-health/crash-*.txt`.
+- The replay guard's 30 s margin is narrower than first measured: battles 48 and
+  49 were 42 s apart after a quick elimination.
 - `Start VibeBSDS Server.bat` (Desktop shortcut "Start VibeBSDS Brawl Stars
   Server") starts Core.py and refuses if the configured port is already taken.
 - Android package: `com.projectbsds.v49`.

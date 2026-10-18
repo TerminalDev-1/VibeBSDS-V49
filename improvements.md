@@ -859,3 +859,30 @@ quarter of a win. The values come only from `trophy_delta` in `GameData.py`;
 Battle End displays the stored delta. Regression tests cover all ten
 placements, and the server change needs no new APK. Not yet live-tested in a
 Showdown match.
+
+### Showdown renderer guards: live checkpoint (2026-10-18)
+
+The published client hit the known Play SIGFPE repeatedly in Solo Showdown.
+Unlike the upstream BSDS client, the reproducible patch now adds three guards
+for actors that offline Showdown occasionally spawns outside the 60x60 arena
+or without UI objects:
+
+- The two health-fraction divide-by-zero guards (`0x242624`, `0x248544`),
+  live-tested for the first time. The SIGFPE stopped.
+- `0x2447e0`: the map tile under an actor can be null outside the map (the
+  getter at `0x5a4910` bounds-checks it). Its flag byte now reads as clear.
+  Observed live: tile index 9840 against 3600 tiles.
+- `0x85d944`: child lookup by ID treats a null container as empty and returns
+  0, exactly as it already did for an empty container. Observed live as
+  null+0xc from actor UI at `0x45058c`.
+
+Each guard has ARM emulation cases in `scripts/verify_v49_native.py`, and all
+native checks pass. On the Xiaomi Pad 6 (unpublished port-9340 build, SHA-256
+`f046410f9b0aeb3858494316d0e9df3ab315a8b1242e00b13c28def11d8de18d`), three
+consecutive Showdown matches completed without a crash: battles 48 (Brock, 7th),
+49 (Shelly, 6th) and 50 (Shelly, 1st). Battle 50 stored +100, and Shelly went
+from 1931 to 2031, which is the first live proof of the scaled placement table.
+The crash is spawn-dependent, not trophy-dependent: Shelly played at 1931 after
+the crashes. A fourth null read at `0x88fc00` (from `0x454590`, null+0x14) was
+seen once before these matches and is still unguarded, so Showdown can still
+crash occasionally. The public release is unchanged.

@@ -166,6 +166,28 @@ def patch_library(original):
     struct.pack_into("<II", data, header + 16,
                      health_update_at + 16 - 0xEAA000,
                      health_update_at + 16 - 0xEAA000)
+    # Renderer setup reads a flag byte from the map tile under each actor.
+    # The tile getter (0x5a4910) returns null outside the map, as for an actor
+    # placed beyond a 60x60 Showdown arena; treat that tile's flag as clear.
+    tile_at = health_update_at + 16
+    tile = [0xE3500000, 0x03A04000, 0x15D04038, branch(tile_at + 12, 0x2447E4)]
+    if any(data[tile_at:tile_at + 16]):
+        raise ValueError("Tile flag guard executable padding is unavailable")
+    struct.pack_into("<4I", data, tile_at, *tile)
+    struct.pack_into("<I", data, 0x2447E0, branch(0x2447E0, tile_at))
+    struct.pack_into("<II", data, header + 16,
+                     tile_at + 16 - 0xEAA000, tile_at + 16 - 0xEAA000)
+    # Child lookup by ID (0x85d944) returns 0 for an empty container. Actor UI
+    # passes a null container for the same off-map Showdown actors; treat it as
+    # empty instead of reading its count at null+0xc.
+    child_at = tile_at + 16
+    child = [0xE3500000, 0x012FFF1E, 0xE92D4800, branch(child_at + 12, 0x85D948)]
+    if any(data[child_at:child_at + 16]):
+        raise ValueError("Child lookup guard executable padding is unavailable")
+    struct.pack_into("<4I", data, child_at, *child)
+    struct.pack_into("<I", data, 0x85D944, branch(0x85D944, child_at))
+    struct.pack_into("<II", data, header + 16,
+                     child_at + 16 - 0xEAA000, child_at + 16 - 0xEAA000)
     # A received result supersedes the practice end state. Keep the handler's
     # zero return, but let the overlay consume the newly stored result once.
     struct.pack_into("<II", data, 0x431364, 0xE3A00000, 0xE5C403B4)
