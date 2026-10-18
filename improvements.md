@@ -828,3 +828,12 @@ device verification is pending.
 Still open: Android ID recovery remains the effective login identity because the
 tablet's presented token has never matched the stored token. Battle results
 remain client-reported.
+
+### Configurable port and Windows launcher (2026-10-18)
+
+The server port is now `Port` in `Configuration.py` instead of being hardcoded
+in `Core.py`. It stays at 9339 until a client APK with a matching `redirectPort`
+is built and installed. `Start VibeBSDS Server.bat` starts the server on that
+port and refuses, with an explanation, when another server (for example
+OpenMoco) already holds it. Verified locally: the launcher refused while the
+port was taken and started the server once it was free. All 46 tests pass.

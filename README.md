@@ -224,6 +224,10 @@ On Windows you can instead double-click `Start VibeBSDS Server.bat`. It refuses
 to start, and says why, if another server already uses port 9339; close that
 server first. You can make a desktop shortcut to it.
 
+The listening port is `Port` in `Configuration.py` (default `9339`). It must
+match `redirectPort` in the client APK's `lib/armeabi-v7a/libkagenay.c.so`, so
+moving the server to another port also needs a re-signed client.
+
 Run the test suite with:
 
 ```powershell

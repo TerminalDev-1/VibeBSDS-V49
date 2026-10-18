@@ -1,3 +1,4 @@
+import Configuration
 from Classes.ServerConnection import ServerConnection
 
-ServerConnection(("0.0.0.0", 9339))
+ServerConnection(("0.0.0.0", Configuration.settings["Port"]))

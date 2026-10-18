@@ -19,7 +19,14 @@ the Android client.
 
 ## Verified current state
 
-- TCP listener: `0.0.0.0:9339`.
+- TCP listener: `0.0.0.0:9339`, set by `Port` in `Configuration.py`. It must
+  match the APK's `redirectPort` in `lib/armeabi-v7a/libkagenay.c.so`.
+- TerminalDev-1 also runs an OpenMoco server (`Desktop\MO.CO V13.5`, started
+  by `Desktop\Run OpenMoco Server.bat`) on port 9339. Only one can listen at a
+  time. Never stop OpenMoco without asking. The requested long-term fix is a
+  different VibeBSDS port, which needs a re-signed APK installed on the tablet.
+- `Start VibeBSDS Server.bat` (Desktop shortcut "Start VibeBSDS Brawl Stars
+  Server") starts Core.py and refuses if the configured port is already taken.
 - Android package: `com.projectbsds.v49`.
 - Client version: V49.194.
 - Battles currently use the client's local/offline bot simulation. They are not
