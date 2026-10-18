@@ -802,3 +802,29 @@ Final normal-mode regression with this APK remains pending. Earlier notes
 about an unchanged public asset or a development-client requirement are
 superseded by this publication. Binaries, signing material and evidence remain
 outside Git; this checkpoint commits documentation only.
+
+### Server hardening from a static code audit (2026-10-18)
+
+Claude Code (Anthropic) audited the server for single lines carrying whole
+functions and fixed the following inherited or later defects:
+
+- `EndClientTurnMessage` stops at the first command it cannot decode. Previously
+  the unread payload was parsed as further commands.
+- `LogicPurchaseOfferCommand.execute` accepts the turn's three arguments and
+  passes `cryptoInit` when sending its resync message.
+- `Connection.run` uses the exact-length reader for headers and payloads, has a
+  60-second socket idle timeout, and always disconnects cleanly.
+- `Crypto.decryptClient` checks the secretbox MAC and returns None on failure.
+- `Database.record_battle` can refuse results sent too soon after the previous
+  one (30 seconds by default, configurable).
+- `MessageManager` sends LobbyInfo only after a message was handled successfully.
+- `ByteStream.readString` treats the length as signed. Null strings return `''`.
+- The `active_events` debug override reuses the advertised variations.
+
+Evidence: 12 new regression tests, including a real-key secretbox tamper test,
+a split-header socket test and misaligned-turn tests. All 46 tests pass. Live
+device verification is pending.
+
+Still open: Android ID recovery remains the effective login identity because the
+tablet's presented token has never matched the stored token. Battle results
+remain client-reported.

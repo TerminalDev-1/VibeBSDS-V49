@@ -53,7 +53,8 @@ class Crypto:
             crypto_box_curve25519xsalsa20poly1305_tweet_beforenm(self.s, self.client_public_key, self.server_private_key)
             payload = bytearray(16) + bytearray(payload) 
             decrypted = bytearray(len(payload))
-            crypto_secretbox_xsalsa20poly1305_tweet_open(decrypted, payload, len(payload), bytes(self.nonce), self.s)
+            if crypto_secretbox_xsalsa20poly1305_tweet_open(decrypted, payload, len(payload), bytes(self.nonce), self.s) != 0:
+                return None
             decrypted = decrypted[32:]
             self.decryptNonce = Nonce(bytes(decrypted[24:48]))
             return decrypted[48:]
@@ -63,7 +64,10 @@ class Crypto:
             self.decryptNonce.increment()
             payload = bytearray(16) + bytearray(payload)
             decrypted = bytearray(len(payload))
-            crypto_secretbox_xsalsa20poly1305_tweet_open(decrypted, payload, len(payload), bytes(self.decryptNonce), self.shared_encryption_key)
+            # A failed MAC means a tampered packet or a desynchronised nonce.
+            # Return None so the connection drops it instead of decoding zeros.
+            if crypto_secretbox_xsalsa20poly1305_tweet_open(decrypted, payload, len(payload), bytes(self.decryptNonce), self.shared_encryption_key) != 0:
+                return None
             # NaCl's low-level API leaves the 32-byte zero prefix used by
             # crypto_secretbox in the output buffer.  That prefix is transport
             # framing, not part of the Laser message payload.

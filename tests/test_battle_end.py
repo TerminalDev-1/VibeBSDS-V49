@@ -19,6 +19,10 @@ class BattleEndTests(unittest.TestCase):
         self.player = Player()
         self.player.load(account, brawlers)
         self.player.reload = lambda: self.player.load(*self.db.load(self.player.ID[1]))
+        # These tests submit results back to back; the replay guard has its own tests.
+        settings = patch.dict("Configuration.settings", {"MinSecondsBetweenBattleResults": 0})
+        settings.start()
+        self.addCleanup(settings.stop)
 
     def tearDown(self):
         self.directory.cleanup()

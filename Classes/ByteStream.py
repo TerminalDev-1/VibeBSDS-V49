@@ -254,34 +254,22 @@ class ByteStream(ChecksumEncoder):
         length += (self.messagePayload[self.offset + 2] << 8)
         length += (self.messagePayload[self.offset + 3])
         self.offset += 4
+        # The length is a signed 32-bit integer; -1 marks a null string.
+        if length >= 0x80000000:
+            length -= 0x100000000
         if length <= -1:
             if length != -1:
                 Debugger.warning("Negative String length encountered.")
-            return b''
+            return ''
         elif length > max:
             Debugger.warning(f"Too long String encountered, length {length}, max {max}")
-            return b''
+            return ''
         result = bytes(self.messagePayload[self.offset:self.offset + length]).decode('utf-8')
         self.offset += length
         return result
 
-    def readStringReference(self, max):
-        self.bitoffset = 0
-        length = (self.messagePayload[self.offset] << 24)
-        length += (self.messagePayload[self.offset + 1] << 16)
-        length += (self.messagePayload[self.offset + 2] << 8)
-        length += (self.messagePayload[self.offset + 3])
-        self.offset += 4
-        if length <= -1:
-            if length != -1:
-                Debugger.warning("Negative String length encountered.")
-            return b''
-        elif length > max:
-            Debugger.warning(f"Too long String encountered, length {length}, max {max}")
-            return b''
-        result = self.messagePayload[self.offset].decode('utf-8')
-        self.offset += length
-        return result
+    def readStringReference(self, max=900000):
+        return self.readString(max)
 
     def readVInt(self):
         offset = self.offset

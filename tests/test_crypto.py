@@ -11,6 +11,7 @@ class CryptoTests(unittest.TestCase):
 
         def fake_open(output, payload, length, nonce, key):
             output[:] = bytes(32) + b"laser"
+            return 0
 
         with patch(
             "Classes.Crypto.crypto_secretbox_xsalsa20poly1305_tweet_open",

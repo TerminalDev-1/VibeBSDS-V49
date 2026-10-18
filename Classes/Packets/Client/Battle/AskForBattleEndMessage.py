@@ -1,3 +1,4 @@
+import Configuration
 from Classes.Messaging import Messaging
 from Classes.Database import database
 from Classes.GameData import active_events
@@ -58,9 +59,13 @@ class AskForBattleEndMessage(PiranhaMessage):
             fields["Result"],
             fields["Rank"],
             brawler_id,
+            Configuration.settings["MinSecondsBetweenBattleResults"],
         )
         if progression is None:
             print(f"Rejected battle result for unowned brawler {brawler_id}")
+            return
+        if progression.get("rejected"):
+            print("Rejected battle result sent too soon after the previous one")
             return
         calling_instance.player.reload()
         fields["Progression"] = progression

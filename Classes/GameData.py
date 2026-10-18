@@ -81,6 +81,12 @@ EVENT_LANES = (
 )
 
 
+# Debug override variations: the advertised lanes plus map 24 (Ball1, the
+# Brawl Ball probe location).
+_OVERRIDE_VARIATIONS = {map_id: variation for _, _, map_id, variation in EVENT_LANES}
+_OVERRIDE_VARIATIONS[24] = 5
+
+
 def active_events(now=None):
     override_slot = os.environ.get("VIBEBSDS_EVENT_SLOT")
     override_map = os.environ.get("VIBEBSDS_EVENT_MAP")
@@ -91,7 +97,7 @@ def active_events(now=None):
             "slot": int(override_slot),
             "map_id": map_id,
             "seconds_left": 72292,
-            "variation": {24: 5, 5: 3, 7: 0}.get(map_id, 0),
+            "variation": _OVERRIDE_VARIATIONS.get(map_id, 0),
         }]
     return [
         {

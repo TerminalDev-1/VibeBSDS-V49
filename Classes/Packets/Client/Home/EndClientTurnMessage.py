@@ -21,12 +21,18 @@ class EndClientTurnMessage(PiranhaMessage):
         fields["Commands"] = []
         for i in range(fields["CommandsCount"]):
             fields["Commands"].append({"ID": self.readVInt()})
+            command = None
             if LogicCommandManager.commandExist(fields["Commands"][i]["ID"]):
                 command = LogicCommandManager.createCommand(fields["Commands"][i]["ID"])
                 print("Command", LogicCommandManager.getCommandsName(fields["Commands"][i]["ID"]))
-                if command is not None:
-                    fields["Commands"][i]["Fields"] = command.decode(self)
-                    fields["Commands"][i]["Instance"] = command
+            if command is None:
+                # Commands carry no length prefix. Without a decoder the payload
+                # cannot be skipped, so anything after it would be read from the
+                # wrong offset. Stop here rather than execute misaligned commands.
+                print("Stopped turn decode at undecodable command", fields["Commands"][i]["ID"])
+                break
+            fields["Commands"][i]["Fields"] = command.decode(self)
+            fields["Commands"][i]["Instance"] = command
         return fields
 
     def execute(message, calling_instance, fields, cryptoInit):

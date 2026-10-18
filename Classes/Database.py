@@ -319,7 +319,7 @@ class GameDatabase:
             )
             return True, {**reward, "kind": kind, "amount": amount}
 
-    def record_battle(self, low_id, map_id, result, rank, brawler_id):
+    def record_battle(self, low_id, map_id, result, rank, brawler_id, min_interval=0):
         delta = trophy_delta(result, rank)
         won = rank == 1 if rank > 0 else result == 0
         tokens = 20 if won else 10
@@ -327,6 +327,14 @@ class GameDatabase:
         now = int(time.time())
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
+            if min_interval > 0:
+                # Offline results cannot be matched to a server-issued battle,
+                # so limit how quickly results can be replayed instead.
+                last = db.execute(
+                    "SELECT MAX(created_at) FROM battles WHERE account_low_id = ?", (low_id,)
+                ).fetchone()[0]
+                if last is not None and now - last < min_interval:
+                    return {"rejected": "too-soon"}
             brawler = db.execute(
                 "SELECT trophies, highest_trophies, mastery_points FROM brawlers WHERE account_low_id = ? AND brawler_id = ?",
                 (low_id, brawler_id),

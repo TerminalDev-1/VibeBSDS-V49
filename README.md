@@ -727,3 +727,40 @@ Final normal-mode regression with this APK remains pending. Earlier notes
 about an unchanged public asset or a development-client requirement are
 superseded by this publication. Binaries, signing material and evidence remain
 outside Git; this checkpoint commits documentation only.
+
+### Server hardening from a static code audit (2026-10-18)
+
+A line-by-line audit by Claude Code (Anthropic) found several single lines that
+each broke a whole server function. These fixes go beyond the upstream BSDS
+base:
+
+- A turn containing a command with no decoder no longer misreads every later
+  command in that turn. Decoding stops at that command instead.
+- Offer purchases no longer crash with `TypeError` and take the rest of the turn
+  with them. The client is asked to resynchronise, as intended. Unused upstream
+  1,250-trophy/power-11 tables were removed.
+- The connection reads complete 7-byte headers, so split TCP reads no longer
+  desynchronise the stream. A 60-second socket idle timeout replaces the old
+  7-second check, which never fired.
+- Encrypted packets that fail authentication are rejected and the connection
+  closes, instead of being decoded as zeros.
+- Battle results arriving less than 30 seconds after the account's previous one
+  are not rewarded (`MinSecondsBetweenBattleResults` in `Configuration.py`; 0
+  disables it). Offline results are still client-reported, so this limits
+  replays rather than proving a match happened. The shortest gap among the 39
+  recorded live battles was 97 seconds.
+- LobbyInfo is no longer sent after unknown messages or failed handlers.
+- Null strings decode as empty text, and the broken `readStringReference`
+  now reuses `readString`.
+- The debug event override now uses each advertised mode's real variation.
+
+Not changed: Android ID account recovery. Every recorded tablet login sends a
+token that does not match the stored one, so the Android ID is currently the
+only identity that loads the account. Requiring the token would lock the real
+account out. Any client that sends another device's Android ID can still load
+that account.
+
+Verification: 46 automated tests (12 new), Classes compilation and diff checks
+pass. Not yet live-tested on the device. Login, keep-alive, a full match result
+and reconnect should be checked after restarting `Core.py`. No replacement APK
+is needed.

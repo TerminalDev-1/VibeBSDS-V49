@@ -138,37 +138,40 @@ field and +32 policy" below; its live results also predate the outcome-field fix
 - Additional modes must be proven in a live match before being advertised.
 - Real server-authoritative multiplayer is not implemented.
 
-### Known code defects from the 2026-10-18 static audit (unfixed)
+### 2026-10-18 static audit: server hardening (automated checks only)
 
-These come from reading the code, not from live reproduction. Fix each one
-narrowly and add a regression test before claiming it is fixed.
+Fixed in code, with 12 regression tests in `tests/test_audit_fixes.py`. These
+are not yet live-tested on the device. After restarting `Core.py`, check login,
+keep-alives during a full match, the result screen and reconnect.
 
-- `EndClientTurnMessage.decode`: a command ID that has no decoder class (an
-  unknown ID or a string placeholder in `LogicCommandManager`) is not consumed.
-  Every later command in that turn is then read from the wrong offset.
-- `LogicPurchaseOfferCommand.execute` takes two arguments but is called with
-  three, and its `Messaging.sendMessage` call omits `cryptoInit`. Purchasing
-  raises `TypeError`, which also drops the rest of that turn's commands. Its
-  hardcoded `OwnedBrawlersLatest`/`OwnedPinsLatest` tables are unused upstream
-  leftovers.
-- `Database.login`: if the token check fails, the account is found by
-  `AndroidID` alone, so any client that sends another device's Android ID gets
-  that account.
-- `AskForBattleEndMessage`: Outcome and Rank are trusted from the client with no
-  server-issued match to compare against, so repeated 14110 messages each award
-  trophies, tokens and credits. This is inherent to offline battles, but nothing
-  limits replays.
-- `Connection.run` uses `self.client.recv(7)` rather than its exact-length
-  `recv` helper, so a split header desynchronises the stream. With no socket
-  timeout, a silent client blocks forever and the 7-second idle check never runs.
-- `Crypto.decryptClient` ignores the return value of `secretbox_open`, so a
-  failed MAC is decoded as payload instead of being rejected. The server private
-  key is the shared upstream BSDS key.
-- `MessageManager.receiveMessage` sends LobbyInfo (23457) after every client
-  message above 10100, including keep-alives and failed handlers.
-- `ByteStream.readString` reads the length as unsigned, so its `<= -1` branch
-  cannot run. A null string (-1) takes the "too long" path and returns bytes
-  `b''` instead of a string.
+- `EndClientTurnMessage.decode` stops at the first command without a decoder.
+  Commands have no length prefix, so later commands in that turn are dropped
+  rather than misread. Add decoders for any command the client needs.
+- `LogicPurchaseOfferCommand.execute` now takes `crypto_init` and sends its
+  24104 resync correctly. Its unused upstream tables were removed.
+- `Connection.run` reads exact-length headers and payloads, sets a 60-second
+  socket idle timeout (`Connection.IDLE_TIMEOUT`) and always calls
+  `disconnect()`. Do not reduce the timeout without measuring the client's
+  keep-alive interval during matches.
+- `Crypto.decryptClient` returns None on a MAC failure, and the connection
+  closes. The shared upstream server key is unchanged because the client needs it.
+- `record_battle(..., min_interval)` refuses results sent within
+  `Configuration.settings["MinSecondsBetweenBattleResults"]` (30) seconds of the
+  previous one. The shortest real gap in 39 recorded battles was 97 seconds.
+  Tests that submit back-to-back results patch it to 0.
+- `MessageManager` sends LobbyInfo only after a successfully handled message.
+  Keep-alives still trigger it, since that keeps the lobby text current.
+- `ByteStream.readString` is signed and returns `''` for null strings;
+  `readStringReference` reuses it.
+- The `active_events` debug override reuses the `EVENT_LANES` variations plus
+  map 24 -> 5.
+
+Deliberately NOT changed: Android ID login fallback in `Database.login`. Every
+recorded tablet login (21 server logs) presents a 40-character token that does
+not match the stored account token. The account loads only via the Android ID,
+so requiring the token would lock TerminalDev-1 out. Any client that sends
+another device's Android ID still gets that account. A real fix first needs
+to find out why the client does not save or resend the LoginOk token.
 
 ## Android and device safety
 
